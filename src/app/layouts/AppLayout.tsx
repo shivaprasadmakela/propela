@@ -27,7 +27,7 @@ export function AppLayout() {
     : 'U';
 
   return (
-    <div className="flex h-screen bg-[#0a0a0f] text-white overflow-hidden">
+    <div className="flex h-screen w-full bg-[#0a0a0f] text-white overflow-hidden">
       {/* Sidebar */}
       <aside
         className={`
@@ -63,8 +63,10 @@ export function AppLayout() {
                 }`
               }
             >
-              <span className="text-base w-5 text-center shrink-0">{item.icon}</span>
-              {!sidebarCollapsed && <span>{item.label}</span>}
+              <div className="w-5 flex items-center justify-center shrink-0">
+                <span className="text-base">{item.icon}</span>
+              </div>
+              {!sidebarCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
             </NavLink>
           ))}
         </nav>
@@ -135,8 +137,10 @@ export function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto w-full">
+          <div className="max-w-[1400px] mx-auto p-6 lg:p-8">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
