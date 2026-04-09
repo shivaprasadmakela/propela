@@ -8,6 +8,7 @@ import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 import { LandingPage } from '@/app/pages/LandingPage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { DealsPage } from '@/domains/deals/pages/DealsPage';
+import { DashboardPage } from '@/app/pages/DashboardPage';
 
 export function AppRoutes() {
   return (
@@ -30,6 +31,7 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/deals" element={<DealsPage />} />
         {/* Future routes go here */}
       </Route>

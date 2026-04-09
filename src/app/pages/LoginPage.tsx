@@ -25,7 +25,7 @@ export function LoginPage() {
         cookie: false,
         indentifierType: 'EMAIL_ID',
       });
-      navigate('/deals');
+      navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
     } finally {
