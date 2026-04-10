@@ -4,4 +4,7 @@ export const ENDPOINTS = {
     VERIFY_TOKEN: '/api/security/verifyToken',
     FIND_USER_CLIENTS: '/api/security/users/findUserClients?appLevel=false',
   },
+  DEALS: {
+    QUERY_EAGER: '/api/entity/processor/tickets/eager/query',
+  },
 } as const;
