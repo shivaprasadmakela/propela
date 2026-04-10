@@ -1,35 +1,116 @@
-import { useState } from 'react';
-
-const mockDeals = [
-  { id: 1, name: 'Enterprise SaaS Contract', company: 'Acme Corp', value: '$125,000', stage: 'Negotiation', probability: '75%', owner: 'Sarah Chen', updatedAt: '2h ago' },
-  { id: 2, name: 'Platform License Renewal', company: 'TechStart Inc', value: '$45,000', stage: 'Proposal', probability: '60%', owner: 'Mike Ross', updatedAt: '4h ago' },
-  { id: 3, name: 'Annual Support Package', company: 'DataFlow Ltd', value: '$32,000', stage: 'Qualification', probability: '40%', owner: 'Alex Kim', updatedAt: '1d ago' },
-  { id: 4, name: 'Custom Integration Build', company: 'CloudNine', value: '$89,000', stage: 'Negotiation', probability: '80%', owner: 'Sarah Chen', updatedAt: '3h ago' },
-  { id: 5, name: 'Startup Bundle Deal', company: 'LaunchPad', value: '$18,500', stage: 'Discovery', probability: '25%', owner: 'Jordan Lee', updatedAt: '5h ago' },
-  { id: 6, name: 'Government Contract Bid', company: 'GovTech Agency', value: '$250,000', stage: 'Proposal', probability: '50%', owner: 'Mike Ross', updatedAt: '2d ago' },
-  { id: 7, name: 'API Access Tier Upgrade', company: 'DevHub', value: '$12,000', stage: 'Closed Won', probability: '100%', owner: 'Alex Kim', updatedAt: '6h ago' },
-  { id: 8, name: 'Multi-region Deployment', company: 'GlobalScale', value: '$175,000', stage: 'Discovery', probability: '30%', owner: 'Jordan Lee', updatedAt: '1d ago' },
-];
-
-const stageColors: Record<string, string> = {
-  'Discovery': 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  'Qualification': 'bg-amber-500/15 text-amber-400 border-amber-500/20',
-  'Proposal': 'bg-purple-500/15 text-purple-400 border-purple-500/20',
-  'Negotiation': 'bg-indigo-500/15 text-indigo-400 border-indigo-500/20',
-  'Closed Won': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
-  'Closed Lost': 'bg-red-500/15 text-red-400 border-red-500/20',
-};
-
-
+import { useState, useEffect } from 'react';
+import { dealsApi, type DealEntity } from '../api/dealsApi';
+import { DataTable, type ColumnDef } from '@/shared/ui/table/DataTable';
+import { getStringColorClass } from '@/shared/utils/colorUtils';
 
 export function DealsPage() {
+  const [deals, setDeals] = useState<DealEntity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  const filtered = mockDeals.filter(
+  const fetchLiveDeals = async () => {
+    setIsLoading(true);
+    try {
+      const response = await dealsApi.fetchDeals({
+        condition: {
+          conditions: [], // Blank slate requested
+          operator: 'AND',
+        },
+        eager: true,
+        size: 100,
+        page: 0,
+        sort: {
+          property: 'updatedAt',
+          direction: 'DESC',
+        },
+        eagerFields: ['name', 'firstName', 'lastName', 'campaign_name', 'id', 'code'],
+      });
+      setDeals(response.content || []);
+    } catch (error) {
+      console.error('Failed to fetch deals:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveDeals();
+  }, []);
+
+  const filteredDeals = deals.filter(
     (d) =>
-      d.name.toLowerCase().includes(search.toLowerCase()) ||
-      d.company.toLowerCase().includes(search.toLowerCase())
+      d.name?.toLowerCase().includes(search.toLowerCase()) ||
+      d.code?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const columns: ColumnDef<DealEntity>[] = [
+    {
+      key: 'name',
+      header: 'Deal',
+      render: (deal) => (
+        <span className="text-sm font-medium text-white/90 cursor-pointer hover:text-indigo-400 transition-colors">
+          {deal.name || 'Unnamed Deal'}
+          <br/>
+          <span className="text-xs font-mono text-white/30">{deal.code}</span>
+        </span>
+      ),
+    },
+    {
+      key: 'assignedUserId',
+      header: 'Assigned To',
+      render: (deal) => (
+        <span className="text-sm text-white/50">
+          {deal.assignedUserId?.firstName} {deal.assignedUserId?.lastName}
+        </span>
+      ),
+    },
+    {
+      key: 'stage',
+      header: 'Stage & Status',
+      render: (deal) => (
+        <div className="flex flex-col gap-1 items-start">
+          <span className="text-sm font-semibold text-white/80">{deal.stage?.name || '-'}</span>
+          <span className="text-xs text-white/50">{deal.status?.name || '-'}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'source',
+      header: 'Source',
+      render: (deal) => (
+        <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border ${getStringColorClass(deal.source)}`}>
+          {deal.source || 'Unknown'}
+        </span>
+      ),
+    },
+    {
+      key: 'subSource',
+      header: 'Sub Source',
+      render: (deal) => (
+        <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border ${getStringColorClass(deal.subSource)}`}>
+          {deal.subSource || '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'tag',
+      header: 'Tag',
+      render: (deal) => (
+        <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border ${getStringColorClass(deal.tag)}`}>
+          {deal.tag || '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'createdAt',
+      header: 'Created On',
+      render: (deal) => (
+        <span className="text-sm text-white/50">
+          {deal.createdAt ? new Date(deal.createdAt * 1000).toLocaleDateString() : '-'}
+        </span>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -44,8 +125,6 @@ export function DealsPage() {
           New Deal
         </button>
       </div>
-
-
 
       {/* Table card */}
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.01] overflow-hidden">
@@ -67,61 +146,16 @@ export function DealsPage() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/30">{filtered.length} deals</span>
+            <span className="text-xs text-white/30">{filteredDeals.length} deals</span>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-white/[0.04]">
-                {['Deal', 'Company', 'Value', 'Stage', 'Probability', 'Owner', 'Updated'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left text-xs font-medium text-white/30 uppercase tracking-wider px-5 py-3"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((deal, i) => (
-                <tr
-                  key={deal.id}
-                  className={`border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors cursor-pointer group ${
-                    i === filtered.length - 1 ? 'border-b-0' : ''
-                  }`}
-                >
-                  <td className="px-5 py-4">
-                    <span className="text-sm font-medium text-white/90 group-hover:text-indigo-400 transition-colors">
-                      {deal.name}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-sm text-white/50">{deal.company}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-white/80">{deal.value}</td>
-                  <td className="px-5 py-4">
-                    <span
-                      className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border ${
-                        stageColors[deal.stage] || 'bg-white/5 text-white/50 border-white/10'
-                      }`}
-                    >
-                      {deal.stage}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-sm text-white/50">{deal.probability}</td>
-                  <td className="px-5 py-4 text-sm text-white/50">{deal.owner}</td>
-                  <td className="px-5 py-4 text-xs text-white/30">{deal.updatedAt}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {/* Table Mount */}
+        <DataTable data={filteredDeals} columns={columns} isLoading={isLoading} />
 
-        {/* Pagination */}
+        {/* Pagination placeholder */}
         <div className="flex items-center justify-between px-5 py-3 border-t border-white/[0.04]">
-          <span className="text-xs text-white/30">Showing 1–{filtered.length} of {filtered.length}</span>
+          <span className="text-xs text-white/30">Showing 1–{filteredDeals.length} of {filteredDeals.length}</span>
           <div className="flex items-center gap-1">
             <button className="px-3 py-1.5 rounded-lg text-xs text-white/30 hover:bg-white/[0.04] transition-colors">Prev</button>
             <button className="px-3 py-1.5 rounded-lg text-xs bg-indigo-500/15 text-indigo-400 font-medium">1</button>
