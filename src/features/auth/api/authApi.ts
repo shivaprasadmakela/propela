@@ -8,6 +8,7 @@ export interface LoginCredentials {
   cookie?: boolean;
   indentifierType?: string;
   clientId?: number;
+  userId?: number;
 }
 
 export interface AuthUser {
@@ -31,6 +32,11 @@ export interface AuthClient {
   businessType: string;
 }
 
+export interface UserClient {
+  userId: number;
+  client: AuthClient;
+}
+
 export interface LoginResponse {
   user: AuthUser;
   client: AuthClient;
@@ -50,6 +56,17 @@ export const authApi = {
       cookie: credentials.cookie ?? false,
       indentifierType: credentials.indentifierType ?? 'EMAIL_ID',
       clientId: credentials.clientId,
+      userId: credentials.userId,
+    });
+  },
+  verifyToken: (): Promise<LoginResponse> => {
+    return httpClient.get<LoginResponse>(ENDPOINTS.AUTH.VERIFY_TOKEN);
+  },
+  findUserClients: (credentials: LoginCredentials): Promise<UserClient[]> => {
+    return httpClient.post<UserClient[]>(ENDPOINTS.AUTH.FIND_USER_CLIENTS, {
+      userName: credentials.userName,
+      password: credentials.password,
+      identifierType: credentials.indentifierType ?? 'EMAIL_ID',
     });
   },
 };

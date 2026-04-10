@@ -37,6 +37,10 @@ class HttpClient {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // Dispatch custom event to trigger logout from store
+        window.dispatchEvent(new Event('auth:unauthorized'));
+      }
       const error = await response.json().catch(() => ({ message: response.statusText }));
       throw new Error(error.message || `HTTP ${response.status}`);
     }

@@ -6,10 +6,10 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isInitialized } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
+  if (!isInitialized || isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-[#0a0a0f]">
         <div className="flex flex-col items-center gap-4">

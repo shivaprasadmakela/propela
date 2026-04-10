@@ -1,13 +1,21 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AuthProvider } from './features/auth/store/AuthContext';
 import { Router } from './app/router';
+import { useAuthStore } from './features/auth/store/useAuthStore';
 import './index.css';
+
+function App() {
+  const initAuth = useAuthStore((state) => state.initAuth);
+  
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
+
+  return <Router />;
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <Router />
-    </AuthProvider>
+    <App />
   </StrictMode>,
 );

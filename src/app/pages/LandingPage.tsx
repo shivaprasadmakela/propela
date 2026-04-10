@@ -53,7 +53,7 @@ export function LandingPage() {
       </div>
 
       {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.04]">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.04] bg-[#0a0a0f]/80 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-base shadow-lg shadow-indigo-500/20">
             P
@@ -77,7 +77,7 @@ export function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
+      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-32 pb-20 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8 text-sm text-indigo-400">
           <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
           Now in Beta — Join the waitlist
