@@ -30,7 +30,7 @@ export function DealsPage() {
         size: pageSize,
         page: page,
         sort: sortState,
-        eagerFields: ['name', 'firstName', 'lastName', 'campaign_name', 'id', 'code'],
+        eagerFields: ['name', 'firstName', 'lastName', 'campaign_name', 'id', 'code', 'productId', 'createdBy', 'nextFollowUp'],
       });
       setDeals(response.content || []);
       setTotalElements(response.totalElements || 0);
@@ -67,29 +67,35 @@ export function DealsPage() {
 
   const columns: ColumnDef<DealEntity>[] = [
     {
-      key: 'name',
-      header: 'Deal',
+      key: 'id',
+      header: 'Deal ID',
       sortable: true,
       render: (deal) => {
         const dealIdDisplay = `D${String(deal.id).padStart(10, '0')}`;
         return (
-          <span className="text-sm font-medium text-foreground/90 cursor-pointer hover:text-primary transition-colors">
-            {deal.name || 'Unnamed Deal'}
-            <br/>
-            <span 
-              className="text-xs font-mono text-foreground/40 hover:text-foreground/80 flex items-center gap-1 mt-0.5"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(dealIdDisplay);
-                toast(`Copied ${dealIdDisplay}`, 'success');
-              }}
-              title="Copy Deal ID"
-            >
-              {dealIdDisplay} <span className="opacity-50">⎘</span>
-            </span>
+          <span 
+            className="text-xs font-mono text-foreground/60 hover:text-primary cursor-pointer flex items-center gap-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(dealIdDisplay);
+              toast(`Copied ${dealIdDisplay}`, 'success');
+            }}
+            title="Copy Deal ID"
+          >
+            {dealIdDisplay} <span className="opacity-50">⎘</span>
           </span>
         );
       },
+    },
+    {
+      key: 'name',
+      header: 'Deal Name',
+      sortable: true,
+      render: (deal) => (
+        <span className="text-sm font-medium text-foreground/90 cursor-pointer hover:text-primary transition-colors">
+          {deal.name || 'Unnamed Deal'}
+        </span>
+      ),
     },
     {
       key: 'assignedUserId',
@@ -102,12 +108,17 @@ export function DealsPage() {
     },
     {
       key: 'stage',
-      header: 'Stage & Status',
+      header: 'Stage',
+      sortable: true,
       render: (deal) => (
-        <div className="flex flex-col gap-1 items-start">
-          <span className="text-sm font-semibold text-foreground/80">{deal.stage?.name || '-'}</span>
-          <span className="text-xs text-foreground/50">{deal.status?.name || '-'}</span>
-        </div>
+        <span className="text-sm font-medium text-foreground/80">{deal.stage?.name || '-'}</span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (deal) => (
+        <span className="text-sm text-foreground/70">{deal.status?.name || '-'}</span>
       ),
     },
     {
@@ -135,6 +146,37 @@ export function DealsPage() {
       render: (deal) => (
         <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border ${getStringColorClass(deal.tag)}`}>
           {deal.tag || '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'productId',
+      header: 'Product',
+      sortable: true,
+      render: (deal) => (
+        <span className="text-sm font-medium text-foreground/80">
+          {deal.productId?.name || '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'createdBy',
+      header: 'Created By',
+      render: (deal) => (
+        <span className="text-sm text-foreground/50">
+          {deal.createdBy?.firstName ? `${deal.createdBy.firstName} ${deal.createdBy.lastName || ''}` : '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'nextFollowUp',
+      header: 'Next Follow Up',
+      sortable: true,
+      render: (deal) => (
+        <span className="text-sm text-foreground/50">
+          {deal.nextFollowUp 
+            ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(deal.nextFollowUp * 1000)) 
+            : '-'}
         </span>
       ),
     },

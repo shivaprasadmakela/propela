@@ -74,7 +74,7 @@ export function DataTable<T>({
               <th
                 key={col.key}
                 style={{ width: col.width }}
-                className={`text-left text-xs font-medium text-foreground/30 uppercase tracking-wider px-5 py-3 whitespace-nowrap ${
+                className={`text-left text-xs font-medium text-foreground/30 uppercase tracking-wider px-4 py-2.5 whitespace-nowrap ${
                   col.sortable ? 'cursor-pointer hover:text-foreground/60 transition-colors' : ''
                 }`}
                 onClick={() => {
@@ -92,8 +92,8 @@ export function DataTable<T>({
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={actualColumns.length} className="px-5 py-12 text-center text-sm text-foreground/40">
-                <div className="flex flex-col items-center justify-center gap-3">
+              <td colSpan={actualColumns.length} className="px-4 py-8 text-center text-sm text-foreground/40">
+                <div className="flex flex-col items-center justify-center gap-2">
                   <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                   Loading data...
                 </div>
@@ -101,7 +101,7 @@ export function DataTable<T>({
             </tr>
           ) : data.length === 0 ? (
             <tr>
-              <td colSpan={actualColumns.length} className="px-5 py-12 text-center text-sm text-foreground/40">
+              <td colSpan={actualColumns.length} className="px-4 py-8 text-center text-sm text-foreground/40">
                 {emptyMessage}
               </td>
             </tr>
@@ -113,7 +113,7 @@ export function DataTable<T>({
                   }`}
               >
                 {actualColumns.map((col) => (
-                  <td key={col.key} className="px-5 py-4 whitespace-nowrap">
+                  <td key={col.key} className="px-4 py-2.5 whitespace-nowrap">
                     {col.render
                       ? col.render(item, i)
                       : (item[col.key as keyof T] as React.ReactNode)}

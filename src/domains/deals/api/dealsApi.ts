@@ -32,6 +32,9 @@ export interface DealEntity {
   source?: string;
   subSource?: string;
   tag?: string;
+  productId?: DealStageNode & { createdBy?: number };
+  createdBy?: DealUser;
+  nextFollowUp?: number;
   expiresOn?: number;
   createdAt?: number;
   updatedAt?: number;
