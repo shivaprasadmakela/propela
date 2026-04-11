@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react';
 import { dealsApi, type DealEntity } from '../api/dealsApi';
-import { DataTable, type ColumnDef } from '@/shared/ui/table/DataTable';
+import { DataTable, type ColumnDef, type SortState } from '@/shared/ui/table/DataTable';
 import { getStringColorClass } from '@/shared/utils/colorUtils';
+import { useToast } from '@/shared/ui/toast/ToastProvider';
 
 export function DealsPage() {
   const [deals, setDeals] = useState<DealEntity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
+  
+  // Pagination & Sorting State
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(100);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
+
+  const toast = useToast();
 
   const fetchLiveDeals = async () => {
     setIsLoading(true);
@@ -17,17 +27,17 @@ export function DealsPage() {
           operator: 'AND',
         },
         eager: true,
-        size: 100,
-        page: 0,
-        sort: {
-          property: 'updatedAt',
-          direction: 'DESC',
-        },
+        size: pageSize,
+        page: page,
+        sort: sortState,
         eagerFields: ['name', 'firstName', 'lastName', 'campaign_name', 'id', 'code'],
       });
       setDeals(response.content || []);
+      setTotalElements(response.totalElements || 0);
+      setTotalPages(response.totalPages || 0);
     } catch (error) {
       console.error('Failed to fetch deals:', error);
+      toast('Failed to load deals', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -35,7 +45,19 @@ export function DealsPage() {
 
   useEffect(() => {
     fetchLiveDeals();
-  }, []);
+  }, [page, sortState]);
+
+  const handleSortChange = (property: string) => {
+    setSortState((prev) => {
+      const existing = prev.find((s) => s.property === property);
+      if (existing) {
+        if (existing.direction === 'ASC') return [{ property, direction: 'DESC' }];
+        return []; // Clear sort
+      }
+      return [{ property, direction: 'ASC' }];
+    });
+    setPage(0); // Reset to first page on sort
+  };
 
   const filteredDeals = deals.filter(
     (d) =>
@@ -47,13 +69,27 @@ export function DealsPage() {
     {
       key: 'name',
       header: 'Deal',
-      render: (deal) => (
-        <span className="text-sm font-medium text-foreground/90 cursor-pointer hover:text-primary transition-colors">
-          {deal.name || 'Unnamed Deal'}
-          <br/>
-          <span className="text-xs font-mono text-foreground/30">{deal.code}</span>
-        </span>
-      ),
+      sortable: true,
+      render: (deal) => {
+        const dealIdDisplay = `D${String(deal.id).padStart(10, '0')}`;
+        return (
+          <span className="text-sm font-medium text-foreground/90 cursor-pointer hover:text-primary transition-colors">
+            {deal.name || 'Unnamed Deal'}
+            <br/>
+            <span 
+              className="text-xs font-mono text-foreground/40 hover:text-foreground/80 flex items-center gap-1 mt-0.5"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(dealIdDisplay);
+                toast(`Copied ${dealIdDisplay}`, 'success');
+              }}
+              title="Copy Deal ID"
+            >
+              {dealIdDisplay} <span className="opacity-50">⎘</span>
+            </span>
+          </span>
+        );
+      },
     },
     {
       key: 'assignedUserId',
@@ -77,6 +113,7 @@ export function DealsPage() {
     {
       key: 'source',
       header: 'Source',
+      sortable: true,
       render: (deal) => (
         <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border ${getStringColorClass(deal.source)}`}>
           {deal.source || 'Unknown'}
@@ -104,9 +141,12 @@ export function DealsPage() {
     {
       key: 'createdAt',
       header: 'Created On',
+      sortable: true,
       render: (deal) => (
         <span className="text-sm text-foreground/50">
-          {deal.createdAt ? new Date(deal.createdAt * 1000).toLocaleDateString() : '-'}
+          {deal.createdAt 
+            ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(deal.createdAt * 1000)) 
+            : '-'}
         </span>
       ),
     },
@@ -150,17 +190,20 @@ export function DealsPage() {
         </div>
 
         {/* Table Mount */}
-        <DataTable data={filteredDeals} columns={columns} isLoading={isLoading} />
-
-        {/* Pagination placeholder */}
-        <div className="flex items-center justify-between px-5 py-3 border-t border-border">
-          <span className="text-xs text-foreground/30">Showing 1–{filteredDeals.length} of {filteredDeals.length}</span>
-          <div className="flex items-center gap-1">
-            <button className="px-3 py-1.5 rounded-lg text-xs text-foreground/30 hover:bg-muted transition-colors">Prev</button>
-            <button className="px-3 py-1.5 rounded-lg text-xs bg-primary/20 text-primary font-medium">1</button>
-            <button className="px-3 py-1.5 rounded-lg text-xs text-foreground/30 hover:bg-muted transition-colors">Next</button>
-          </div>
-        </div>
+        <DataTable 
+          data={filteredDeals} 
+          columns={columns} 
+          isLoading={isLoading}
+          showSerialNumber
+          startIndex={page * pageSize}
+          sortState={sortState}
+          onSortChange={handleSortChange}
+          page={page}
+          size={pageSize}
+          totalElements={totalElements}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

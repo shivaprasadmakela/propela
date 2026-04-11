@@ -59,10 +59,10 @@ export interface DealsQueryPayload {
   eager: boolean;
   size: number;
   page: number;
-  sort: {
+  sort: Array<{
     property: string;
     direction: 'ASC' | 'DESC';
-  };
+  }>;
   eagerFields: string[];
 }
 

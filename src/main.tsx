@@ -4,6 +4,8 @@ import { Router } from './app/router';
 import { useAuthStore } from './features/auth/store/useAuthStore';
 import './index.css';
 
+import { ToastProvider } from '@/shared/ui/toast/ToastProvider';
+
 function App() {
   const initAuth = useAuthStore((state) => state.initAuth);
   
@@ -11,7 +13,11 @@ function App() {
     initAuth();
   }, [initAuth]);
 
-  return <Router />;
+  return (
+    <ToastProvider>
+      <Router />
+    </ToastProvider>
+  );
 }
 
 createRoot(document.getElementById('root')!).render(
