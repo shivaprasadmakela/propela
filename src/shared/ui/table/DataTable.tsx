@@ -21,9 +21,9 @@ export function DataTable<T>({
   emptyMessage = 'No data available.',
 }: DataTableProps<T>) {
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full">
-        <thead>
+    <div className="flex-1 overflow-auto min-h-0 w-full">
+      <table className="w-full relative">
+        <thead className="sticky top-0 z-10 bg-card">
           <tr className="border-b border-border">
             {columns.map((col) => (
               <th

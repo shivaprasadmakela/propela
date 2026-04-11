@@ -113,12 +113,11 @@ export function DealsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 flex flex-col min-h-0 space-y-4">
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Deals</h1>
-          <p className="text-sm text-foreground/40 mt-1">Manage and track your sales pipeline</p>
         </div>
         <button className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2">
           <span className="text-lg leading-none">+</span>
@@ -127,7 +126,7 @@ export function DealsPage() {
       </div>
 
       {/* Table card */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+      <div className="flex-1 rounded-2xl border border-border bg-card overflow-hidden flex flex-col min-h-0">
         {/* Toolbar */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-3">

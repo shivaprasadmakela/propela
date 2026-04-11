@@ -137,8 +137,8 @@ export function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto w-full">
-          <div className="max-w-[1400px] mx-auto p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto w-full flex flex-col">
+          <div className="max-w-[1400px] px-6 py-4 mx-auto w-full flex-1 flex flex-col min-h-0">
             <Outlet />
           </div>
         </main>
