@@ -27,22 +27,22 @@ export function AppLayout() {
     : 'U';
 
   return (
-    <div className="flex h-screen w-full bg-[#0a0a0f] text-white overflow-hidden">
+    <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
       {/* Sidebar */}
       <aside
         className={`
           ${sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'}
-          flex flex-col border-r border-white/[0.06] bg-[#0d0d14]
+          flex flex-col border-r border-border bg-card
           transition-all duration-300 ease-in-out shrink-0
         `}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-5 border-b border-white/[0.06] gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+        <div className="h-16 flex items-center px-5 border-b border-border gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0">
             P
           </div>
           {!sidebarCollapsed && (
-            <span className="text-lg font-semibold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+            <span className="text-lg font-semibold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
               Propela
             </span>
           )}
@@ -58,8 +58,8 @@ export function AppLayout() {
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                 ${
                   isActive
-                    ? 'bg-indigo-500/15 text-indigo-400 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.2)]'
-                    : 'text-white/50 hover:text-white/80 hover:bg-white/[0.04]'
+                    ? 'bg-primary/20 text-primary shadow-[inset_0_0_0_1px_var(--color-primary)]'
+                    : 'text-foreground/50 hover:text-foreground/80 hover:bg-muted'
                 }`
               }
             >
@@ -72,10 +72,10 @@ export function AppLayout() {
         </nav>
 
         {/* Collapse Toggle */}
-        <div className="px-3 py-3 border-t border-white/[0.06]">
+        <div className="px-3 py-3 border-t border-border">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-white/40 hover:text-white/70 hover:bg-white/[0.04] transition-all text-sm"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-foreground/40 hover:text-foreground/70 hover:bg-muted transition-all text-sm"
           >
             <span className={`transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`}>
               ‹‹
@@ -88,45 +88,45 @@ export function AppLayout() {
       {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-white/[0.06] bg-[#0d0d14]/80 backdrop-blur-xl shrink-0">
+        <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/80 backdrop-blur-xl shrink-0">
           <div className="flex items-center gap-3">
-            <h2 className="text-sm font-medium text-white/70">
-              Welcome back, <span className="text-white">{user?.firstName || 'User'}</span>
+            <h2 className="text-sm font-medium text-foreground/70">
+              Welcome back, <span className="text-foreground">{user?.firstName || 'User'}</span>
             </h2>
           </div>
 
           <div className="flex items-center gap-4">
             {/* Notification bell */}
-            <button className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-white/50 hover:text-white/80 transition-all relative">
+            <button className="w-9 h-9 rounded-xl bg-muted hover:bg-muted/50 flex items-center justify-center text-foreground/50 hover:text-foreground/80 transition-all relative">
               <span className="text-sm">🔔</span>
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
             </button>
 
             {/* User avatar */}
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-white/[0.04] transition-all"
+                className="flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-muted transition-all"
               >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold">
                   {initials}
                 </div>
                 {!sidebarCollapsed && (
                   <div className="text-left hidden md:block">
-                    <p className="text-sm font-medium text-white/90 leading-tight">
+                    <p className="text-sm font-medium text-foreground/90 leading-tight">
                       {user?.firstName} {user?.lastName}
                     </p>
-                    <p className="text-xs text-white/40 leading-tight">{user?.emailId}</p>
+                    <p className="text-xs text-foreground/40 leading-tight">{user?.emailId}</p>
                   </div>
                 )}
               </button>
 
               {/* Dropdown */}
               {userMenuOpen && (
-                <div className="absolute right-0 top-12 w-48 py-2 bg-[#1a1a28] border border-white/[0.08] rounded-xl shadow-2xl z-50">
+                <div className="absolute right-0 top-12 w-48 py-2 bg-card border border-border rounded-xl shadow-2xl z-50">
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-white/[0.04] transition-colors"
+                    className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-muted transition-colors"
                   >
                     Sign out
                   </button>

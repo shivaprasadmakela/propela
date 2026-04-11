@@ -12,8 +12,9 @@ class HttpClient {
   }
 
   private getHeaders(): HeadersInit {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      'appcode': 'leadzump',
     };
 
     const token = localStorage.getItem('accessToken');

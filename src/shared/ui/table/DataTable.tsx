@@ -24,12 +24,12 @@ export function DataTable<T>({
     <div className="w-full overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-white/[0.04]">
+          <tr className="border-b border-border">
             {columns.map((col) => (
               <th
                 key={col.key}
                 style={{ width: col.width }}
-                className="text-left text-xs font-medium text-white/30 uppercase tracking-wider px-5 py-3 whitespace-nowrap"
+                className="text-left text-xs font-medium text-foreground/30 uppercase tracking-wider px-5 py-3 whitespace-nowrap"
               >
                 {col.header}
               </th>
@@ -39,16 +39,16 @@ export function DataTable<T>({
         <tbody>
           {isLoading ? (
             <tr>
-              <td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-white/40">
+              <td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-foreground/40">
                 <div className="flex flex-col items-center justify-center gap-3">
-                  <div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                  <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                   Loading data...
                 </div>
               </td>
             </tr>
           ) : data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-white/40">
+              <td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-foreground/40">
                 {emptyMessage}
               </td>
             </tr>
@@ -56,15 +56,13 @@ export function DataTable<T>({
             data.map((item, i) => (
               <tr
                 key={i}
-                className={`border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors group ${
-                  i === data.length - 1 ? 'border-b-0' : ''
-                }`}
+                className={`border-b border-border hover:bg-muted/50 transition-colors group ${i === data.length - 1 ? 'border-b-0' : ''
+                  }`}
               >
                 {columns.map((col) => (
                   <td key={col.key} className="px-5 py-4 whitespace-nowrap">
                     {col.render
                       ? col.render(item, i)
-                      // @ts-expect-error fallback property access
                       : (item[col.key] as React.ReactNode)}
                   </td>
                 ))}

@@ -35,10 +35,10 @@ const features = [
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-indigo-600/[0.07] rounded-full blur-[150px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/[0.07] rounded-full blur-[150px]" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/[0.05] rounded-full blur-[150px]" />
         <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-cyan-600/[0.04] rounded-full blur-[150px]" />
 
@@ -53,9 +53,9 @@ export function LandingPage() {
       </div>
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.04] bg-[#0a0a0f]/80 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-base shadow-lg shadow-indigo-500/20">
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg shadow-primary/20">
             P
           </div>
           <span className="text-xl font-bold tracking-tight">Propela</span>
@@ -69,7 +69,7 @@ export function LandingPage() {
           </Link>
           <Link
             to="/login"
-            className="px-5 py-2.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5"
+            className="px-5 py-2.5 text-sm font-medium bg-primary hover:bg-primary/90 rounded-xl transition-all duration-200 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5"
           >
             Get Started
           </Link>
@@ -78,8 +78,8 @@ export function LandingPage() {
 
       {/* Hero */}
       <section className="relative z-10 max-w-5xl mx-auto px-6 pt-32 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8 text-sm text-indigo-400">
-          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-8 text-sm text-primary">
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           Now in Beta — Join the waitlist
         </div>
 
@@ -102,7 +102,7 @@ export function LandingPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             to="/login"
-            className="px-8 py-3.5 text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-xl transition-all duration-300 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5"
+            className="px-8 py-3.5 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all duration-300 shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5"
           >
             Start Free Trial →
           </Link>
@@ -113,9 +113,9 @@ export function LandingPage() {
 
         {/* Dashboard preview mockup */}
         <div className="mt-20 relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-transparent z-10 pointer-events-none" />
-          <div className="rounded-2xl border border-white/[0.08] bg-[#0d0d14] p-1 shadow-2xl overflow-hidden">
-            <div className="rounded-xl bg-[#12121c] p-6 min-h-[320px] flex flex-col">
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none" />
+          <div className="rounded-2xl border border-border bg-card p-1 shadow-2xl overflow-hidden">
+            <div className="rounded-xl bg-muted/20 p-6 min-h-[320px] flex flex-col">
               {/* Fake header bar */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
