@@ -3,6 +3,7 @@ import { dealsApi, type DealEntity } from '../api/dealsApi';
 import { DataTable, type ColumnDef, type SortState } from '@/shared/ui/table/DataTable';
 import { getStringColorClass } from '@/shared/utils/colorUtils';
 import { useToast } from '@/shared/ui/toast/ToastProvider';
+import { AddDealModal } from '../components/AddDealModal';
 
 export function DealsPage() {
   const [deals, setDeals] = useState<DealEntity[]>([]);
@@ -15,6 +16,7 @@ export function DealsPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const toast = useToast();
 
@@ -201,7 +203,10 @@ export function DealsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Deals</h1>
         </div>
-        <button className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2">
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2"
+        >
           <span className="text-lg leading-none">+</span>
           New Deal
         </button>
@@ -247,6 +252,16 @@ export function DealsPage() {
           onPageChange={setPage}
         />
       </div>
+
+      <AddDealModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onSuccess={() => {
+          toast('Deal created successfully', 'success');
+          setPage(0); // Optional: reload deals list
+          fetchLiveDeals();
+        }}
+      />
     </div>
   );
 }
