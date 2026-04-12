@@ -5,7 +5,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', icon: '◫' },
   { label: 'Deals', path: '/deals', icon: '◈' },
-  { label: 'Leads', path: '/leads', icon: '◉' },
+  { label: 'Accounts', path: '/accounts', icon: '◉' },
   { label: 'Products', path: '/products', icon: '▣' },
   { label: 'Campaigns', path: '/campaigns', icon: '◆' },
   { label: 'Settings', path: '/settings', icon: '⚙' },

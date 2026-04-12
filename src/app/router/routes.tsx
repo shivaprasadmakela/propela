@@ -9,6 +9,8 @@ import { LandingPage } from '@/app/pages/LandingPage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { DealsPage } from '@/domains/deals/pages/DealsPage';
 import { DashboardPage } from '@/app/pages/DashboardPage';
+import { ProductsPage } from '@/domains/products/pages/ProductsPage';
+import { AccountsPage } from '@/domains/accounts/pages/AccountsPage';
 
 export function AppRoutes() {
   return (
@@ -33,6 +35,8 @@ export function AppRoutes() {
       >
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/deals" element={<DealsPage />} />
+        <Route path="/accounts" element={<AccountsPage />} />
+        <Route path="/products" element={<ProductsPage />} />
         {/* Future routes go here */}
       </Route>
     </Routes>
