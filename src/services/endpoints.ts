@@ -10,4 +10,7 @@ export const ENDPOINTS = {
   ACCOUNTS: {
     QUERY_EAGER: '/api/entity/processor/owners/eager/query',
   },
+  PRODUCTS: {
+    QUERY_EAGER: '/api/entity/processor/products/eager/query',
+  },
 } as const;

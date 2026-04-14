@@ -21,8 +21,13 @@ export interface AccountEntity {
     email?: string;
     source?: string;
     subSource?: string;
+    parentOwnerId?: {
+        id: number;
+        name?: string;
+    };
     createdBy?: User;
     createdAt?: number;
+    updatedBy?: User;
     updatedAt?: number;
 }
 

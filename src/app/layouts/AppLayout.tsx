@@ -3,12 +3,15 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
 const navItems = [
-  { label: 'Dashboard', path: '/dashboard', icon: '◫' },
-  { label: 'Deals', path: '/deals', icon: '◈' },
-  { label: 'Accounts', path: '/accounts', icon: '◉' },
-  { label: 'Products', path: '/products', icon: '▣' },
-  { label: 'Campaigns', path: '/campaigns', icon: '◆' },
-  { label: 'Settings', path: '/settings', icon: '⚙' },
+  { label: 'Dashboard', path: '/dashboard', icon: '⌬' },
+  { label: 'Deals', path: '/deals', icon: '✦' },
+  { label: 'Accounts', path: '/accounts', icon: '👥' },
+  { label: 'Products', path: '/products', icon: '🛒' },
+  { label: 'My Tasks', path: '/tasks', icon: '📋' },
+  { label: 'Reports', path: '/reports', icon: '📊' },
+  { label: 'Channel Partner', path: '/partners', icon: '🤝' },
+  { label: 'Organisation', path: '/organisation', icon: '🏢' },
+  { label: 'Settings', path: '/settings', icon: '⚙️' },
 ];
 
 export function AppLayout() {
