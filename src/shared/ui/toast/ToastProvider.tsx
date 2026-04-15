@@ -1,4 +1,10 @@
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faCircleCheck, 
+  faCircleExclamation, 
+  faCircleInfo 
+} from '@fortawesome/free-solid-svg-icons';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -41,8 +47,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               ${t.type === 'info' ? 'bg-indigo-500/10 border border-indigo-500/30 text-indigo-400' : ''}
             `}
           >
-            <span className="text-lg">
-              {t.type === 'success' ? '✓' : t.type === 'error' ? '⚠' : 'ℹ'}
+            <span className="text-lg flex items-center justify-center">
+              {t.type === 'success' && <FontAwesomeIcon icon={faCircleCheck} />}
+              {t.type === 'error' && <FontAwesomeIcon icon={faCircleExclamation} />}
+              {t.type === 'info' && <FontAwesomeIcon icon={faCircleInfo} />}
             </span>
             <p className="text-sm font-medium">{t.message}</p>
           </div>

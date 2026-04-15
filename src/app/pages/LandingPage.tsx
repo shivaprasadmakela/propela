@@ -1,33 +1,43 @@
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faLayerGroup, 
+  faUserPlus, 
+  faBolt, 
+  faChartSimple, 
+  faLink, 
+  faShieldHalved,
+  faArrowRight
+} from '@fortawesome/free-solid-svg-icons';
 
 const features = [
   {
-    icon: '◈',
+    icon: faLayerGroup,
     title: 'Deal Pipeline',
     desc: 'Track every deal from first touch to close. Visual pipelines give your team clarity at every stage.',
   },
   {
-    icon: '◉',
+    icon: faUserPlus,
     title: 'Lead Management',
     desc: 'Capture, qualify, and route leads automatically. Never miss an opportunity again.',
   },
   {
-    icon: '⚡',
+    icon: faBolt,
     title: 'Automation',
     desc: 'Set up workflows that run on autopilot — follow-ups, assignments, escalations, all handled.',
   },
   {
-    icon: '📊',
+    icon: faChartSimple,
     title: 'Analytics',
     desc: 'Real-time dashboards and reports that help you make data-driven decisions faster.',
   },
   {
-    icon: '🔗',
+    icon: faLink,
     title: 'Integrations',
     desc: 'Connect with your existing tools — email, calendar, Slack, and hundreds more.',
   },
   {
-    icon: '🛡️',
+    icon: faShieldHalved,
     title: 'Enterprise Security',
     desc: 'Role-based access, audit logs, and multi-tenant isolation built from the ground up.',
   },
@@ -104,7 +114,7 @@ export function LandingPage() {
             to="/login"
             className="px-8 py-3.5 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all duration-300 shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5"
           >
-            Start Free Trial →
+            Start Free Trial <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
           </Link>
           <button className="px-8 py-3.5 text-base font-medium text-white/60 hover:text-white border border-white/10 hover:border-white/20 rounded-xl transition-all duration-200 hover:bg-white/[0.03]">
             Watch Demo
@@ -184,7 +194,7 @@ export function LandingPage() {
               className="group p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-indigo-500/30 hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1"
             >
               <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-2xl mb-4 group-hover:bg-indigo-500/20 transition-colors">
-                {f.icon}
+                <FontAwesomeIcon icon={f.icon} className="text-indigo-400" />
               </div>
               <h3 className="text-lg font-semibold mb-2 text-white/90">{f.title}</h3>
               <p className="text-sm text-white/40 leading-relaxed">{f.desc}</p>
@@ -206,7 +216,7 @@ export function LandingPage() {
               to="/login"
               className="inline-block px-8 py-3.5 text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-xl transition-all duration-300 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5"
             >
-              Get Started Free →
+              Get Started Free <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
             </Link>
           </div>
         </div>

@@ -4,6 +4,14 @@ import { accountApi, type AccountEntity } from "../api/accountApi";
 import { DataTable, type ColumnDef, type SortState } from "@/shared/ui/table/DataTable";
 import { useToast } from "@/shared/ui/toast/ToastProvider";
 import { getStringColorClass } from "@/shared/utils/colorUtils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faMagnifyingGlass,
+  faFilter,
+  faPlus,
+  faUpRightFromSquare,
+  faCopy
+} from "@fortawesome/free-solid-svg-icons";
 
 export function AccountsPage() {
 
@@ -51,14 +59,37 @@ export function AccountsPage() {
 
 
   const columns: ColumnDef<AccountEntity>[] = [
-
     {
-      key: 'name',
-      header: 'Deal Name',
+      key: "id",
+      header: "Account ID",
       sortable: true,
-      render: (deal) => (
-        <span className="text-sm font-medium text-foreground/90 cursor-pointer hover:text-primary transition-colors">
-          {deal.name || 'Unnamed Deal'}
+      render: (account) => {
+        const accountIdDisplay = `A${String(account.id).padStart(10, "0")}`;
+        return (
+          <span
+            className="text-xs font-mono text-foreground/60 hover:text-primary hover:underline cursor-pointer flex items-center gap-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(accountIdDisplay);
+              toast(`Copied ${accountIdDisplay}`, 'success');
+            }}
+            title="Copy Account ID"
+          >
+            {accountIdDisplay} <FontAwesomeIcon icon={faCopy} className="opacity-50" />
+          </span>
+        );
+      },
+    },
+    {
+      key: "name",
+      header: "Account Name",
+      sortable: true,
+      render: (account) => (
+        <span
+          className="text-sm font-medium text-foreground/90 hover:text-primary hover:underline cursor-pointer transition-colors flex items-center gap-1"
+
+        >
+          {account.name || "Unnamed Account"}
         </span>
       ),
     },
@@ -133,7 +164,7 @@ export function AccountsPage() {
           <h1 className="text-2xl font-bold text-foreground">Accounts</h1>
         </div>
         <button className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 flex items-center gap-2">
-          <span className="text-lg leading-none">+</span>
+          <FontAwesomeIcon icon={faPlus} className="text-lg" />
           New Account
         </button>
       </div>
@@ -144,21 +175,21 @@ export function AccountsPage() {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30 text-sm">🔍</span>
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30 text-sm" />
               <input
                 type="text"
-                placeholder="Search deals..."
+                placeholder="Search accounts..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9 pr-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground placeholder-foreground/20 text-sm outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all w-64"
               />
             </div>
             <button className="px-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground/50 text-sm hover:bg-muted hover:text-foreground/70 transition-all flex items-center gap-2">
-              <span>⫶</span> Filter
+              <FontAwesomeIcon icon={faFilter} /> Filter
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-foreground/30">{filteredDeals.length} deals</span>
+            <span className="text-xs text-foreground/30">{filteredDeals.length} accounts</span>
           </div>
         </div>
 
@@ -176,7 +207,7 @@ export function AccountsPage() {
           totalElements={totalElements}
           totalPages={totalPages}
           onPageChange={setPage}
-          onRowClick={(account) => navigate(`/accountProfile/${account.code}`)}
+          onRowClick={(account) => window.open(`/accountProfile/${account.code}`, "_blank")}
         />
       </div>
 

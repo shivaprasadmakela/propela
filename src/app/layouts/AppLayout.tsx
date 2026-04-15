@@ -1,17 +1,32 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faGauge, 
+  faHandshake, 
+  faUsers, 
+  faCartShopping, 
+  faListCheck, 
+  faChartPie, 
+  faHandshakeAngle, 
+  faBuilding, 
+  faGear,
+  faBell,
+  faAngleDoubleLeft,
+  faAngleDoubleRight
+} from '@fortawesome/free-solid-svg-icons';
 
 const navItems = [
-  { label: 'Dashboard', path: '/dashboard', icon: '⌬' },
-  { label: 'Deals', path: '/deals', icon: '✦' },
-  { label: 'Accounts', path: '/accounts', icon: '👥' },
-  { label: 'Products', path: '/products', icon: '🛒' },
-  { label: 'My Tasks', path: '/tasks', icon: '📋' },
-  { label: 'Reports', path: '/reports', icon: '📊' },
-  { label: 'Channel Partner', path: '/partners', icon: '🤝' },
-  { label: 'Organisation', path: '/organisation', icon: '🏢' },
-  { label: 'Settings', path: '/settings', icon: '⚙️' },
+  { label: 'Dashboard', path: '/dashboard', icon: faGauge },
+  { label: 'Deals', path: '/deals', icon: faHandshake },
+  { label: 'Accounts', path: '/accounts', icon: faUsers },
+  { label: 'Products', path: '/products', icon: faCartShopping },
+  { label: 'My Tasks', path: '/tasks', icon: faListCheck },
+  { label: 'Reports', path: '/reports', icon: faChartPie },
+  { label: 'Channel Partner', path: '/partners', icon: faHandshakeAngle },
+  { label: 'Organisation', path: '/organisation', icon: faBuilding },
+  { label: 'Settings', path: '/settings', icon: faGear },
 ];
 
 export function AppLayout() {
@@ -67,7 +82,7 @@ export function AppLayout() {
               }
             >
               <div className="w-5 flex items-center justify-center shrink-0">
-                <span className="text-base">{item.icon}</span>
+                <FontAwesomeIcon icon={item.icon} className="text-base" />
               </div>
               {!sidebarCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
             </NavLink>
@@ -80,9 +95,10 @@ export function AppLayout() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-foreground/40 hover:text-foreground/70 hover:bg-muted transition-all text-sm"
           >
-            <span className={`transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`}>
-              ‹‹
-            </span>
+            <FontAwesomeIcon 
+              icon={sidebarCollapsed ? faAngleDoubleRight : faAngleDoubleLeft} 
+              className="transition-transform duration-300" 
+            />
             {!sidebarCollapsed && <span className="text-xs">Collapse</span>}
           </button>
         </div>
@@ -101,7 +117,7 @@ export function AppLayout() {
           <div className="flex items-center gap-4">
             {/* Notification bell */}
             <button className="w-9 h-9 rounded-xl bg-muted hover:bg-muted/50 flex items-center justify-center text-foreground/50 hover:text-foreground/80 transition-all relative">
-              <span className="text-sm">🔔</span>
+              <FontAwesomeIcon icon={faBell} className="text-sm" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
             </button>
 

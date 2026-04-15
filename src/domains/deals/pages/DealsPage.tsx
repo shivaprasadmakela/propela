@@ -5,6 +5,14 @@ import { DataTable, type ColumnDef, type SortState } from '@/shared/ui/table/Dat
 import { getStringColorClass } from '@/shared/utils/colorUtils';
 import { useToast } from '@/shared/ui/toast/ToastProvider';
 import { AddDealModal } from '../components/AddDealModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faMagnifyingGlass,
+  faFilter,
+  faPlus,
+  faUpRightFromSquare,
+  faCopy
+} from '@fortawesome/free-solid-svg-icons';
 
 export function DealsPage() {
   const [deals, setDeals] = useState<DealEntity[]>([]);
@@ -85,7 +93,7 @@ export function DealsPage() {
             }}
             title="Copy Deal ID"
           >
-            {dealIdDisplay} <span className="opacity-50">⎘</span>
+            {dealIdDisplay} <FontAwesomeIcon icon={faCopy} className="opacity-50" />
           </span>
         );
       },
@@ -95,8 +103,8 @@ export function DealsPage() {
       header: 'Deal Name',
       sortable: true,
       render: (deal) => (
-        <span className="text-sm font-medium text-foreground/90 cursor-pointer hover:text-primary transition-colors">
-          {deal.name || 'Unnamed Deal'}
+        <span className="text-sm text-foreground/50">
+          {deal.name}
         </span>
       ),
     },
@@ -157,7 +165,10 @@ export function DealsPage() {
       header: 'Product',
       sortable: true,
       render: (deal) => (
-        <span className="text-sm font-medium text-foreground/80">
+        <span
+          className="text-sm font-medium text-foreground/80 cursor-pointer transition-colors flex items-center gap-1"
+
+        >
           {deal.productId?.name || '-'}
         </span>
       ),
@@ -210,7 +221,7 @@ export function DealsPage() {
           onClick={() => setIsAddModalOpen(true)}
           className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2"
         >
-          <span className="text-lg leading-none">+</span>
+          <FontAwesomeIcon icon={faPlus} className="text-base" />
           New Deal
         </button>
       </div>
@@ -221,7 +232,7 @@ export function DealsPage() {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30 text-sm">🔍</span>
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30 text-sm" />
               <input
                 type="text"
                 placeholder="Search deals..."
@@ -231,7 +242,7 @@ export function DealsPage() {
               />
             </div>
             <button className="px-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground/50 text-sm hover:bg-muted hover:text-foreground/70 transition-all flex items-center gap-2">
-              <span>⫶</span> Filter
+              <FontAwesomeIcon icon={faFilter} /> Filter
             </button>
           </div>
           <div className="flex items-center gap-2">

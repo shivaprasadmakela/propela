@@ -1,4 +1,6 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 export interface SortState {
   property: string;
@@ -49,7 +51,12 @@ export function DataTable<T>({
   const getSortIndicator = (key: string) => {
     const sort = sortState.find((s) => s.property === key);
     if (!sort) return null;
-    return sort.direction === 'ASC' ? ' ↑' : ' ↓';
+    return (
+      <FontAwesomeIcon 
+        icon={sort.direction === 'ASC' ? faSortUp : faSortDown} 
+        className="ml-1.5 text-primary opacity-80" 
+      />
+    );
   };
 
   const actualColumns = showSerialNumber

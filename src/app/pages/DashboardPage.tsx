@@ -1,9 +1,17 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faHandshake, 
+  faCircleDollarToSlot, 
+  faTrophy, 
+  faChartLine 
+} from '@fortawesome/free-solid-svg-icons';
+
 export function DashboardPage() {
   const stats = [
-    { label: 'Total Deals', value: '48', change: '+5', positive: true, icon: '◈' },
-    { label: 'Pipeline Value', value: '$1.24M', change: '+12.5%', positive: true, icon: '💰' },
-    { label: 'Won This Month', value: '12', change: '+3', positive: true, icon: '🏆' },
-    { label: 'Avg. Deal Size', value: '$25.8K', change: '-2.1%', positive: false, icon: '📊' },
+    { label: 'Total Deals', value: '48', change: '+5', positive: true, icon: faHandshake },
+    { label: 'Pipeline Value', value: '$1.24M', change: '+12.5%', positive: true, icon: faCircleDollarToSlot },
+    { label: 'Won This Month', value: '12', change: '+3', positive: true, icon: faTrophy },
+    { label: 'Avg. Deal Size', value: '$25.8K', change: '-2.1%', positive: false, icon: faChartLine },
   ];
 
   return (
@@ -23,7 +31,7 @@ export function DashboardPage() {
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-medium text-foreground/40 uppercase tracking-wider">{s.label}</span>
-              <span className="text-lg">{s.icon}</span>
+              <FontAwesomeIcon icon={s.icon} className="text-lg text-primary/60" />
             </div>
             <p className="text-2xl font-bold text-foreground">{s.value}</p>
             <span className={`text-xs font-medium ${s.positive ? 'text-emerald-400' : 'text-red-400'}`}>
