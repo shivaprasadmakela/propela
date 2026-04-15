@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { accountApi, type AccountEntity } from "../api/accountApi";
 import { DataTable, type ColumnDef, type SortState } from "@/shared/ui/table/DataTable";
 import { useToast } from "@/shared/ui/toast/ToastProvider";
@@ -123,6 +124,8 @@ export function AccountsPage() {
       d.code?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const navigate = useNavigate();
+
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-4">
       <div className="flex items-center justify-between">
@@ -173,6 +176,7 @@ export function AccountsPage() {
           totalElements={totalElements}
           totalPages={totalPages}
           onPageChange={setPage}
+          onRowClick={(account) => navigate(`/accountProfile/${account.code}`)}
         />
       </div>
 

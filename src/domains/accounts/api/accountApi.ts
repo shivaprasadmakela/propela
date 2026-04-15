@@ -64,4 +64,15 @@ export const accountApi = {
     fetchAccounts: (payload: AccountQueryPayload): Promise<PaginatedAccountResponse> => {
         return httpClient.post<PaginatedAccountResponse>(ENDPOINTS.ACCOUNTS.QUERY_EAGER, payload);
     },
+    fetchAccountByCode: async (code: string): Promise<AccountEntity | null> => {
+        const eagerFields = [
+            'id', 'name', 'clientCode', 'code', 'firstName', 'lastName',
+            'email', 'phoneNumber', 'dialCode', 'source', 'subSource', 'tag'
+        ];
+        const params = new URLSearchParams();
+        params.append('eager', 'true');
+        eagerFields.forEach(field => params.append('eagerField', field));
+
+        return httpClient.get<AccountEntity>(`${ENDPOINTS.ACCOUNTS.BY_CODE(code)}?${params.toString()}`);
+    },
 };
