@@ -12,6 +12,8 @@ import { DashboardPage } from '@/app/pages/DashboardPage';
 import { ProductsPage } from '@/domains/products/pages/ProductsPage';
 import { AccountsPage } from '@/domains/accounts/pages/AccountsPage';
 import { SettingsPage } from '@/domains/settings/pages/SettingsPage';
+import { DealProfilePage } from '@/domains/deals/pages/DealProfilePage';
+import { AccountProfilePage } from '@/domains/accounts/pages/AccountProfilePage';
 
 export function AppRoutes() {
   return (
@@ -39,6 +41,8 @@ export function AppRoutes() {
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/dealProfile/:code" element={<DealProfilePage />} />
+        <Route path="/accountProfile/:code" element={<AccountProfilePage />} />
         {/* Future routes go here */}
       </Route>
     </Routes>
