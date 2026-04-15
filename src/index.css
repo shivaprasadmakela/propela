@@ -66,6 +66,10 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* ── Selection ──────────────────────────────────────── */
 
 ::selection {
