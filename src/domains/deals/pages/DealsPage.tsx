@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { dealsApi, type DealEntity } from '../api/dealsApi';
 import { DataTable, type ColumnDef, type SortState } from '@/shared/ui/table/DataTable';
 import { getStringColorClass } from '@/shared/utils/colorUtils';
@@ -9,7 +10,7 @@ export function DealsPage() {
   const [deals, setDeals] = useState<DealEntity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  
+
   // Pagination & Sorting State
   const [page, setPage] = useState(0);
   const [pageSize] = useState(100);
@@ -75,7 +76,7 @@ export function DealsPage() {
       render: (deal) => {
         const dealIdDisplay = `D${String(deal.id).padStart(10, '0')}`;
         return (
-          <span 
+          <span
             className="text-xs font-mono text-foreground/60 hover:text-primary cursor-pointer flex items-center gap-1"
             onClick={(e) => {
               e.stopPropagation();
@@ -176,8 +177,8 @@ export function DealsPage() {
       sortable: true,
       render: (deal) => (
         <span className="text-sm text-foreground/50">
-          {deal.nextFollowUp 
-            ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(deal.nextFollowUp * 1000)) 
+          {deal.nextFollowUp
+            ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(deal.nextFollowUp * 1000))
             : '-'}
         </span>
       ),
@@ -188,13 +189,15 @@ export function DealsPage() {
       sortable: true,
       render: (deal) => (
         <span className="text-sm text-foreground/50">
-          {deal.createdAt 
-            ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(deal.createdAt * 1000)) 
+          {deal.createdAt
+            ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(deal.createdAt * 1000))
             : '-'}
         </span>
       ),
     },
   ];
+
+  const navigate = useNavigate();
 
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-4">
@@ -203,7 +206,7 @@ export function DealsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Deals</h1>
         </div>
-        <button 
+        <button
           onClick={() => setIsAddModalOpen(true)}
           className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2"
         >
@@ -237,9 +240,9 @@ export function DealsPage() {
         </div>
 
         {/* Table Mount */}
-        <DataTable 
-          data={filteredDeals} 
-          columns={columns} 
+        <DataTable
+          data={filteredDeals}
+          columns={columns}
           isLoading={isLoading}
           showSerialNumber
           startIndex={page * pageSize}
@@ -250,12 +253,13 @@ export function DealsPage() {
           totalElements={totalElements}
           totalPages={totalPages}
           onPageChange={setPage}
+          onRowClick={(deal) => navigate(`/dealProfile/${deal.code}`)}
         />
       </div>
 
-      <AddDealModal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)} 
+      <AddDealModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => {
           toast('Deal created successfully', 'success');
           setPage(0); // Optional: reload deals list

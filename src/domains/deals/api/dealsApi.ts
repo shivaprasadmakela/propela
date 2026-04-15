@@ -73,4 +73,15 @@ export const dealsApi = {
   fetchDeals: (payload: DealsQueryPayload): Promise<PaginatedDealsResponse> => {
     return httpClient.post<PaginatedDealsResponse>(ENDPOINTS.DEALS.QUERY_EAGER, payload);
   },
+  fetchDealByCode: async (code: string): Promise<DealEntity | null> => {
+    const eagerFields = [
+      'id', 'name', 'productTemplateId', 'order', 'platform', 'isSuccess',
+      'firstName', 'lastName', 'emailId', 'phoneNumber', 'clientId', 'statusCode'
+    ];
+    const params = new URLSearchParams();
+    params.append('eager', 'true');
+    eagerFields.forEach(field => params.append('eagerField', field));
+
+    return httpClient.get<DealEntity>(`${ENDPOINTS.DEALS.BY_CODE(code)}?${params.toString()}`);
+  },
 };
