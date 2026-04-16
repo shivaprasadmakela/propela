@@ -1,4 +1,4 @@
-import { ENV } from '@/config/env';
+import { ENV } from '@/env';
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;

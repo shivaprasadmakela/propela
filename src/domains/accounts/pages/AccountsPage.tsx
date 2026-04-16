@@ -67,7 +67,7 @@ export function AccountsPage() {
         const accountIdDisplay = `A${String(account.id).padStart(10, "0")}`;
         return (
           <span
-            className="text-xs font-mono text-foreground/60 hover:text-primary hover:underline cursor-pointer flex items-center gap-1"
+            className="text-xs font-mono text-foreground/60 hover:text-primary cursor-pointer flex items-center gap-1"
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(accountIdDisplay);
