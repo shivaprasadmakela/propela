@@ -5,13 +5,15 @@ import { DataTable, type ColumnDef, type SortState } from '@/shared/ui/table/Dat
 import { getStringColorClass } from '@/shared/utils/colorUtils';
 import { useToast } from '@/shared/ui/toast/ToastProvider';
 import { AddDealModal } from '../components/AddDealModal';
+import { DealFilterModal } from '../components/DealFilterModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMagnifyingGlass,
   faFilter,
   faPlus,
   faUpRightFromSquare,
-  faCopy
+  faCopy,
+  faCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 export function DealsPage() {
@@ -26,15 +28,22 @@ export function DealsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<any>({});
 
   const toast = useToast();
 
   const fetchLiveDeals = async () => {
     setIsLoading(true);
     try {
+      const conditions: any[] = [];
+      
+      // If we have search, it's already filtered locally in this implementation 
+      // but usually we'd add it to conditions for server-side search.
+      
       const response = await dealsApi.fetchDeals({
         condition: {
-          conditions: [], // Blank slate requested
+          conditions: conditions,
           operator: 'AND',
         },
         eager: true,
@@ -56,7 +65,7 @@ export function DealsPage() {
 
   useEffect(() => {
     fetchLiveDeals();
-  }, [page, sortState]);
+  }, [page, sortState, activeFilters]);
 
   const handleSortChange = (property: string) => {
     setSortState((prev) => {
@@ -210,6 +219,8 @@ export function DealsPage() {
 
   const navigate = useNavigate();
 
+  const hasActiveFilters = Object.keys(activeFilters).length > 0;
+
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-4">
       {/* Page header */}
@@ -241,14 +252,33 @@ export function DealsPage() {
                 className="pl-9 pr-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground placeholder-foreground/20 text-sm outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all w-64"
               />
             </div>
-            <button className="px-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground/50 text-sm hover:bg-muted hover:text-foreground/70 transition-all flex items-center gap-2">
-              <FontAwesomeIcon icon={faFilter} /> Filter
+            <button 
+              onClick={() => setIsFilterModalOpen(true)}
+              className={`px-4 py-2 rounded-xl border text-sm transition-all flex items-center gap-2 ${
+                hasActiveFilters 
+                  ? 'bg-primary/10 border-primary/50 text-primary hover:bg-primary/20' 
+                  : 'bg-muted/50 border-border text-foreground/50 hover:bg-muted hover:text-foreground/70'
+              }`}
+            >
+              <div className="relative">
+                <FontAwesomeIcon icon={faFilter} />
+                {hasActiveFilters && (
+                  <FontAwesomeIcon icon={faCircle} className="absolute -top-1 -right-1 text-[6px] text-primary" />
+                )}
+              </div>
+              Filter
+              {hasActiveFilters && (
+                <span className="bg-primary text-primary-foreground text-[10px] w-4 h-4 rounded-full flex items-center justify-center ml-1">
+                  {Object.keys(activeFilters).length}
+                </span>
+              )}
             </button>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-foreground/30">{filteredDeals.length} deals</span>
           </div>
         </div>
+
 
         {/* Table Mount */}
         <DataTable
@@ -275,6 +305,15 @@ export function DealsPage() {
           toast('Deal created successfully', 'success');
           setPage(0); // Optional: reload deals list
           fetchLiveDeals();
+        }}
+      />
+
+      <DealFilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={(filters) => {
+          setActiveFilters(filters);
+          setPage(0);
         }}
       />
     </div>
