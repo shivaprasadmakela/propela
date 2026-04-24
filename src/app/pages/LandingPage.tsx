@@ -46,13 +46,13 @@ const features = [
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
-      {/* Background elements */}
+      {}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/[0.07] rounded-full blur-[150px]" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/[0.05] rounded-full blur-[150px]" />
         <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-cyan-600/[0.04] rounded-full blur-[150px]" />
 
-        {/* Grid pattern */}
+        {}
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -62,7 +62,7 @@ export function LandingPage() {
         />
       </div>
 
-      {/* Nav */}
+      {}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-base shadow-lg shadow-primary/20">
@@ -86,7 +86,7 @@ export function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
+      {}
       <section className="relative z-10 max-w-5xl mx-auto px-6 pt-32 pb-20 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-8 text-sm text-primary">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -121,12 +121,12 @@ export function LandingPage() {
           </button>
         </div>
 
-        {/* Dashboard preview mockup */}
+        {}
         <div className="mt-20 relative">
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none" />
           <div className="rounded-2xl border border-border bg-card p-1 shadow-2xl overflow-hidden">
             <div className="rounded-xl bg-muted/20 p-6 min-h-[320px] flex flex-col">
-              {/* Fake header bar */}
+              {}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-red-500/60" />
@@ -137,7 +137,7 @@ export function LandingPage() {
                 <div className="w-20" />
               </div>
 
-              {/* Fake dashboard content */}
+              {}
               <div className="flex gap-4 mb-6">
                 {[
                   { label: 'Total Deals', value: '2,847', change: '+12.5%', color: 'from-indigo-500 to-indigo-600' },
@@ -158,7 +158,7 @@ export function LandingPage() {
                 ))}
               </div>
 
-              {/* Fake chart area */}
+              {}
               <div className="flex-1 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-end p-4 gap-2">
                 {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
                   <div key={i} className="flex-1 flex flex-col justify-end">
@@ -174,7 +174,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Features */}
+      {}
       <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -203,7 +203,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {}
       <section className="relative z-10 max-w-4xl mx-auto px-6 py-24 text-center">
         <div className="p-12 rounded-3xl bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border border-indigo-500/20 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/5 to-purple-600/5" />
@@ -222,7 +222,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
+      {}
       <footer className="relative z-10 border-t border-white/[0.04] py-8 px-6 md:px-12">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">

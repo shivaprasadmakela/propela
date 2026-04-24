@@ -21,7 +21,7 @@ export function DealsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  // Pagination & Sorting State
+  
   const [page, setPage] = useState(0);
   const [pageSize] = useState(100);
   const [totalElements, setTotalElements] = useState(0);
@@ -38,8 +38,8 @@ export function DealsPage() {
     try {
       const conditions: any[] = [];
       
-      // If we have search, it's already filtered locally in this implementation 
-      // but usually we'd add it to conditions for server-side search.
+      
+      
       
       const response = await dealsApi.fetchDeals({
         condition: {
@@ -72,11 +72,11 @@ export function DealsPage() {
       const existing = prev.find((s) => s.property === property);
       if (existing) {
         if (existing.direction === 'ASC') return [{ property, direction: 'DESC' }];
-        return []; // Clear sort
+        return []; 
       }
       return [{ property, direction: 'ASC' }];
     });
-    setPage(0); // Reset to first page on sort
+    setPage(0); 
   };
 
   const filteredDeals = deals.filter(
@@ -223,7 +223,7 @@ export function DealsPage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-4">
-      {/* Page header */}
+      {}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Deals</h1>
@@ -237,9 +237,9 @@ export function DealsPage() {
         </button>
       </div>
 
-      {/* Table card */}
+      {}
       <div className="flex-1 rounded-2xl border border-border bg-card overflow-hidden flex flex-col min-h-0">
-        {/* Toolbar */}
+        {}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -280,7 +280,7 @@ export function DealsPage() {
         </div>
 
 
-        {/* Table Mount */}
+        {}
         <DataTable
           data={filteredDeals}
           columns={columns}
@@ -303,7 +303,7 @@ export function DealsPage() {
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => {
           toast('Deal created successfully', 'success');
-          setPage(0); // Optional: reload deals list
+          setPage(0); 
           fetchLiveDeals();
         }}
       />

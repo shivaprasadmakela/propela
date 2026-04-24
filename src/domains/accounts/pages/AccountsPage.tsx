@@ -37,7 +37,7 @@ export function AccountsPage() {
     try {
       const response = await accountApi.fetchAccounts({
         condition: {
-          conditions: [], // Blank slate requested
+          conditions: [], 
           operator: 'AND',
         },
         eager: true,
@@ -146,11 +146,11 @@ export function AccountsPage() {
       const existing = prev.find((s) => s.property === property);
       if (existing) {
         if (existing.direction === 'ASC') return [{ property, direction: 'DESC' }];
-        return []; // Clear sort
+        return []; 
       }
       return [{ property, direction: 'ASC' }];
     });
-    setPage(0); // Reset to first page on sort
+    setPage(0); 
   };
 
   const filteredDeals = deals.filter(
@@ -175,9 +175,9 @@ export function AccountsPage() {
         </button>
       </div>
 
-      {/* Table card */}
+      {}
       <div className="flex-1 rounded-2xl border border-border bg-card overflow-hidden flex flex-col min-h-0">
-        {/* Toolbar */}
+        {}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -217,7 +217,7 @@ export function AccountsPage() {
           </div>
         </div>
 
-        {/* Table Mount */}
+        {}
         <DataTable
           data={filteredDeals}
           columns={columns}

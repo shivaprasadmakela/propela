@@ -18,7 +18,7 @@ export function getStringColorClass(value: string | undefined | null): string {
     hash = value.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  // Ensure index is positive
+  
   const index = Math.abs(hash) % BADGE_COLORS.length;
   return BADGE_COLORS[index];
 }

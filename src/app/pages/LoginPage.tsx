@@ -35,11 +35,11 @@ export function LoginPage() {
       }
 
       if (clients.length === 1) {
-        // Auto login if exactly 1 client
+        
         await login({ ...credentials, userId: clients[0].userId });
         navigate('/dashboard');
       } else {
-        // Show selection options
+        
         setUserClients(clients);
       }
     } catch (err) {
@@ -71,7 +71,7 @@ export function LoginPage() {
 
   return (
     <div>
-      {/* Logo */}
+      {}
       <div className="flex items-center justify-center gap-3 mb-10">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow">
@@ -81,7 +81,7 @@ export function LoginPage() {
         </Link>
       </div>
 
-      {/* Card */}
+      {}
       <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-xl p-8 shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-foreground mb-2">
@@ -92,7 +92,7 @@ export function LoginPage() {
           </p>
         </div>
 
-        {/* Error */}
+        {}
         {error && (
           <div className="px-4 py-3 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
             <span>⚠</span>
@@ -100,7 +100,7 @@ export function LoginPage() {
           </div>
         )}
 
-        {/* Step 2: Select Client */}
+        {}
         {userClients ? (
           <div className="space-y-3">
             {userClients.map((userClient) => (
@@ -133,9 +133,9 @@ export function LoginPage() {
             </button>
           </div>
         ) : (
-          /* Step 1: Credentials Form */
+          
           <form onSubmit={handleInitialSubmit} className="space-y-5">
-            {/* Email */}
+            {}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground/60 mb-2">
                 Email address
@@ -151,7 +151,7 @@ export function LoginPage() {
               />
             </div>
 
-            {/* Password */}
+            {}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-foreground/60 mb-2">
                 Password
@@ -176,7 +176,7 @@ export function LoginPage() {
               </div>
             </div>
 
-            {/* Remember / Forgot */}
+            {}
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 text-sm text-foreground/40 cursor-pointer">
                 <input
@@ -191,7 +191,7 @@ export function LoginPage() {
               </Link>
             </div>
 
-            {/* Submit */}
+            {}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -207,14 +207,14 @@ export function LoginPage() {
               )}
             </button>
             
-            {/* Divider */}
+            {}
             <div className="flex items-center gap-4 my-6">
               <div className="flex-1 h-px bg-border" />
               <span className="text-xs text-foreground/20 uppercase tracking-wider">or</span>
               <div className="flex-1 h-px bg-border" />
             </div>
 
-            {/* SSO placeholder */}
+            {}
             <button type="button" className="w-full py-3 rounded-xl bg-muted/20 border border-border hover:bg-muted/60 text-foreground/60 hover:text-foreground/80 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2">
               <span>🔑</span>
               Continue with SSO
@@ -223,7 +223,7 @@ export function LoginPage() {
         )}
       </div>
 
-      {/* Bottom link */}
+      {}
       <p className="text-center text-sm text-foreground/30 mt-6">
         Don't have an account?{' '}
         <a href="#" className="text-primary hover:text-primary/80 transition-colors font-medium">

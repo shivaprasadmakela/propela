@@ -24,7 +24,7 @@
   --card-foreground: #ffffff;
 }
 
-/* ── Root sizing ─────────────────────────────────────── */
+
 
 html,
 body,
@@ -33,7 +33,7 @@ body,
   width: 100%;
 }
 
-/* ── Base defaults ───────────────────────────────────── */
+
 
 html {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -48,7 +48,7 @@ body {
   line-height: 1.6;
 }
 
-/* ── Scrollbar ──────────────────────────────────────── */
+
 
 ::-webkit-scrollbar {
   width: 6px;
@@ -72,14 +72,14 @@ body {
   background: transparent;
 }
 
-/* ── Selection ──────────────────────────────────────── */
+
 
 ::selection {
   background-color: rgba(99, 102, 241, 0.3);
   color: #ffffff;
 }
 
-/* ── Focus ring ─────────────────────────────────────── */
+
 
 :focus-visible {
   outline: 2px solid rgba(99, 102, 241, 0.5);
@@ -87,7 +87,7 @@ body {
   border-radius: 4px;
 }
 
-/* ── Animations ─────────────────────────────────────── */
+
 
 @keyframes fadeIn {
   from {

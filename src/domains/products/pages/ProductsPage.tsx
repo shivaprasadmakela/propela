@@ -169,7 +169,7 @@ export function ProductsPage() {
       </div>
 
       <div className="flex-1 rounded-2xl border border-border/50 bg-card overflow-hidden flex flex-col min-h-0 shadow-sm">
-        {/* Toolbar */}
+        {}
         <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20">
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -191,7 +191,7 @@ export function ProductsPage() {
           </div>
         </div>
 
-        {/* Table Mount */}
+        {}
         <DataTable
           data={filteredProducts}
           columns={columns}

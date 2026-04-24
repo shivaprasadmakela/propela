@@ -46,7 +46,7 @@ export function AppLayout() {
 
   return (
     <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
-      {/* Sidebar */}
+      {}
       <aside
         className={`
           ${sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'}
@@ -54,7 +54,7 @@ export function AppLayout() {
           transition-all duration-300 ease-in-out shrink-0
         `}
       >
-        {/* Logo */}
+        {}
         <div className="h-16 flex items-center px-5 border-b border-border gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0">
             P
@@ -66,7 +66,7 @@ export function AppLayout() {
           )}
         </div>
 
-        {/* Nav */}
+        {}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
@@ -89,7 +89,7 @@ export function AppLayout() {
           ))}
         </nav>
 
-        {/* Collapse Toggle */}
+        {}
         <div className="px-3 py-3 border-t border-border">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -104,9 +104,9 @@ export function AppLayout() {
         </div>
       </aside>
 
-      {/* Main area */}
+      {}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
+        {}
         <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/80 backdrop-blur-xl shrink-0">
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-medium text-foreground/70">
@@ -115,13 +115,13 @@ export function AppLayout() {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Notification bell */}
+            {}
             <button className="w-9 h-9 rounded-xl bg-muted hover:bg-muted/50 flex items-center justify-center text-foreground/50 hover:text-foreground/80 transition-all relative">
               <FontAwesomeIcon icon={faBell} className="text-sm" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
             </button>
 
-            {/* User avatar */}
+            {}
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -140,7 +140,7 @@ export function AppLayout() {
                 )}
               </button>
 
-              {/* Dropdown */}
+              {}
               {userMenuOpen && (
                 <div className="absolute right-0 top-12 w-48 py-2 bg-card border border-border rounded-xl shadow-2xl z-50">
                   <button
@@ -155,7 +155,7 @@ export function AppLayout() {
           </div>
         </header>
 
-        {/* Page content */}
+        {}
         <main className="flex-1 overflow-y-auto w-full flex flex-col">
           <div className="max-w-[1400px] px-6 py-4 mx-auto w-full flex-1 flex flex-col min-h-0">
             <Outlet />

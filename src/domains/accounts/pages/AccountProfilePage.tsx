@@ -55,14 +55,14 @@ export function AccountProfilePage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-6">
-      {/* Breadcrumbs */}
+      {}
       <nav className="flex items-center gap-2 text-sm">
         <Link to="/accounts" className="text-foreground/40 hover:text-primary transition-colors">Accounts</Link>
         <span className="text-foreground/20">›</span>
         <span className="text-foreground/80 font-medium">{account.name}</span>
       </nav>
 
-      {/* Header Card */}
+      {}
       <div className="bg-card border border-border/50 rounded-3xl p-6 shadow-sm overflow-hidden">
         <div className="flex items-start justify-between">
           <div className="space-y-4">
@@ -92,7 +92,7 @@ export function AccountProfilePage() {
         </div>
       </div>
 
-      {/* Main Content Split View */}
+      {}
       <div className="flex-1 flex gap-6 min-h-0">
         <div className="flex-[3] flex flex-col bg-card border border-border/50 rounded-3xl overflow-hidden shadow-sm">
           <div className="flex items-center px-4 border-b border-border/50 bg-muted/20">

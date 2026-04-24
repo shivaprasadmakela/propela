@@ -4,15 +4,15 @@ export function NotFoundPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
       <div className="relative mb-12">
-        {/* Animated Background Element */}
+        {}
         <div className="absolute inset-0 bg-primary/20 blur-[120px] rounded-full animate-pulse" />
         
-        {/* Large 404 Text */}
+        {}
         <h1 className="relative text-[12rem] font-black leading-none tracking-tighter text-foreground/5 select-none">
           404
         </h1>
         
-        {/* Centered Floating Element */}
+        {}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-24 h-24 rounded-3xl bg-card border border-border shadow-2xl flex items-center justify-center text-4xl animate-bounce duration-[3000ms]">
             🔍
@@ -44,7 +44,7 @@ export function NotFoundPage() {
         </div>
       </div>
 
-      {/* Decorative dots */}
+      {}
       <div className="fixed bottom-10 left-10 w-2 h-2 rounded-full bg-primary/20" />
       <div className="fixed top-20 right-20 w-3 h-3 rounded-full bg-primary/10" />
       <div className="fixed bottom-40 right-10 w-4 h-4 rounded-full bg-primary/5" />

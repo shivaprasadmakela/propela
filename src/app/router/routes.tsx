@@ -20,18 +20,18 @@ import { AccountProfilePage } from '@/domains/accounts/pages/AccountProfilePage'
 export function AppRoutes() {
   return (
     <Routes>
-      {/* Public — Landing */}
+      {}
       <Route element={<MinimalLayout />}>
         <Route path="/" element={<LandingPage />} />
       </Route>
 
-      {/* Auth — Login */}
+      {}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       </Route>
 
-      {/* Protected — App Shell */}
+      {}
       <Route
         element={
           <ProtectedRoute>
@@ -46,10 +46,10 @@ export function AppRoutes() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/dealProfile/:code" element={<DealProfilePage />} />
         <Route path="/accountProfile/:code" element={<AccountProfilePage />} />
-        {/* Future routes go here */}
+        {}
       </Route>
       
-      {/* Fallback — 404 */}
+      {}
       <Route element={<MinimalLayout />}>
         <Route path="*" element={<NotFoundPage />} />
       </Route>

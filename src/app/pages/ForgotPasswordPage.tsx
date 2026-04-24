@@ -13,7 +13,7 @@ export function ForgotPasswordPage() {
     setIsSubmitting(true);
 
     try {
-      // Mock API call
+      
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsSuccess(true);
     } catch (err) {
@@ -25,7 +25,7 @@ export function ForgotPasswordPage() {
 
   return (
     <div>
-      {/* Logo */}
+      {}
       <div className="flex items-center justify-center gap-3 mb-10">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow">
@@ -35,7 +35,7 @@ export function ForgotPasswordPage() {
         </Link>
       </div>
 
-      {/* Card */}
+      {}
       <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-xl p-8 shadow-2xl">
         {isSuccess ? (
           <div className="text-center py-4">
@@ -63,7 +63,7 @@ export function ForgotPasswordPage() {
               </p>
             </div>
 
-            {/* Error */}
+            {}
             {error && (
               <div className="px-4 py-3 mb-6 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
                 <span>⚠</span>
@@ -72,7 +72,7 @@ export function ForgotPasswordPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email */}
+              {}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-foreground/60 mb-2">
                   Email address
@@ -88,7 +88,7 @@ export function ForgotPasswordPage() {
                 />
               </div>
 
-              {/* Submit */}
+              {}
               <button
                 type="submit"
                 disabled={isSubmitting}

@@ -17,12 +17,12 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call or call proper API here
+    
     console.log('Creating deal:', { name, phone, email, product, source, subSource });
     onClose();
     if (onSuccess) onSuccess();
     
-    // Clear form
+    
     setName('');
     setPhone('');
     setEmail('');

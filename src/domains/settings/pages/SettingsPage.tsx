@@ -19,13 +19,13 @@ export function SettingsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
       </div>
 
       <div className="flex flex-1 gap-8 min-h-0">
-        {/* Sub-navigation Sidebar */}
+        {}
         <aside className="w-80 flex flex-col gap-2 shrink-0">
           {CATEGORIES.map((category) => (
             <button
@@ -50,7 +50,7 @@ export function SettingsPage() {
           ))}
         </aside>
 
-        {/* Content Area */}
+        {}
         <main className="flex-1 bg-card/30 rounded-3xl border border-border/50 p-8 overflow-y-auto">
           {activeCategory === 'user' && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -60,7 +60,7 @@ export function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Users Card */}
+                {}
                 <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <span className="text-xl">👤</span>
@@ -71,7 +71,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                {/* Profile Card */}
+                {}
                 <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <span className="text-xl">👥</span>

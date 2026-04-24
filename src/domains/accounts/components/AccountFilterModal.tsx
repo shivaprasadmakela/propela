@@ -84,7 +84,7 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex-1 flex min-h-0">
-          {/* Sidebar */}
+          {}
           <div className="w-[240px] border-r border-border overflow-y-auto p-4 bg-white/[0.02]">
             {tabs.map((tab) => (
               <div
@@ -104,7 +104,7 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
             ))}
           </div>
 
-          {/* Content */}
+          {}
           <div className="flex-1 p-8 overflow-y-auto bg-card">
             {activeTab === 'Date Range' && (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -188,7 +188,7 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
           </div>
         </div>
 
-        {/* Footer */}
+        {}
         <div className="px-8 py-6 border-t border-border flex justify-between items-center bg-card">
           <button 
             className="bg-transparent border-none text-foreground font-semibold text-[0.9rem] cursor-pointer uppercase tracking-wider opacity-70 hover:opacity-100 transition-opacity" 
