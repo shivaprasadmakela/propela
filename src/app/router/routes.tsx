@@ -8,6 +8,7 @@ import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 import { LandingPage } from '@/app/pages/LandingPage';
 import { LoginPage } from '@/app/pages/LoginPage';
 import { ForgotPasswordPage } from '@/app/pages/ForgotPasswordPage';
+import { NotFoundPage } from '@/app/pages/NotFoundPage';
 import { DealsPage } from '@/domains/deals/pages/DealsPage';
 import { DashboardPage } from '@/app/pages/DashboardPage';
 import { ProductsPage } from '@/domains/products/pages/ProductsPage';
@@ -46,6 +47,11 @@ export function AppRoutes() {
         <Route path="/dealProfile/:code" element={<DealProfilePage />} />
         <Route path="/accountProfile/:code" element={<AccountProfilePage />} />
         {/* Future routes go here */}
+      </Route>
+      
+      {/* Fallback — 404 */}
+      <Route element={<MinimalLayout />}>
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );
