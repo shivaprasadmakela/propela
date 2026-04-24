@@ -186,9 +186,9 @@ export function LoginPage() {
                 />
                 Remember me
               </label>
-              <a href="#" className="text-sm text-primary hover:text-primary/80 transition-colors">
+              <Link to="/forgot-password" className="text-sm text-primary hover:text-primary/80 transition-colors">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Submit */}

@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 
 import { LandingPage } from '@/app/pages/LandingPage';
 import { LoginPage } from '@/app/pages/LoginPage';
+import { ForgotPasswordPage } from '@/app/pages/ForgotPasswordPage';
 import { DealsPage } from '@/domains/deals/pages/DealsPage';
 import { DashboardPage } from '@/app/pages/DashboardPage';
 import { ProductsPage } from '@/domains/products/pages/ProductsPage';
@@ -26,6 +27,7 @@ export function AppRoutes() {
       {/* Auth — Login */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       </Route>
 
       {/* Protected — App Shell */}
