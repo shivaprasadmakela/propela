@@ -10,8 +10,10 @@ import {
   faFilter,
   faPlus,
   faUpRightFromSquare,
-  faCopy
+  faCopy,
+  faCircle
 } from "@fortawesome/free-solid-svg-icons";
+import { AccountFilterModal } from "../components/AccountFilterModal";
 
 export function AccountsPage() {
 
@@ -24,6 +26,8 @@ export function AccountsPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<any>({});
 
   const toast = useToast();
 
@@ -55,7 +59,7 @@ export function AccountsPage() {
 
   useEffect(() => {
     fetchLiveAccounts()
-  }, [page, sortState]);
+  }, [page, sortState, activeFilters]);
 
 
   const columns: ColumnDef<AccountEntity>[] = [
@@ -157,6 +161,8 @@ export function AccountsPage() {
 
   const navigate = useNavigate();
 
+  const hasActiveFilters = Object.keys(activeFilters).length > 0;
+
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-4">
       <div className="flex items-center justify-between">
@@ -184,8 +190,26 @@ export function AccountsPage() {
                 className="pl-9 pr-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground placeholder-foreground/20 text-sm outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all w-64"
               />
             </div>
-            <button className="px-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground/50 text-sm hover:bg-muted hover:text-foreground/70 transition-all flex items-center gap-2">
-              <FontAwesomeIcon icon={faFilter} /> Filter
+            <button 
+              onClick={() => setIsFilterModalOpen(true)}
+              className={`px-4 py-2 rounded-xl border text-sm transition-all flex items-center gap-2 ${
+                hasActiveFilters 
+                  ? 'bg-primary/10 border-primary/50 text-primary hover:bg-primary/20' 
+                  : 'bg-muted/50 border-border text-foreground/50 hover:bg-muted hover:text-foreground/70'
+              }`}
+            >
+              <div className="relative">
+                <FontAwesomeIcon icon={faFilter} />
+                {hasActiveFilters && (
+                  <FontAwesomeIcon icon={faCircle} className="absolute -top-1 -right-1 text-[6px] text-primary" />
+                )}
+              </div>
+              Filter
+              {hasActiveFilters && (
+                <span className="bg-primary text-primary-foreground text-[10px] w-4 h-4 rounded-full flex items-center justify-center ml-1">
+                  {Object.keys(activeFilters).length}
+                </span>
+              )}
             </button>
           </div>
           <div className="flex items-center gap-2">
@@ -211,7 +235,14 @@ export function AccountsPage() {
         />
       </div>
 
-
+      <AccountFilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={(filters) => {
+          setActiveFilters(filters);
+          setPage(0);
+        }}
+      />
     </div>
   );
 }
