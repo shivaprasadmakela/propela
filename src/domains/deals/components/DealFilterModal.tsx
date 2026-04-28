@@ -89,7 +89,7 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" 
+      className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 pb-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" 
       onClick={onClose}
     >
       <div 
