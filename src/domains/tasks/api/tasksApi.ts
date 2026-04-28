@@ -72,4 +72,9 @@ export const tasksApi = {
   fetchTasks: (payload: TasksQueryPayload): Promise<PaginatedTasksResponse> => {
     return httpClient.post<PaginatedTasksResponse>(ENDPOINTS.TASKS.QUERY_EAGER, payload);
   },
+  completeTask: async (taskId: number): Promise<void> => {
+    const formData = new FormData();
+    formData.append('completed', 'true');
+    return httpClient.put(ENDPOINTS.TASKS.COMPLETE(taskId), formData);
+  },
 };

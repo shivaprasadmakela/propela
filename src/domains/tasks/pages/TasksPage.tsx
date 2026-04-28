@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { tasksApi, type TaskEntity } from '../api/tasksApi';
 import { DataTable, type ColumnDef, type SortState } from '@/shared/ui/table/DataTable';
 import { useToast } from '@/shared/ui/toast/ToastProvider';
@@ -21,6 +20,9 @@ export function TasksPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'isCompleted', direction: 'ASC' }, { property: 'dueDate', direction: 'ASC' }]);
   const [activeFilters] = useState<any>({});
+
+  const [taskToComplete, setTaskToComplete] = useState<TaskEntity | null>(null);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const toast = useToast();
 
@@ -88,7 +90,56 @@ export function TasksPage() {
     return 'Pending';
   };
 
+  const handleCompleteTask = async () => {
+    if (!taskToComplete) return;
+    setIsCompleting(true);
+    try {
+      await tasksApi.completeTask(taskToComplete.id);
+      toast('Task marked as completed', 'success');
+      fetchLiveTasks();
+    } catch (error) {
+      console.error('Failed to complete task:', error);
+      toast('Failed to complete task', 'error');
+    } finally {
+      setIsCompleting(false);
+      setTaskToComplete(null);
+    }
+  };
+
   const columns: ColumnDef<TaskEntity>[] = [
+    {
+      key: 'checkbox',
+      header: '',
+      width: '40px',
+      render: (task) => (
+        <div 
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!task.isCompleted) {
+              setTaskToComplete(task);
+            }
+          }}
+          className="flex items-center justify-center cursor-pointer"
+        >
+          <input
+            type="checkbox"
+            checked={!!task.isCompleted}
+            readOnly
+            className={`w-4 h-4 rounded border-border transition-colors ${
+              task.isCompleted ? 'bg-primary/50 cursor-not-allowed' : 'cursor-pointer accent-primary'
+            }`}
+          />
+        </div>
+      ),
+    },
+    {
+      key: '_serial',
+      header: 'S. NO',
+      width: '60px',
+      render: (_, i) => (
+        <span className="text-foreground/50 text-sm">{page * pageSize + i + 1}</span>
+      ),
+    },
     {
       key: 'name',
       header: 'TASK NAME',
@@ -227,7 +278,6 @@ export function TasksPage() {
           data={filteredTasks}
           columns={columns}
           isLoading={isLoading}
-          showSerialNumber
           startIndex={page * pageSize}
           sortState={sortState}
           onSortChange={handleSortChange}
@@ -238,6 +288,46 @@ export function TasksPage() {
           onPageChange={setPage}
         />
       </div>
+
+      {taskToComplete && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 pb-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" 
+          onClick={() => !isCompleting && setTaskToComplete(null)}
+        >
+          <div 
+            className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Complete Task</h3>
+              <p className="text-foreground/70 mb-6">
+                Are you sure you want to mark <span className="font-semibold text-foreground">{taskToComplete.name}</span> as completed?
+              </p>
+              
+              <div className="flex gap-3 justify-end mt-4">
+                <button 
+                  className="px-5 py-2.5 rounded-xl border border-border text-foreground font-medium hover:bg-muted transition-colors disabled:opacity-50"
+                  onClick={() => setTaskToComplete(null)}
+                  disabled={isCompleting}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all hover:-translate-y-0.5 disabled:opacity-50 flex items-center gap-2"
+                  onClick={handleCompleteTask}
+                  disabled={isCompleting}
+                >
+                  {isCompleting ? (
+                    <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> Completing...</>
+                  ) : (
+                    'Mark as Complete'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
