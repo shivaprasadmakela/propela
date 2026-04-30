@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { authApi, type UserClient } from '@/features/auth/api/authApi';
+import { Checkbox } from '@/shared/ui/form/Checkbox';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [userClients, setUserClients] = useState<UserClient[] | null>(null);
 
+  const [rememberMe, setRememberMe] = useState(true);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -178,14 +180,11 @@ export function LoginPage() {
 
             {}
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-foreground/40 cursor-pointer">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="w-4 h-4 rounded bg-muted/50 border-border text-primary focus:ring-primary/20"
-                />
-                Remember me
-              </label>
+              <Checkbox
+                label="Remember me"
+                checked={rememberMe}
+                onChange={setRememberMe}
+              />
               <Link to="/forgot-password" className="text-sm text-primary hover:text-primary/80 transition-colors">
                 Forgot password?
               </Link>

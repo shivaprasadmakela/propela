@@ -8,6 +8,7 @@ import {
   faFilter,
   faCircle
 } from '@fortawesome/free-solid-svg-icons';
+import { Checkbox } from '@/shared/ui/form/Checkbox';
 
 export function TasksPage() {
   const [tasks, setTasks] = useState<TaskEntity[]>([]);
@@ -112,24 +113,16 @@ export function TasksPage() {
       header: '',
       width: '40px',
       render: (task) => (
-        <div 
-          onClick={(e) => {
-            e.stopPropagation();
+        <Checkbox
+          checked={!!task.isCompleted}
+          disabled={!!task.isCompleted}
+          onChange={() => {
             if (!task.isCompleted) {
               setTaskToComplete(task);
             }
           }}
-          className="flex items-center justify-center cursor-pointer"
-        >
-          <input
-            type="checkbox"
-            checked={!!task.isCompleted}
-            readOnly
-            className={`w-4 h-4 rounded border-border transition-colors ${
-              task.isCompleted ? 'bg-primary/50 cursor-not-allowed' : 'cursor-pointer accent-primary'
-            }`}
-          />
-        </div>
+          className="justify-center"
+        />
       ),
     },
     {
