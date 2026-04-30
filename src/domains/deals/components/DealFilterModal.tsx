@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faCalendar,
   faCalendarCheck,
@@ -14,11 +15,12 @@ import {
   faImage,
   faCircleDot
 } from '@fortawesome/free-solid-svg-icons';
+import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '../utils/dealConstants';
 
 interface DealFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (filters: any) => void;
+  onApply: (filters: Record<string, any>) => void;
 }
 
 type FilterTab = 
@@ -43,12 +45,20 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
   const [activeTab, setActiveTab] = useState<FilterTab>('Date Range');
   const [selectedDatePreset, setSelectedDatePreset] = useState('Last 6 Months');
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
+  const [selectedSubSources, setSelectedSubSources] = useState<string[]>([]);
   const [selectedStages, setSelectedStages] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
+  const availableSubSources = useMemo(() => {
+    if (selectedSources.length === 0) {
+      return Array.from(new Set(Object.values(DEAL_SUB_SOURCES).flat()));
+    }
+    return Array.from(new Set(selectedSources.flatMap(s => DEAL_SUB_SOURCES[s] || [])));
+  }, [selectedSources]);
+
   if (!isOpen) return null;
 
-  const tabs: { label: FilterTab; icon: any }[] = [
+  const tabs: { label: FilterTab; icon: IconDefinition }[] = [
     { label: 'Date Type', icon: faCalendar },
     { label: 'Date Range', icon: faCalendarCheck },
     { label: 'Source', icon: faFilter },
@@ -65,6 +75,7 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
   const handleReset = () => {
     setSelectedDatePreset('Last 6 Months');
     setSelectedSources([]);
+    setSelectedSubSources([]);
     setSelectedStages([]);
     setSelectedStatuses([]);
   };
@@ -73,6 +84,7 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
     onApply({
       dateRange: selectedDatePreset,
       sources: selectedSources,
+      subSources: selectedSubSources,
       stages: selectedStages,
       statuses: selectedStatuses,
     });
@@ -156,14 +168,16 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
             {activeTab === 'Source' && (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="font-semibold text-lg mb-6">Select Sources</div>
-                <div className="grid grid-cols-2 gap-5">
-                  {['Facebook', 'Google', 'LinkedIn', 'Referral', 'Website', 'Direct'].map((source) => (
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {DEAL_SOURCES.map((source) => (
                     <div
                       key={source}
                       className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors hover:bg-muted ${
                         selectedSources.includes(source) ? 'text-foreground font-medium' : 'text-muted-foreground'
                       }`}
-                      onClick={() => toggleFilter(selectedSources, setSelectedSources, source)}
+                      onClick={() => {
+                        toggleFilter(selectedSources, setSelectedSources, source);
+                      }}
                     >
                       <div className={`w-5 h-5 rounded-[4px] border-2 flex items-center justify-center transition-all ${
                         selectedSources.includes(source) ? 'border-foreground bg-foreground' : 'border-border'
@@ -174,6 +188,39 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'Sub Source' && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="font-semibold text-lg mb-6">Select Sub Sources</div>
+                {availableSubSources.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                    {availableSubSources.map((subSource) => (
+                      <div
+                        key={subSource}
+                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors hover:bg-muted ${
+                          selectedSubSources.includes(subSource) ? 'text-foreground font-medium' : 'text-muted-foreground'
+                        }`}
+                        onClick={() => toggleFilter(selectedSubSources, setSelectedSubSources, subSource)}
+                      >
+                        <div className={`w-5 h-5 rounded-[4px] border-2 flex items-center justify-center transition-all ${
+                          selectedSubSources.includes(subSource) ? 'border-foreground bg-foreground' : 'border-border'
+                        }`}>
+                          {selectedSubSources.includes(subSource) && <div className="w-2 h-2 text-primary-foreground text-[10px]">✓</div>}
+                        </div>
+                        <span className="text-[0.95rem]">{subSource}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                      <FontAwesomeIcon icon={faSitemap} className="text-2xl text-primary/40" />
+                    </div>
+                    <p className="text-muted-foreground text-sm">No sub sources available for the selected sources.</p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -225,7 +272,7 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
               </div>
             )}
 
-            {['Date Type', 'Sub Source', 'Product', 'Assigned User', 'Campaign', 'Tag', 'Ad'].includes(activeTab) && (
+            {['Date Type', 'Product', 'Assigned User', 'Campaign', 'Tag', 'Ad'].includes(activeTab) && (
               <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in duration-300">
                 <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
                   <FontAwesomeIcon icon={tabs.find(t => t.label === activeTab)?.icon} className="text-2xl text-primary" />

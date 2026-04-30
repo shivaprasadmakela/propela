@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Modal } from '@/shared/ui/modal/Modal';
+import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '../utils/dealConstants';
 
 interface AddDealModalProps {
   isOpen: boolean;
@@ -15,13 +16,16 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
   const [source, setSource] = useState('');
   const [subSource, setSubSource] = useState('');
 
+  const availableSubSources = useMemo(() => {
+    return DEAL_SUB_SOURCES[source] || [];
+  }, [source]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     console.log('Creating deal:', { name, phone, email, product, source, subSource });
     onClose();
     if (onSuccess) onSuccess();
-    
     
     setName('');
     setPhone('');
@@ -87,13 +91,16 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
             <label className="block text-sm font-medium text-foreground/70 mb-1.5">Source</label>
             <select
               value={source}
-              onChange={(e) => setSource(e.target.value)}
+              onChange={(e) => {
+                setSource(e.target.value);
+                setSubSource('');
+              }}
               className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border text-foreground placeholder-foreground/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 outline-none transition-all appearance-none"
             >
               <option value="">Select source...</option>
-              <option value="Website">Website</option>
-              <option value="Referral">Referral</option>
-              <option value="Outbound">Outbound</option>
+              {DEAL_SOURCES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -101,12 +108,15 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
             <select
               value={subSource}
               onChange={(e) => setSubSource(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border text-foreground placeholder-foreground/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 outline-none transition-all appearance-none"
+              disabled={!source || availableSubSources.length === 0}
+              className="w-full px-4 py-2.5 rounded-xl bg-muted/50 border border-border text-foreground placeholder-foreground/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 outline-none transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="">Select sub source...</option>
-              <option value="Organic Search">Organic Search</option>
-              <option value="Paid Social">Paid Social</option>
-              <option value="Cold Call">Cold Call</option>
+              <option value="">
+                {!source ? 'Select source first...' : availableSubSources.length === 0 ? 'No sub sources' : 'Select sub source...'}
+              </option>
+              {availableSubSources.map((ss) => (
+                <option key={ss} value={ss}>{ss}</option>
+              ))}
             </select>
           </div>
         </div>
