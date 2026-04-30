@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUser, 
@@ -11,7 +12,6 @@ import {
   faGear
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { UsersTable } from '@/domains/users/components/UsersTable';
 
 interface SettingsCategory {
   id: string;
@@ -55,11 +55,10 @@ const CATEGORIES: SettingsCategory[] = [
 
 export function SettingsPage() {
   const [activeCategory, setActiveCategory] = useState('user');
-  const [view, setView] = useState<'grid' | 'users-list'>('grid');
+  const navigate = useNavigate();
 
   const handleCategoryChange = (id: string) => {
     setActiveCategory(id);
-    setView('grid');
   };
 
   return (
@@ -102,7 +101,7 @@ export function SettingsPage() {
         </aside>
 
         <main className="flex-1 bg-card/30 rounded-3xl border border-border/50 p-8 overflow-y-auto">
-          {activeCategory === 'user' && view === 'grid' && (
+          {activeCategory === 'user' && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
               <div className="space-y-1">
                 <h2 className="text-xl font-bold">User Setting</h2>
@@ -111,7 +110,7 @@ export function SettingsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <button 
-                  onClick={() => setView('users-list')}
+                  onClick={() => navigate('/users')}
                   className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
                 >
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
@@ -134,10 +133,6 @@ export function SettingsPage() {
                 </button>
               </div>
             </div>
-          )}
-
-          {activeCategory === 'user' && view === 'users-list' && (
-            <UsersTable onBack={() => setView('grid')} />
           )}
 
           {activeCategory !== 'user' && (

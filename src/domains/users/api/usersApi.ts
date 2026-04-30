@@ -38,7 +38,7 @@ interface UserQueryResponse {
 export const usersApi = {
   fetchUsers: async (page = 0, size = 25) => {
     return httpClient.post<UserQueryResponse>(
-      '/security/users/query?fetchDesignation=true&fetchReportingTo=true&fetchProfiles=true',
+      'api/security/users/query?fetchDesignation=true&fetchReportingTo=true&fetchProfiles=true',
       {
         condition: {
           conditions: [
@@ -49,7 +49,10 @@ export const usersApi = {
         },
         size,
         page,
-        sort: { property: 'createdAt', direction: 'DESC' }
+        sort: [
+          { property: 'statusCode', direction: 'ASC' },
+          { property: 'createdAt', direction: 'DESC' }
+        ]
       }
     );
   }

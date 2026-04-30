@@ -82,6 +82,25 @@ export function UsersTable({ onBack }: UsersTableProps) {
       ),
     },
     {
+      key: 'profiles',
+      header: 'PROFILES',
+      render: (user) => {
+        if (!user.profiles || user.profiles.length === 0) return '-';
+        const mainProfile = user.profiles[0].name;
+        const extraCount = user.profiles.length - 1;
+        return (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-foreground/60">{mainProfile}</span>
+            {extraCount > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20">
+                +{extraCount}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       key: 'reportingUser',
       header: 'REPORTING TO',
       render: (user) => (
@@ -94,11 +113,14 @@ export function UsersTable({ onBack }: UsersTableProps) {
       key: 'statusCode',
       header: 'STATUS',
       render: (user) => (
-        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium border ${
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${
           user.statusCode === 'ACTIVE' 
             ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' 
-            : 'bg-gray-100 text-gray-500 border-gray-200'
+            : 'bg-gray-500/10 border-gray-500/20 text-gray-500'
         }`}>
+          <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+            user.statusCode === 'ACTIVE' ? 'bg-emerald-500' : 'bg-gray-500'
+          }`} />
           {user.statusCode}
         </span>
       ),
@@ -107,7 +129,7 @@ export function UsersTable({ onBack }: UsersTableProps) {
       key: 'actions',
       header: 'ACTION',
       render: () => (
-        <button className="text-sm text-primary hover:underline">
+        <button className="text-sm text-primary hover:underline font-medium">
           Edit
         </button>
       ),
