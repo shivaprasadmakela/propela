@@ -10,7 +10,7 @@ import {
   faIdCard,
   faGear
 } from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { UsersTable } from '@/domains/users/components/UsersTable';
 
 interface SettingsCategory {
