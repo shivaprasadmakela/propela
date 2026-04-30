@@ -42,13 +42,13 @@ export interface DealEntity {
 
 export interface PaginatedDealsResponse {
   content: DealEntity[];
-  pageable: any;
+  pageable: Record<string, any>;
   totalPages: number;
   totalElements: number;
   last: boolean;
   size: number;
   number: number;
-  sort: any;
+  sort: Record<string, any>;
   numberOfElements: number;
   first: boolean;
   empty: boolean;
@@ -56,7 +56,7 @@ export interface PaginatedDealsResponse {
 
 export interface DealsQueryPayload {
   condition: {
-    conditions: any[];
+    conditions: Record<string, any>[];
     operator: 'AND' | 'OR';
   };
   eager: boolean;
@@ -83,5 +83,19 @@ export const dealsApi = {
     eagerFields.forEach(field => params.append('eagerField', field));
 
     return httpClient.get<DealEntity>(`${ENDPOINTS.DEALS.BY_CODE(code)}?${params.toString()}`);
+  },
+  createDeal: (data: {
+    name: string;
+    phoneNumber: string;
+    email: string;
+    productId: number;
+    source: string;
+    subSource: string;
+  }): Promise<Record<string, any>> => {
+    return httpClient.post(ENDPOINTS.DEALS.CREATE, data, {
+      headers: {
+        appcode: 'leadzump'
+      }
+    });
   },
 };

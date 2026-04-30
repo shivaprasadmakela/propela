@@ -5,6 +5,7 @@ export const ENDPOINTS = {
     FIND_USER_CLIENTS: '/api/security/users/findUserClients?appLevel=false',
   },
   DEALS: {
+    CREATE: '/api/entity/processor/tickets',
     QUERY_EAGER: '/api/entity/processor/tickets/eager/query',
     BY_CODE: (code: string) => `/api/entity/processor/tickets/code/${code}/eager`,
   },
