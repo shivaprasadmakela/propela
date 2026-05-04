@@ -60,7 +60,7 @@ export function AppLayout() {
             P
           </div>
           {!sidebarCollapsed && (
-            <span className="text-lg font-semibold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+            <span className="text-lg font-bold tracking-tight text-foreground">
               Propela
             </span>
           )}
@@ -76,7 +76,7 @@ export function AppLayout() {
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                 ${
                   isActive
-                    ? 'bg-primary/20 text-primary shadow-[inset_0_0_0_1px_var(--color-primary)]'
+                    ? 'bg-primary/5 text-primary shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)]'
                     : 'text-foreground/50 hover:text-foreground/80 hover:bg-muted'
                 }`
               }

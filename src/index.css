@@ -13,15 +13,15 @@
 }
 
 :root {
-  --background: #0a0a0f;
-  --foreground: #ffffff;
-  --primary: #4f46e5;
+  --background: #fdfdfd;
+  --foreground: #111111;
+  --primary: #000000;
   --primary-foreground: #ffffff;
-  --muted: rgba(255, 255, 255, 0.04);
-  --muted-foreground: rgba(255, 255, 255, 0.5);
-  --border: rgba(255, 255, 255, 0.1);
-  --card: #0d0d14;
-  --card-foreground: #ffffff;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --border: #e2e2e7;
+  --card: #ffffff;
+  --card-foreground: #111111;
 }
 
 
@@ -60,12 +60,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 ::-webkit-scrollbar-corner {
@@ -75,14 +75,14 @@ body {
 
 
 ::selection {
-  background-color: rgba(99, 102, 241, 0.3);
-  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #000000;
 }
 
 
 
 :focus-visible {
-  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline: 2px solid rgba(0, 0, 0, 0.2);
   outline-offset: 2px;
   border-radius: 4px;
 }
