@@ -1,8 +1,9 @@
 export const BADGE_COLORS = [
-  'bg-muted text-foreground/70 border-border',
-  'bg-foreground/5 text-foreground/80 border-foreground/10',
-  'bg-foreground/10 text-foreground/90 border-foreground/20',
-  'bg-muted/50 text-foreground/60 border-border/50',
+  'bg-[#fff7ed] text-[#fb923c] border-[#ffedd5]', // Orange/Peach (Paused)
+  'bg-[#f0f9ff] text-[#0ea5e9] border-[#e0f2fe]', // Blue (Inactive)
+  'bg-[#f0fdf4] text-[#22c55e] border-[#dcfce7]', // Green (Active)
+  'bg-[#fef2f2] text-[#ef4444] border-[#fee2e2]', // Red (Inactive)
+  'bg-[#faf5ff] text-[#a855f7] border-[#f3e8ff]', // Purple (Private)
 ];
 
 export function getStringColorClass(value: string | undefined | null): string {

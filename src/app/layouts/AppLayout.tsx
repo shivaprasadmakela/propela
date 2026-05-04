@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faGauge, 
-  faHandshake, 
-  faUsers, 
-  faCartShopping, 
-  faListCheck, 
-  faChartPie, 
-  faHandshakeAngle, 
-  faBuilding, 
+import {
+  faGauge,
+  faHandshake,
+  faUsers,
+  faCartShopping,
+  faListCheck,
+  faChartPie,
+  faHandshakeAngle,
+  faBuilding,
   faGear,
   faBell,
   faAngleDoubleLeft,
@@ -46,15 +46,15 @@ export function AppLayout() {
 
   return (
     <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
-      {}
+      { }
       <aside
         className={`
-          ${sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'}
+          ${sidebarCollapsed ? 'w-[64px]' : 'w-[210px]'}
           flex flex-col border-r border-border bg-card
           transition-all duration-300 ease-in-out shrink-0
         `}
       >
-        {}
+        { }
         <div className="h-16 flex items-center px-5 border-b border-border gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0">
             P
@@ -66,7 +66,7 @@ export function AppLayout() {
           )}
         </div>
 
-        {}
+        { }
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
@@ -74,10 +74,9 @@ export function AppLayout() {
               to={item.path}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
-                ${
-                  isActive
-                    ? 'bg-primary/5 text-primary shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)]'
-                    : 'text-foreground/50 hover:text-foreground/80 hover:bg-muted'
+                ${isActive
+                  ? 'bg-primary/5 text-primary shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)]'
+                  : 'text-foreground/50 hover:text-foreground/80 hover:bg-muted'
                 }`
               }
             >
@@ -89,25 +88,25 @@ export function AppLayout() {
           ))}
         </nav>
 
-        {}
+        { }
         <div className="px-3 py-3 border-t border-border">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-foreground/40 hover:text-foreground/70 hover:bg-muted transition-all text-sm"
           >
-            <FontAwesomeIcon 
-              icon={sidebarCollapsed ? faAngleDoubleRight : faAngleDoubleLeft} 
-              className="transition-transform duration-300" 
+            <FontAwesomeIcon
+              icon={sidebarCollapsed ? faAngleDoubleRight : faAngleDoubleLeft}
+              className="transition-transform duration-300"
             />
             {!sidebarCollapsed && <span className="text-xs">Collapse</span>}
           </button>
         </div>
       </aside>
 
-      {}
+      { }
       <div className="flex-1 flex flex-col min-w-0">
-        {}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card/80 backdrop-blur-xl shrink-0">
+        { }
+        <header className="h-16 flex items-center justify-between px-5 border-b border-border bg-card/80 backdrop-blur-xl shrink-0">
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-medium text-foreground/70">
               Welcome back, <span className="text-foreground">{user?.firstName || 'User'}</span>
@@ -115,13 +114,13 @@ export function AppLayout() {
           </div>
 
           <div className="flex items-center gap-4">
-            {}
+            { }
             <button className="w-9 h-9 rounded-xl bg-muted hover:bg-muted/50 flex items-center justify-center text-foreground/50 hover:text-foreground/80 transition-all relative">
               <FontAwesomeIcon icon={faBell} className="text-sm" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
             </button>
 
-            {}
+            { }
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -140,7 +139,7 @@ export function AppLayout() {
                 )}
               </button>
 
-              {}
+              { }
               {userMenuOpen && (
                 <div className="absolute right-0 top-12 w-48 py-2 bg-card border border-border rounded-xl shadow-2xl z-50">
                   <button
@@ -155,9 +154,8 @@ export function AppLayout() {
           </div>
         </header>
 
-        {}
         <main className="flex-1 overflow-y-auto w-full flex flex-col">
-          <div className="max-w-[1400px] px-6 py-4 mx-auto w-full flex-1 flex flex-col min-h-0">
+          <div className="px-4 py-4 w-full flex-1 flex flex-col min-h-0">
             <Outlet />
           </div>
         </main>

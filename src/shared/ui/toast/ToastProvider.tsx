@@ -42,9 +42,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={t.id}
             className={`
               animate-fade-in flex items-center gap-3 min-w-[280px] px-5 py-3.5 rounded-xl shadow-2xl transition-all
-              ${t.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400' : ''}
-              ${t.type === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-400' : ''}
-              ${t.type === 'info' ? 'bg-indigo-500/10 border border-indigo-500/30 text-indigo-400' : ''}
+              ${t.type === 'success' ? 'bg-[#f0fdf4] border border-[#dcfce7] text-[#22c55e]' : ''}
+              ${t.type === 'error' ? 'bg-[#fef2f2] border border-[#fee2e2] text-[#ef4444]' : ''}
+              ${t.type === 'info' ? 'bg-[#f0f9ff] border border-[#e0f2fe] text-[#0ea5e9]' : ''}
             `}
           >
             <span className="text-lg flex items-center justify-center">
