@@ -21,6 +21,8 @@ export interface DealEntity {
   clientCode: string;
   code: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   version: number;
   ownerId?: DealUser;
   assignedUserId?: DealUser;
@@ -96,6 +98,11 @@ export const dealsApi = {
       headers: {
         appcode: 'leadzump'
       }
+    });
+  },
+  updateDealStage: (dealId: number, stageId: number): Promise<void> => {
+    return httpClient.patch(`/api/entity/processor/tickets/${dealId}`, {
+      stage: { id: stageId }
     });
   },
 };

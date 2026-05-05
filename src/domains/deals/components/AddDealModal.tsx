@@ -20,7 +20,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
   const [productId, setProductId] = useState<number | ''>('');
   const [source, setSource] = useState('');
   const [subSource, setSubSource] = useState('');
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [products, setProducts] = useState<ProductEntity[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +59,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (email && !emailRegex.test(email)) {
@@ -94,7 +94,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
         source,
         subSource
       });
-      
+
       toast('Deal created successfully', 'success');
       onClose();
       if (onSuccess) onSuccess();
@@ -120,7 +120,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
             placeholder="e.g. Enterprise License"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4">
           <div>
             <label className="block text-sm font-medium text-foreground/70 mb-1.5">Phone</label>
             <PhoneInput
@@ -204,7 +204,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
             </select>
           </div>
         </div>
-        
+
         <div className="pt-4 flex items-center justify-end gap-3">
           <button
             type="button"

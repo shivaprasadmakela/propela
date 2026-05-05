@@ -64,6 +64,10 @@ class HttpClient {
   delete<T>(endpoint: string, options?: RequestOptions) {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
+
+  patch<T>(endpoint: string, body?: unknown, options?: RequestOptions) {
+    return this.request<T>(endpoint, { ...options, method: 'PATCH', body });
+  }
 }
 
 export const httpClient = new HttpClient(ENV.API_BASE_URL);

@@ -16,6 +16,9 @@ export const ENDPOINTS = {
   PRODUCTS: {
     QUERY_EAGER: '/api/entity/processor/products/eager/query',
   },
+  STAGES: {
+    EAGER: '/api/entity/processor/stages/eager',
+  },
   TASKS: {
     QUERY_EAGER: '/api/entity/processor/tasks/eager/query',
     COMPLETE: (id: string | number) => `/api/entity/processor/tasks/req/${id}/completed`,
