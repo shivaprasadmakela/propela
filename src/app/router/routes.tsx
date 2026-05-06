@@ -18,6 +18,7 @@ import { DealProfilePage } from '@/domains/deals/pages/DealProfilePage';
 import { AccountProfilePage } from '@/domains/accounts/pages/AccountProfilePage';
 import { TasksPage } from '@/domains/tasks/pages/TasksPage';
 import { UsersPage } from '@/domains/users/pages/UsersPage';
+import { SourceConfigPage } from '../../domains/settings/pages/SourceConfigPage';
 
 export function AppRoutes() {
   return (
@@ -47,6 +48,7 @@ export function AppRoutes() {
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/source-config" element={<SourceConfigPage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/dealProfile/:code" element={<DealProfilePage />} />
         <Route path="/accountProfile/:code" element={<AccountProfilePage />} />
