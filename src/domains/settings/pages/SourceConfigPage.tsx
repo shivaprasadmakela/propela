@@ -140,6 +140,8 @@ export function SourceConfigPage() {
   const [loading, setLoading] = useState(true);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [editingSource, setEditingSource] = useState<{ source: Source; parentId?: string; isNew?: boolean } | null>(null);
+  const [editingName, setEditingName] = useState('');
+  const [deletingSource, setDeletingSource] = useState<{ index: number; childIndex?: number; name: string } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const toast = useToast();
 
@@ -236,6 +238,7 @@ export function SourceConfigPage() {
       children: []
     };
     setEditingSource({ source: newSource, isNew: true });
+    setEditingName('');
   };
 
   const handleAddSubSource = (parentIndex: number) => {
@@ -250,21 +253,34 @@ export function SourceConfigPage() {
       parentId: parentIndex.toString(), 
       isNew: true 
     });
+    setEditingName('');
   };
 
   const handleDeleteSource = (index: number) => {
-    if (window.confirm('Are you sure you want to delete this source and all its sub-sources?')) {
-      const newSources = sources.filter((_, i) => i !== index);
-      setSources(newSources);
-    }
+    setDeletingSource({ index, name: sources[index].name });
   };
 
   const handleDeleteSubSource = (parentIndex: number, childIndex: number) => {
-    if (window.confirm('Are you sure you want to delete this sub-source?')) {
-      const newSources = [...sources];
-      newSources[parentIndex].children = newSources[parentIndex].children.filter((_, i) => i !== childIndex);
-      setSources(newSources);
+    setDeletingSource({ 
+      index: parentIndex, 
+      childIndex, 
+      name: sources[parentIndex].children[childIndex].name 
+    });
+  };
+
+  const confirmDelete = () => {
+    if (!deletingSource) return;
+    const { index, childIndex } = deletingSource;
+    
+    const newSources = [...sources];
+    if (childIndex !== undefined) {
+      newSources[index].children = newSources[index].children.filter((_, i) => i !== childIndex);
+    } else {
+      newSources.splice(index, 1);
     }
+    setSources(newSources);
+    setDeletingSource(null);
+    toast('Item deleted successfully', 'success');
   };
 
   const handleUpdateSourceName = (newName: string) => {
@@ -273,9 +289,13 @@ export function SourceConfigPage() {
     
     const newSources = [...sources];
     if (isNew) {
-      if (parentId) {
+      if (parentId !== undefined) {
         const pIdx = parseInt(parentId);
-        newSources[pIdx].children.push({ ...source, name: newName });
+        // Create a copy of the parent to avoid direct mutation
+        newSources[pIdx] = {
+          ...newSources[pIdx],
+          children: [...newSources[pIdx].children, { ...source, name: newName }]
+        };
         // Auto expand parent
         const newExpanded = new Set(expandedIds);
         newExpanded.add(parentId);
@@ -284,21 +304,24 @@ export function SourceConfigPage() {
         newSources.push({ ...source, name: newName });
       }
     } else {
-      if (parentId) {
+      if (parentId !== undefined) {
         const pIdx = parseInt(parentId);
-        const cIdx = newSources[pIdx].children.findIndex(c => c === source);
-        if (cIdx !== -1) {
-          newSources[pIdx].children[cIdx].name = newName;
+        const childIdx = newSources[pIdx].children.findIndex(c => c === source);
+        if (childIdx !== -1) {
+          const newChildren = [...newSources[pIdx].children];
+          newChildren[childIdx] = { ...newChildren[childIdx], name: newName };
+          newSources[pIdx] = { ...newSources[pIdx], children: newChildren };
         }
       } else {
         const sIdx = newSources.findIndex(s => s === source);
         if (sIdx !== -1) {
-          newSources[sIdx].name = newName;
+          newSources[sIdx] = { ...newSources[sIdx], name: newName };
         }
       }
     }
     setSources(newSources);
     setEditingSource(null);
+    setEditingName('');
   };
 
   if (loading) {
@@ -374,7 +397,10 @@ export function SourceConfigPage() {
                       id={sourceId}
                       source={source}
                       level={0}
-                      onEdit={(s) => setEditingSource({ source: s })}
+                      onEdit={(s) => {
+                        setEditingSource({ source: s });
+                        setEditingName(s.name);
+                      }}
                       onDelete={() => handleDeleteSource(index)}
                       onAddChild={() => handleAddSubSource(index)}
                       isExpanded={isExpanded}
@@ -393,7 +419,10 @@ export function SourceConfigPage() {
                               id={`${sourceId}-${childIndex}`}
                               source={child}
                               level={1}
-                              onEdit={(s) => setEditingSource({ source: s, parentId: sourceId })}
+                              onEdit={(s) => {
+                                setEditingSource({ source: s, parentId: sourceId });
+                                setEditingName(s.name);
+                              }}
                               onDelete={() => handleDeleteSubSource(index, childIndex)}
                             />
                           ))}
@@ -433,41 +462,65 @@ export function SourceConfigPage() {
                 </div>
                 <input 
                   type="text"
-                  defaultValue={editingSource.source.name}
-                  id="edit-source-name"
+                  value={editingName}
                   placeholder="Enter name..."
                   autoFocus
                   className="w-full px-4 py-3 rounded-xl bg-muted border-2 border-transparent focus:border-primary/20 focus:ring-4 focus:ring-primary/5 text-foreground transition-all outline-none"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      handleUpdateSourceName((e.target as HTMLInputElement).value);
+                      handleUpdateSourceName(editingName);
                     }
                   }}
-                  onChange={(e) => {
-                    const btn = document.getElementById('update-source-btn') as HTMLButtonElement;
-                    if (btn) btn.disabled = !e.target.value.trim();
-                  }}
+                  onChange={(e) => setEditingName(e.target.value)}
                 />
               </div>
               <div className="flex items-center gap-3 pt-4">
                 <button 
-                  onClick={() => setEditingSource(null)}
+                  onClick={() => {
+                    setEditingSource(null);
+                    setEditingName('');
+                  }}
                   className="flex-1 py-3 rounded-xl hover:bg-muted font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button 
-                  id="update-source-btn"
-                  disabled={!editingSource.source.name && editingSource.isNew}
-                  onClick={() => {
-                    const val = (document.getElementById('edit-source-name') as HTMLInputElement).value;
-                    handleUpdateSourceName(val);
-                  }}
+                  disabled={!editingName.trim()}
+                  onClick={() => handleUpdateSourceName(editingName)}
                   className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {editingSource.isNew ? 'Add' : 'Update'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deletingSource && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="w-full max-w-sm bg-card border border-border shadow-2xl rounded-3xl p-8 animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center text-2xl mb-6 mx-auto">
+              <FontAwesomeIcon icon={faTrash} />
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-center">Delete {deletingSource.childIndex !== undefined ? 'Sub-Source' : 'Source'}?</h3>
+            <p className="text-sm text-foreground/50 text-center mb-8">
+              Are you sure you want to delete <span className="font-bold text-foreground">"{deletingSource.name}"</span>? 
+              {deletingSource.childIndex === undefined && " All sub-sources will also be removed."}
+            </p>
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setDeletingSource(null)}
+                className="flex-1 py-3 rounded-xl hover:bg-muted font-semibold transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="flex-1 py-3 rounded-xl bg-destructive text-destructive-foreground font-bold shadow-lg shadow-destructive/20 hover:bg-destructive/90 transition-all"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
