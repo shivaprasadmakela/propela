@@ -19,6 +19,7 @@ import { Checkbox } from '@/shared/ui/form/Checkbox';
 import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '../utils/dealConstants';
 import { productApi } from '@/domains/products/api/productApi';
 import { stagesApi } from '@/domains/stages/api/stagesApi';
+import { dealsApi } from '../api/dealsApi';
 
 interface DealFilterModalProps {
   isOpen: boolean;
@@ -52,10 +53,12 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
   const [selectedStages, setSelectedStages] = useState<number[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<number[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
 
   const [products, setProducts] = useState<any[]>([]);
   const [stages, setStages] = useState<any[]>([]);
   const [statuses, setStatuses] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -91,6 +94,24 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
         const statusesRes = await stagesApi.fetchList({ productTemplateId: firstTemplateId, isParent: false, active: true, size: 100, sort: 'name,ASC' });
         setStatuses(statusesRes.content || []);
       }
+
+      // 5. Fetch Users
+      const usersRes = await dealsApi.fetchUsers({
+        condition: {
+          conditions: [
+            { conditions: [], operator: 'OR' }
+          ],
+          operator: 'AND'
+        },
+        eager: true,
+        size: 100,
+        page: 0,
+        sort: [{ property: 'createdAt', direction: 'DESC' }],
+        eagerFields: ['name', 'firstName', 'lastName', 'id', 'code']
+      });
+      // Handle both paginated and direct array responses
+      setUsers(Array.isArray(usersRes) ? usersRes : (usersRes.content || []));
+
     } catch (error) {
       console.error('Failed to fetch filter data:', error);
     } finally {
@@ -133,6 +154,7 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
     setSelectedStages([]);
     setSelectedStatuses([]);
     setSelectedProducts([]);
+    setSelectedUsers([]);
   };
 
   const handleApply = () => {
@@ -143,6 +165,7 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
       stages: stages.filter(s => selectedStages.includes(s.id)).map(s => s.name),
       statuses: statuses.filter(s => selectedStatuses.includes(s.id)).map(s => s.name),
       products: products.filter(p => selectedProducts.includes(p.id)).map(p => p.name),
+      assignedUsers: users.filter(u => selectedUsers.includes(u.id)).map(u => `${u.firstName} ${u.lastName}`),
     });
     onClose();
   };
@@ -270,8 +293,11 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
                     <Checkbox
                       key={stage.id}
                       label={stage.name}
-                      checked={selectedStages.includes(stage.name)}
-                      onChange={() => toggleFilter(selectedStages, setSelectedStages, stage.name)}
+                      checked={selectedStages.includes(stage.id)}
+                      onChange={() => {
+                        toggleFilter(selectedStages, setSelectedStages, stage.id);
+                        // Optional: Clear sub-statuses if parent stage is unselected
+                      }}
                       className="p-2 rounded-lg hover:bg-muted/50"
                     />
                   ))}
@@ -286,17 +312,20 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="font-semibold text-lg mb-6">Select Statuses</div>
                 <div className="grid grid-cols-2 gap-x-8 gap-y-3">
-                  {statuses.map((status) => (
+                  {filteredStatuses.map((status) => (
                     <Checkbox
                       key={status.id}
                       label={status.name}
-                      checked={selectedStatuses.includes(status.name)}
-                      onChange={() => toggleFilter(selectedStatuses, setSelectedStatuses, status.name)}
+                      checked={selectedStatuses.includes(status.id)}
+                      onChange={() => toggleFilter(selectedStatuses, setSelectedStatuses, status.id)}
                       className="p-2 rounded-lg hover:bg-muted/50"
                     />
                   ))}
-                  {statuses.length === 0 && !loading && (
-                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No statuses found.</p>
+                  {selectedStages.length === 0 && (
+                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">Please select a stage first to see related statuses.</p>
+                  )}
+                  {selectedStages.length > 0 && filteredStatuses.length === 0 && !loading && (
+                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No statuses found for the selected stage(s).</p>
                   )}
                 </div>
               </div>
@@ -310,8 +339,8 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
                     <Checkbox
                       key={product.id}
                       label={product.name}
-                      checked={selectedProducts.includes(product.name)}
-                      onChange={() => toggleFilter(selectedProducts, setSelectedProducts, product.name)}
+                      checked={selectedProducts.includes(product.id)}
+                      onChange={() => toggleFilter(selectedProducts, setSelectedProducts, product.id)}
                       className="p-2 rounded-lg hover:bg-muted/50"
                     />
                   ))}
@@ -322,7 +351,27 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
               </div>
             )}
 
-            {['Date Type', 'Assigned User', 'Campaign', 'Tag', 'Ad'].includes(activeTab) && (
+            {activeTab === 'Assigned User' && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="font-semibold text-lg mb-6">Select Users</div>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {users.map((user) => (
+                    <Checkbox
+                      key={user.id}
+                      label={`${user.firstName} ${user.lastName}`}
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={() => toggleFilter(selectedUsers, setSelectedUsers, user.id)}
+                      className="p-2 rounded-lg hover:bg-muted/50"
+                    />
+                  ))}
+                  {users.length === 0 && !loading && (
+                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No users found.</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {['Date Type', 'Campaign', 'Tag', 'Ad'].includes(activeTab) && (
               <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in duration-300">
                 <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
                   <FontAwesomeIcon icon={tabs.find(t => t.label === activeTab)?.icon!} className="text-2xl text-primary" />

@@ -105,4 +105,7 @@ export const dealsApi = {
       stage: { id: stageId }
     });
   },
+  fetchUsers: (payload: any): Promise<any> => {
+    return httpClient.post(ENDPOINTS.USERS.QUERY, payload);
+  },
 };

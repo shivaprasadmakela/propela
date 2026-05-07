@@ -31,4 +31,7 @@ export const ENDPOINTS = {
     LIST: '/api/entity/processor/sources',
     SAVE: '/api/entity/processor/sources',
   },
+  USERS: {
+    QUERY: '/api/entity/processor/tickets/users/query',
+  },
 } as const;
