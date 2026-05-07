@@ -17,7 +17,11 @@ export const ENDPOINTS = {
     QUERY_EAGER: '/api/entity/processor/products/eager/query',
   },
   STAGES: {
+    LIST: '/api/entity/processor/stages',
     EAGER: '/api/entity/processor/stages/eager',
+  },
+  PRODUCT_TEMPLATES: {
+    LIST: '/api/entity/processor/products/templates',
   },
   TASKS: {
     QUERY_EAGER: '/api/entity/processor/tasks/eager/query',

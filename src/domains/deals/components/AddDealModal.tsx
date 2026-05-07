@@ -110,7 +110,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
     <Modal isOpen={isOpen} onClose={onClose} title="Add New Deal">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-foreground/70 mb-1.5">Deal Name</label>
+          <label className="block text-[11px] font-bold text-foreground/40 uppercase tracking-widest mb-2 ml-1">Deal Name</label>
           <input
             type="text"
             required
@@ -122,7 +122,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
         </div>
         <div className="grid gap-4">
           <div>
-            <label className="block text-sm font-medium text-foreground/70 mb-1.5">Phone</label>
+            <label className="block text-[11px] font-bold text-foreground/40 uppercase tracking-widest mb-2 ml-1">Phone</label>
             <PhoneInput
               value={phone}
               onChange={(val) => {
@@ -140,7 +140,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
             {errors.phone && <p className="text-[11px] text-red-500 mt-1 ml-1">{errors.phone}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground/70 mb-1.5">Email</label>
+            <label className="block text-[11px] font-bold text-foreground/40 uppercase tracking-widest mb-2 ml-1">Email</label>
             <input
               type="email"
               value={email}
@@ -156,7 +156,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground/70 mb-1.5">Product</label>
+          <label className="block text-[11px] font-bold text-foreground/40 uppercase tracking-widest mb-2 ml-1">Product</label>
           <select
             value={productId}
             onChange={(e) => setProductId(Number(e.target.value))}
@@ -172,7 +172,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-foreground/70 mb-1.5">Source</label>
+            <label className="block text-[11px] font-bold text-foreground/40 uppercase tracking-widest mb-2 ml-1">Source</label>
             <select
               value={source}
               onChange={(e) => {
@@ -188,7 +188,7 @@ export function AddDealModal({ isOpen, onClose, onSuccess }: AddDealModalProps) 
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground/70 mb-1.5">Sub Source</label>
+            <label className="block text-[11px] font-bold text-foreground/40 uppercase tracking-widest mb-2 ml-1">Sub Source</label>
             <select
               value={subSource}
               onChange={(e) => setSubSource(e.target.value)}

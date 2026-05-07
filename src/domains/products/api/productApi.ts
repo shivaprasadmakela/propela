@@ -78,4 +78,12 @@ export const productApi = {
     fetchProducts: (payload: ProductQueryPayload): Promise<PaginatedProductResponse> => {
         return httpClient.post<PaginatedProductResponse>(ENDPOINTS.PRODUCTS.QUERY_EAGER, payload);
     },
+    fetchProductTemplates: (params: { size?: number; page?: number; sort?: string }): Promise<any> => {
+        const queryParams = new URLSearchParams();
+        if (params.size) queryParams.append('size', String(params.size));
+        if (params.page !== undefined) queryParams.append('page', String(params.page));
+        if (params.sort) queryParams.append('sort', params.sort);
+        
+        return httpClient.get<any>(`${ENDPOINTS.PRODUCT_TEMPLATES.LIST}?${queryParams.toString()}`);
+    },
 };

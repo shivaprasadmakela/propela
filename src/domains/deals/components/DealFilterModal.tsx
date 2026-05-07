@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -17,6 +17,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Checkbox } from '@/shared/ui/form/Checkbox';
 import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '../utils/dealConstants';
+import { productApi } from '@/domains/products/api/productApi';
+import { stagesApi } from '@/domains/stages/api/stagesApi';
 
 interface DealFilterModalProps {
   isOpen: boolean;
@@ -47,8 +49,59 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
   const [selectedDatePreset, setSelectedDatePreset] = useState('Last 6 Months');
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedSubSources, setSelectedSubSources] = useState<string[]>([]);
-  const [selectedStages, setSelectedStages] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [selectedStages, setSelectedStages] = useState<number[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<number[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+
+  const [products, setProducts] = useState<any[]>([]);
+  const [stages, setStages] = useState<any[]>([]);
+  const [statuses, setStatuses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchData();
+    }
+  }, [isOpen]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // 1. Fetch Products
+      const productsRes = await productApi.fetchProducts({
+        condition: { conditions: [], operator: 'AND' },
+        eager: false,
+        size: 100,
+        page: 0,
+        sort: [{ property: 'name', direction: 'ASC' }],
+        eagerFields: []
+      });
+      setProducts(productsRes.content || []);
+
+      // 2. Fetch Templates to get the first one's ID
+      const templatesRes = await productApi.fetchProductTemplates({ size: 1, page: 0, sort: 'createdAt,desc' });
+      const firstTemplateId = templatesRes.content?.[0]?.id;
+
+      if (firstTemplateId) {
+        // 3. Fetch Stages (isParent=true)
+        const stagesRes = await stagesApi.fetchList({ productTemplateId: firstTemplateId, isParent: true, size: 50, sort: 'name,ASC' });
+        setStages(stagesRes.content || []);
+
+        // 4. Fetch Statuses (isParent=false)
+        const statusesRes = await stagesApi.fetchList({ productTemplateId: firstTemplateId, isParent: false, active: true, size: 100, sort: 'name,ASC' });
+        setStatuses(statusesRes.content || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch filter data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredStatuses = useMemo(() => {
+    if (selectedStages.length === 0) return [];
+    return statuses.filter(s => selectedStages.includes(s.parentLevel0));
+  }, [selectedStages, statuses]);
 
   const availableSubSources = useMemo(() => {
     if (selectedSources.length === 0) {
@@ -79,6 +132,7 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
     setSelectedSubSources([]);
     setSelectedStages([]);
     setSelectedStatuses([]);
+    setSelectedProducts([]);
   };
 
   const handleApply = () => {
@@ -86,13 +140,14 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
       dateRange: selectedDatePreset,
       sources: selectedSources,
       subSources: selectedSubSources,
-      stages: selectedStages,
-      statuses: selectedStatuses,
+      stages: stages.filter(s => selectedStages.includes(s.id)).map(s => s.name),
+      statuses: statuses.filter(s => selectedStatuses.includes(s.id)).map(s => s.name),
+      products: products.filter(p => selectedProducts.includes(p.id)).map(p => p.name),
     });
     onClose();
   };
 
-  const toggleFilter = (list: string[], setList: (l: string[]) => void, item: string) => {
+  const toggleFilter = (list: any[], setList: (l: any[]) => void, item: any) => {
     if (list.includes(item)) {
       setList(list.filter(i => i !== item));
     } else {
@@ -210,16 +265,19 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
             {activeTab === 'Stage' && (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="font-semibold text-lg mb-6">Select Stages</div>
-                <div className="grid grid-cols-2 gap-5">
-                  {['Lead', 'Contacted', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'].map((stage) => (
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {stages.map((stage) => (
                     <Checkbox
-                      key={stage}
-                      label={stage}
-                      checked={selectedStages.includes(stage)}
-                      onChange={() => toggleFilter(selectedStages, setSelectedStages, stage)}
+                      key={stage.id}
+                      label={stage.name}
+                      checked={selectedStages.includes(stage.name)}
+                      onChange={() => toggleFilter(selectedStages, setSelectedStages, stage.name)}
                       className="p-2 rounded-lg hover:bg-muted/50"
                     />
                   ))}
+                  {stages.length === 0 && !loading && (
+                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No stages found.</p>
+                  )}
                 </div>
               </div>
             )}
@@ -227,21 +285,44 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
             {activeTab === 'Status' && (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="font-semibold text-lg mb-6">Select Statuses</div>
-                <div className="grid grid-cols-2 gap-5">
-                  {['Active', 'Pending', 'On Hold', 'Completed', 'Cancelled'].map((status) => (
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {statuses.map((status) => (
                     <Checkbox
-                      key={status}
-                      label={status}
-                      checked={selectedStatuses.includes(status)}
-                      onChange={() => toggleFilter(selectedStatuses, setSelectedStatuses, status)}
+                      key={status.id}
+                      label={status.name}
+                      checked={selectedStatuses.includes(status.name)}
+                      onChange={() => toggleFilter(selectedStatuses, setSelectedStatuses, status.name)}
                       className="p-2 rounded-lg hover:bg-muted/50"
                     />
                   ))}
+                  {statuses.length === 0 && !loading && (
+                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No statuses found.</p>
+                  )}
                 </div>
               </div>
             )}
 
-            {['Date Type', 'Product', 'Assigned User', 'Campaign', 'Tag', 'Ad'].includes(activeTab) && (
+            {activeTab === 'Product' && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="font-semibold text-lg mb-6">Select Products</div>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {products.map((product) => (
+                    <Checkbox
+                      key={product.id}
+                      label={product.name}
+                      checked={selectedProducts.includes(product.name)}
+                      onChange={() => toggleFilter(selectedProducts, setSelectedProducts, product.name)}
+                      className="p-2 rounded-lg hover:bg-muted/50"
+                    />
+                  ))}
+                  {products.length === 0 && !loading && (
+                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No products found.</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {['Date Type', 'Assigned User', 'Campaign', 'Tag', 'Ad'].includes(activeTab) && (
               <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in duration-300">
                 <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
                   <FontAwesomeIcon icon={tabs.find(t => t.label === activeTab)?.icon!} className="text-2xl text-primary" />
