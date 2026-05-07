@@ -81,29 +81,43 @@ export function DealsPage() {
   const fetchLiveDeals = async () => {
     setIsLoading(true);
     try {
-      let conditions: any[] = [];
+      // Default structure with 15 empty slots
+      let finalCondition = activeFilters?.conditions ? { ...activeFilters } : {
+        operator: 'AND',
+        conditions: Array(15).fill(null).map(() => ({
+          conditions: [] as any[],
+          operator: 'OR'
+        }))
+      };
 
-      // Merge active filters if they exist
-      if (activeFilters?.conditions) {
-        conditions = [...activeFilters.conditions];
+      // Clone conditions to avoid direct mutation
+      const conditions = [...finalCondition.conditions];
+
+      // Slot 0: Search (name)
+      if (search.trim()) {
+        conditions[0] = {
+          operator: 'OR',
+          conditions: [
+            { field: 'name', operator: 'CONTAINS', value: search.trim() },
+            { field: 'code', operator: 'CONTAINS', value: search.trim() }
+          ]
+        };
       }
 
-      // Apply product filter ONLY in Kanban mode
+      // Slot 6: Product (for Kanban view override)
       if (viewMode === 'kanban' && selectedProduct) {
-        // Remove any existing productId filter from activeFilters to avoid conflicts
-        conditions = conditions.filter(c => c.field !== 'productId');
-
-        conditions.push({
-          field: 'productId',
-          operator: 'EQUALS',
-          value: selectedProduct.id
-        });
+        conditions[6] = {
+          operator: 'OR',
+          conditions: [
+            { field: 'productId', operator: 'EQUALS', value: selectedProduct.id }
+          ]
+        };
       }
 
       const response = await dealsApi.fetchDeals({
         condition: {
-          conditions: conditions,
-          operator: 'AND',
+          ...finalCondition,
+          conditions: conditions
         },
         eager: true,
         size: pageSize,

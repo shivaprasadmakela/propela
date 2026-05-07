@@ -68,6 +68,9 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
   }, [isOpen]);
 
   const fetchData = async () => {
+    // Cache check: don't fetch if data is already loaded
+    if (products.length > 0 && stages.length > 0 && users.length > 0) return;
+
     setLoading(true);
     try {
       // 1. Fetch Products
@@ -158,14 +161,68 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
   };
 
   const handleApply = () => {
+    const conditions = Array(15).fill(null).map(() => ({
+      conditions: [] as any[],
+      operator: 'OR' as const
+    }));
+
+    // Slot 2: Source
+    if (selectedSources.length > 0) {
+      conditions[2].conditions = selectedSources.map(s => ({
+        field: 'source',
+        value: s,
+        operator: 'EQUALS'
+      }));
+    }
+
+    // Slot 3: Sub Source
+    if (selectedSubSources.length > 0) {
+      conditions[3].conditions = selectedSubSources.map(s => ({
+        field: 'subSource',
+        value: s,
+        operator: 'EQUALS'
+      }));
+    }
+
+    // Slot 4: Stage
+    if (selectedStages.length > 0) {
+      conditions[4].conditions = selectedStages.map(id => ({
+        field: 'stage',
+        value: id,
+        operator: 'EQUALS'
+      }));
+    }
+
+    // Slot 5: Status
+    if (selectedStatuses.length > 0) {
+      conditions[5].conditions = selectedStatuses.map(id => ({
+        field: 'status',
+        value: id,
+        operator: 'EQUALS'
+      }));
+    }
+
+    // Slot 6: Product
+    if (selectedProducts.length > 0) {
+      conditions[6].conditions = selectedProducts.map(id => ({
+        field: 'productId',
+        value: id,
+        operator: 'EQUALS'
+      }));
+    }
+
+    // Slot 10: Assigned User (Assuming slot 10)
+    if (selectedUsers.length > 0) {
+      conditions[10].conditions = selectedUsers.map(id => ({
+        field: 'assignedUserId',
+        value: id,
+        operator: 'EQUALS'
+      }));
+    }
+
     onApply({
-      dateRange: selectedDatePreset,
-      sources: selectedSources,
-      subSources: selectedSubSources,
-      stages: stages.filter(s => selectedStages.includes(s.id)).map(s => s.name),
-      statuses: statuses.filter(s => selectedStatuses.includes(s.id)).map(s => s.name),
-      products: products.filter(p => selectedProducts.includes(p.id)).map(p => p.name),
-      assignedUsers: users.filter(u => selectedUsers.includes(u.id)).map(u => `${u.firstName} ${u.lastName}`),
+      conditions,
+      operator: 'AND'
     });
     onClose();
   };
