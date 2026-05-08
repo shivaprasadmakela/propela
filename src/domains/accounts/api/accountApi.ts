@@ -75,4 +75,20 @@ export const accountApi = {
 
         return httpClient.get<AccountEntity>(`${ENDPOINTS.ACCOUNTS.BY_CODE(code)}?${params.toString()}`);
     },
+    createAccount: (data: {
+        name: string;
+        phoneNumber: string;
+        dialCode: number;
+        email: string;
+        source: string;
+        subSource: string;
+        appCode: string;
+        clientCode: string;
+    }): Promise<Record<string, any>> => {
+        return httpClient.post('/api/entity/processor/owners/', data, {
+            headers: {
+                appcode: data.appCode
+            }
+        });
+    },
 };

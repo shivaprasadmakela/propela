@@ -419,7 +419,7 @@ export function DealsPage() {
               totalElements={totalElements}
               totalPages={totalPages}
               onPageChange={setPage}
-              onRowClick={(deal) => navigate(`/dealProfile/${deal.code}`)}
+              onRowClick={(deal) => window.open(`/dealProfile/${deal.code}`, "_blank")}
             />
           ) : (
             <KanbanView

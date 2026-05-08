@@ -14,6 +14,7 @@ import {
   faCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { AccountFilterModal } from "../components/AccountFilterModal";
+import { AddAccountModal } from "../components/AddAccountModal";
 import { getDateRange } from "@/shared/utils/dateUtils";
 
 export function AccountsPage() {
@@ -27,6 +28,7 @@ export function AccountsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
   const initialRange = getDateRange('Last 6 Months');
   const [activeFilters, setActiveFilters] = useState<any>({
@@ -103,8 +105,7 @@ export function AccountsPage() {
       sortable: true,
       render: (account) => (
         <span
-          className="text-sm font-medium text-foreground/90 hover:text-primary hover:underline cursor-pointer transition-colors flex items-center gap-1"
-
+          className="text-sm font-medium text-foreground/90 hover:text-primary cursor-pointer transition-colors flex items-center gap-1"
         >
           {account.name || "Unnamed Account"}
         </span>
@@ -182,7 +183,10 @@ export function AccountsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Accounts</h1>
         </div>
-        <button className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 flex items-center gap-2">
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-200 flex items-center gap-2"
+        >
           <FontAwesomeIcon icon={faPlus} className="text-lg" />
           New Account
         </button>
@@ -254,6 +258,14 @@ export function AccountsPage() {
         onApply={(filters) => {
           setActiveFilters(filters);
           setPage(0);
+        }}
+      />
+      <AddAccountModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => {
+          setPage(0);
+          fetchLiveAccounts();
         }}
       />
     </div>
