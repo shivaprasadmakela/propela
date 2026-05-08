@@ -36,7 +36,7 @@ export function AccountsPage() {
     setIsLoading(true);
     try {
       const response = await accountApi.fetchAccounts({
-        condition: {
+        condition: activeFilters.conditions ? activeFilters : {
           conditions: [], 
           operator: 'AND',
         },

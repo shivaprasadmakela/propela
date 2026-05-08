@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faCalendar,
   faCalendarCheck,
   faFilter,
   faSitemap,
-  faLayerGroup,
-  faFlag,
-  faBox,
   faUser,
-  faBullhorn,
   faTag,
-  faImage,
   faCircleDot
 } from '@fortawesome/free-solid-svg-icons';
+import { Checkbox } from '@/shared/ui/form/Checkbox';
+import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '@/domains/deals/utils/dealConstants';
+import { dealsApi } from '@/domains/deals/api/dealsApi';
 
 interface AccountFilterModalProps {
   isOpen: boolean;
@@ -38,11 +37,54 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
   const [activeTab, setActiveTab] = useState<FilterTab>('Date Range');
   const [selectedDatePreset, setSelectedDatePreset] = useState('Last 6 Months');
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
-  const [selectedAssignedUsers, setSelectedAssignedUsers] = useState<string[]>([]);
+  const [selectedSubSources, setSelectedSubSources] = useState<string[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchData();
+    }
+  }, [isOpen]);
+
+  const fetchData = async () => {
+    if (users.length > 0) return;
+
+    setLoading(true);
+    try {
+      const usersRes = await dealsApi.fetchUsers({
+        condition: {
+          conditions: [
+            { conditions: [], operator: 'OR' }
+          ],
+          operator: 'AND'
+        },
+        eager: true,
+        size: 100,
+        page: 0,
+        sort: [{ property: 'createdAt', direction: 'DESC' }],
+        eagerFields: ['name', 'firstName', 'lastName', 'id', 'code']
+      });
+      setUsers(Array.isArray(usersRes) ? usersRes : (usersRes.content || []));
+    } catch (error) {
+      console.error('Failed to fetch filter data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const availableSubSources = useMemo(() => {
+    if (selectedSources.length === 0) {
+      return Array.from(new Set(Object.values(DEAL_SUB_SOURCES).flat()));
+    }
+    return Array.from(new Set(selectedSources.flatMap(s => DEAL_SUB_SOURCES[s] || [])));
+  }, [selectedSources]);
 
   if (!isOpen) return null;
 
-  const tabs: { label: FilterTab; icon: any }[] = [
+  const tabs: { label: FilterTab; icon: IconDefinition }[] = [
     { label: 'Date Type', icon: faCalendar },
     { label: 'Date Range', icon: faCalendarCheck },
     { label: 'Source', icon: faFilter },
@@ -54,19 +96,51 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
   const handleReset = () => {
     setSelectedDatePreset('Last 6 Months');
     setSelectedSources([]);
-    setSelectedAssignedUsers([]);
+    setSelectedSubSources([]);
+    setSelectedUsers([]);
   };
 
   const handleApply = () => {
+    const conditions = Array(15).fill(null).map(() => ({
+      conditions: [] as any[],
+      operator: 'OR' as const
+    }));
+
+    // Slot 2: Source
+    if (selectedSources.length > 0) {
+      conditions[2].conditions = selectedSources.map(s => ({
+        field: 'source',
+        value: s,
+        operator: 'EQUALS'
+      }));
+    }
+
+    // Slot 3: Sub Source
+    if (selectedSubSources.length > 0) {
+      conditions[3].conditions = selectedSubSources.map(s => ({
+        field: 'subSource',
+        value: s,
+        operator: 'EQUALS'
+      }));
+    }
+
+    // Slot 10: Assigned User (Assuming slot 10 matches DealFilterModal logic)
+    if (selectedUsers.length > 0) {
+      conditions[10].conditions = selectedUsers.map(id => ({
+        field: 'assignedUserId',
+        value: id,
+        operator: 'EQUALS'
+      }));
+    }
+
     onApply({
-      dateRange: selectedDatePreset,
-      sources: selectedSources,
-      assignedUsers: selectedAssignedUsers,
+      conditions: conditions.filter(c => c.conditions.length > 0),
+      operator: 'AND'
     });
     onClose();
   };
 
-  const toggleFilter = (list: string[], setList: (l: string[]) => void, item: string) => {
+  const toggleFilter = (list: any[], setList: (l: any[]) => void, item: any) => {
     if (list.includes(item)) {
       setList(list.filter(i => i !== item));
     } else {
@@ -84,7 +158,6 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex-1 flex min-h-0">
-          {}
           <div className="w-[240px] border-r border-border overflow-y-auto p-4 bg-white/[0.02]">
             {tabs.map((tab) => (
               <div
@@ -104,7 +177,6 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
             ))}
           </div>
 
-          {}
           <div className="flex-1 p-8 overflow-y-auto bg-card">
             {activeTab === 'Date Range' && (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -143,41 +215,70 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
             {activeTab === 'Source' && (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="font-semibold text-lg mb-6">Select Sources</div>
-                <div className="grid grid-cols-2 gap-5">
-                  {['Facebook', 'Google', 'LinkedIn', 'Referral', 'Website', 'Direct'].map((source) => (
-                    <div
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {DEAL_SOURCES.map((source) => (
+                    <Checkbox
                       key={source}
-                      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors hover:bg-muted ${
-                        selectedSources.includes(source) ? 'text-foreground font-medium' : 'text-muted-foreground'
-                      }`}
-                      onClick={() => toggleFilter(selectedSources, setSelectedSources, source)}
-                    >
-                      <div className={`w-5 h-5 rounded-[4px] border-2 flex items-center justify-center transition-all ${
-                        selectedSources.includes(source) ? 'border-foreground bg-foreground' : 'border-border'
-                      }`}>
-                        {selectedSources.includes(source) && <div className="w-2 h-2 text-primary-foreground text-[10px]">✓</div>}
-                      </div>
-                      <span className="text-[0.95rem]">{source}</span>
-                    </div>
+                      label={source}
+                      checked={selectedSources.includes(source)}
+                      onChange={() => toggleFilter(selectedSources, setSelectedSources, source)}
+                      className="p-2 rounded-lg hover:bg-muted/50"
+                    />
                   ))}
                 </div>
               </div>
             )}
 
+            {activeTab === 'Sub Source' && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="font-semibold text-lg mb-6">Select Sub Sources</div>
+                {availableSubSources.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                    {availableSubSources.map((subSource) => (
+                      <Checkbox
+                        key={subSource}
+                        label={subSource}
+                        checked={selectedSubSources.includes(subSource)}
+                        onChange={() => toggleFilter(selectedSubSources, setSelectedSubSources, subSource)}
+                        className="p-2 rounded-lg hover:bg-muted/50"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+                      <FontAwesomeIcon icon={faSitemap} className="text-2xl text-primary/40" />
+                    </div>
+                    <p className="text-muted-foreground text-sm">No sub sources available for the selected sources.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {activeTab === 'Assigned User' && (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="font-semibold text-lg mb-6">Select Assigned Users</div>
-                <div className="flex flex-col items-center justify-center h-48 text-center text-muted-foreground">
-                  <FontAwesomeIcon icon={faUser} className="text-4xl mb-4 opacity-20" />
-                  <p>User list will appear here.</p>
+                <div className="font-semibold text-lg mb-6">Select Users</div>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {users.map((user) => (
+                    <Checkbox
+                      key={user.id}
+                      label={`${user.firstName} ${user.lastName}`}
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={() => toggleFilter(selectedUsers, setSelectedUsers, user.id)}
+                      className="p-2 rounded-lg hover:bg-muted/50"
+                    />
+                  ))}
+                  {users.length === 0 && !loading && (
+                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No users found.</p>
+                  )}
                 </div>
               </div>
             )}
 
-            {['Date Type', 'Sub Source', 'Tag'].includes(activeTab) && (
+            {['Date Type', 'Tag'].includes(activeTab) && (
               <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in duration-300">
                 <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
-                  <FontAwesomeIcon icon={tabs.find(t => t.label === activeTab)?.icon} className="text-2xl text-primary" />
+                  <FontAwesomeIcon icon={tabs.find(t => t.label === activeTab)?.icon!} className="text-2xl text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{activeTab} Filters</h3>
                 <p className="text-muted-foreground text-sm max-w-xs">
@@ -188,7 +289,6 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
           </div>
         </div>
 
-        {}
         <div className="px-8 py-6 border-t border-border flex justify-between items-center bg-card">
           <button 
             className="bg-transparent border-none text-foreground font-semibold text-[0.9rem] cursor-pointer uppercase tracking-wider opacity-70 hover:opacity-100 transition-opacity" 
