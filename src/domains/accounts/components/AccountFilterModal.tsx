@@ -1,18 +1,16 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
-  faCalendar,
   faCalendarCheck,
   faFilter,
   faSitemap,
-  faUser,
-  faTag,
   faCircleDot
 } from '@fortawesome/free-solid-svg-icons';
+
 import { Checkbox } from '@/shared/ui/form/Checkbox';
 import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '@/domains/deals/utils/dealConstants';
-import { dealsApi } from '@/domains/deals/api/dealsApi';
+
 
 interface AccountFilterModalProps {
   isOpen: boolean;
@@ -21,12 +19,9 @@ interface AccountFilterModalProps {
 }
 
 type FilterTab = 
-  | 'Date Type' 
   | 'Date Range' 
   | 'Source' 
-  | 'Sub Source' 
-  | 'Assigned User' 
-  | 'Tag';
+  | 'Sub Source';
 
 const DATE_PRESETS = [
   'Today', 'Yesterday', 'This week', 'This month', 'Last week', 
@@ -38,42 +33,8 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
   const [selectedDatePreset, setSelectedDatePreset] = useState('Last 6 Months');
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedSubSources, setSelectedSubSources] = useState<string[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   
-  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchData();
-    }
-  }, [isOpen]);
-
-  const fetchData = async () => {
-    if (users.length > 0) return;
-
-    setLoading(true);
-    try {
-      const usersRes = await dealsApi.fetchUsers({
-        condition: {
-          conditions: [
-            { conditions: [], operator: 'OR' }
-          ],
-          operator: 'AND'
-        },
-        eager: true,
-        size: 100,
-        page: 0,
-        sort: [{ property: 'createdAt', direction: 'DESC' }],
-        eagerFields: ['name', 'firstName', 'lastName', 'id', 'code']
-      });
-      setUsers(Array.isArray(usersRes) ? usersRes : (usersRes.content || []));
-    } catch (error) {
-      console.error('Failed to fetch filter data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const availableSubSources = useMemo(() => {
     if (selectedSources.length === 0) {
@@ -85,19 +46,15 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
   if (!isOpen) return null;
 
   const tabs: { label: FilterTab; icon: IconDefinition }[] = [
-    { label: 'Date Type', icon: faCalendar },
     { label: 'Date Range', icon: faCalendarCheck },
     { label: 'Source', icon: faFilter },
     { label: 'Sub Source', icon: faSitemap },
-    { label: 'Assigned User', icon: faUser },
-    { label: 'Tag', icon: faTag },
   ];
 
   const handleReset = () => {
     setSelectedDatePreset('Last 6 Months');
     setSelectedSources([]);
     setSelectedSubSources([]);
-    setSelectedUsers([]);
   };
 
   const handleApply = () => {
@@ -120,15 +77,6 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
       conditions[3].conditions = selectedSubSources.map(s => ({
         field: 'subSource',
         value: s,
-        operator: 'EQUALS'
-      }));
-    }
-
-    // Slot 10: Assigned User (Assuming slot 10 matches DealFilterModal logic)
-    if (selectedUsers.length > 0) {
-      conditions[10].conditions = selectedUsers.map(id => ({
-        field: 'assignedUserId',
-        value: id,
         operator: 'EQUALS'
       }));
     }
@@ -254,40 +202,9 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
                 )}
               </div>
             )}
-
-            {activeTab === 'Assigned User' && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="font-semibold text-lg mb-6">Select Users</div>
-                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
-                  {users.map((user) => (
-                    <Checkbox
-                      key={user.id}
-                      label={`${user.firstName} ${user.lastName}`}
-                      checked={selectedUsers.includes(user.id)}
-                      onChange={() => toggleFilter(selectedUsers, setSelectedUsers, user.id)}
-                      className="p-2 rounded-lg hover:bg-muted/50"
-                    />
-                  ))}
-                  {users.length === 0 && !loading && (
-                    <p className="text-muted-foreground text-sm col-span-2 py-10 text-center">No users found.</p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {['Date Type', 'Tag'].includes(activeTab) && (
-              <div className="flex flex-col items-center justify-center h-full text-center animate-in fade-in duration-300">
-                <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
-                  <FontAwesomeIcon icon={tabs.find(t => t.label === activeTab)?.icon!} className="text-2xl text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{activeTab} Filters</h3>
-                <p className="text-muted-foreground text-sm max-w-xs">
-                  Filtering options for {activeTab} will appear here.
-                </p>
-              </div>
-            )}
           </div>
         </div>
+
 
         <div className="px-8 py-6 border-t border-border flex justify-between items-center bg-card">
           <button 
