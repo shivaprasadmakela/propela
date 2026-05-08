@@ -16,6 +16,7 @@ import {
   faCircleDot
 } from '@fortawesome/free-solid-svg-icons';
 import { Checkbox } from '@/shared/ui/form/Checkbox';
+import { getDateRange } from '@/shared/utils/dateUtils';
 import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '../utils/dealConstants';
 import { productApi } from '@/domains/products/api/productApi';
 import { stagesApi } from '@/domains/stages/api/stagesApi';
@@ -165,6 +166,15 @@ export function DealFilterModal({ isOpen, onClose, onApply }: DealFilterModalPro
       conditions: [] as any[],
       operator: 'OR' as const
     }));
+
+    // Slot 1: Date Range
+    const range = getDateRange(selectedDatePreset);
+    conditions[1].conditions = [{
+      field: 'createdAt',
+      value: range.start,
+      toValue: range.end,
+      operator: 'BETWEEN'
+    }];
 
     // Slot 2: Source
     if (selectedSources.length > 0) {

@@ -9,6 +9,7 @@ import { getStringColorClass } from '@/shared/utils/colorUtils';
 import { useToast } from '@/shared/ui/toast/ToastProvider';
 import { AddDealModal } from '../components/AddDealModal';
 import { DealFilterModal } from '../components/DealFilterModal';
+import { getDateRange } from '@/shared/utils/dateUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMagnifyingGlass,
@@ -41,7 +42,20 @@ export function DealsPage() {
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<any>({});
+  
+  const initialRange = getDateRange('Last 6 Months');
+  const [activeFilters, setActiveFilters] = useState<any>({
+    operator: 'AND',
+    conditions: Array(15).fill(null).map((_, i) => ({
+      operator: 'OR',
+      conditions: i === 1 ? [{
+        field: 'createdAt',
+        value: initialRange.start,
+        toValue: initialRange.end,
+        operator: 'BETWEEN'
+      }] : []
+    }))
+  });
 
   const toast = useToast();
 

@@ -9,8 +9,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { Checkbox } from '@/shared/ui/form/Checkbox';
+import { getDateRange } from '@/shared/utils/dateUtils';
 import { DEAL_SOURCES, DEAL_SUB_SOURCES } from '@/domains/deals/utils/dealConstants';
-
 
 interface AccountFilterModalProps {
   isOpen: boolean;
@@ -63,6 +63,15 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
       operator: 'OR' as const
     }));
 
+    // Slot 1: Date Range
+    const range = getDateRange(selectedDatePreset);
+    conditions[1].conditions = [{
+      field: 'createdAt',
+      value: range.start,
+      toValue: range.end,
+      operator: 'BETWEEN'
+    }];
+
     // Slot 2: Source
     if (selectedSources.length > 0) {
       conditions[2].conditions = selectedSources.map(s => ({
@@ -82,7 +91,7 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
     }
 
     onApply({
-      conditions: conditions.filter(c => c.conditions.length > 0),
+      conditions,
       operator: 'AND'
     });
     onClose();
@@ -204,7 +213,6 @@ export function AccountFilterModal({ isOpen, onClose, onApply }: AccountFilterMo
             )}
           </div>
         </div>
-
 
         <div className="px-8 py-6 border-t border-border flex justify-between items-center bg-card">
           <button 

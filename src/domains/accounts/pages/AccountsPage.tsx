@@ -14,9 +14,9 @@ import {
   faCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { AccountFilterModal } from "../components/AccountFilterModal";
+import { getDateRange } from "@/shared/utils/dateUtils";
 
 export function AccountsPage() {
-
   const [deals, setDeals] = useState<AccountEntity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -27,7 +27,20 @@ export function AccountsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<any>({});
+  
+  const initialRange = getDateRange('Last 6 Months');
+  const [activeFilters, setActiveFilters] = useState<any>({
+    operator: 'AND',
+    conditions: Array(15).fill(null).map((_, i) => ({
+      operator: 'OR',
+      conditions: i === 1 ? [{
+        field: 'createdAt',
+        value: initialRange.start,
+        toValue: initialRange.end,
+        operator: 'BETWEEN'
+      }] : []
+    }))
+  });
 
   const toast = useToast();
 
