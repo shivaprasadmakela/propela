@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { dealsApi, type DealEntity } from '../api/dealsApi';
+import { dealsApi, type DealEntity, type NoteEntity, type TaskEntity } from '../api/dealsApi';
 import { useToast } from '@/shared/ui/toast/ToastProvider';
 import { getStringColorClass } from '@/shared/utils/colorUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,7 +10,11 @@ import {
   faPhone, 
   faStar, 
   faFolderOpen,
-  faShieldHalved
+  faShieldHalved,
+  faCalendar,
+  faClock,
+  faCheckCircle,
+  faCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 const TABS = ['Overview', 'Notes', 'Tasks', 'Sales', 'Whatsapp', 'Call logs'];
@@ -20,6 +24,12 @@ export function DealProfilePage() {
   const [deal, setDeal] = useState<DealEntity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Overview');
+  
+  const [notes, setNotes] = useState<NoteEntity[]>([]);
+  const [tasks, setTasks] = useState<TaskEntity[]>([]);
+  const [callLogs, setCallLogs] = useState<any[]>([]);
+  const [isTabLoading, setIsTabLoading] = useState(false);
+
   const toast = useToast();
 
   useEffect(() => {
@@ -38,6 +48,37 @@ export function DealProfilePage() {
     }
     fetchDeal();
   }, [code]);
+
+  useEffect(() => {
+    async function fetchTabData() {
+      if (!deal?.id) return;
+      
+      const shouldFetch = ['Notes', 'Tasks', 'Call logs'].includes(activeTab);
+      if (!shouldFetch) return;
+
+      setIsTabLoading(true);
+      try {
+        if (activeTab === 'Notes') {
+          const response = await dealsApi.fetchNotes(deal.id);
+          setNotes(response.content || []);
+        } else if (activeTab === 'Tasks') {
+          const response = await dealsApi.fetchTasks(deal.id);
+          setTasks(response.content || []);
+        } else if (activeTab === 'Call logs' && deal.phoneNumber) {
+          const dialCode = deal.dialCode || 91;
+          const fullPhone = deal.phoneNumber.startsWith('+') ? deal.phoneNumber : `+${dialCode}${deal.phoneNumber}`;
+          const response = await dealsApi.fetchCallLogs(fullPhone);
+          setCallLogs(response.content || []);
+        }
+      } catch (error) {
+        console.error(`Failed to fetch ${activeTab}:`, error);
+        toast(`Failed to load ${activeTab}`, 'error');
+      } finally {
+        setIsTabLoading(false);
+      }
+    }
+    fetchTabData();
+  }, [activeTab, deal?.id]);
 
   if (isLoading) {
     return (
@@ -61,6 +102,160 @@ export function DealProfilePage() {
   }
 
   const dealIdDisplay = `D${String(deal.id).padStart(10, '0')}`;
+
+  const renderTabContent = () => {
+    if (isTabLoading) {
+      return (
+        <div className="h-full flex items-center justify-center p-12">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
+
+    switch (activeTab) {
+      case 'Overview':
+        return (
+          <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <DetailField label="Full name" value={deal.name} />
+            <DetailField label="Email ID" value={deal.email} isLink />
+            <DetailField label="Phone number" value={deal.phoneNumber} isPhone />
+            <DetailField label="Source" value={deal.source} isBadge />
+            <DetailField label="Sub source" value={deal.subSource} isBadge />
+            <DetailField label="Stage" value={deal.stage?.name} />
+            <DetailField label="Status" value={deal.status?.name} />
+            <DetailField label="Assigned user" value={deal.assignedUserId ? `${deal.assignedUserId.firstName} ${deal.assignedUserId.lastName || ''}` : '--'} />
+            <DetailField label="Date of creation" value={deal.createdAt ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(deal.createdAt * 1000)) : '--'} />
+            <DetailField label="DNC" value="Off" isBadge />
+            <DetailField label="Tag" value={deal.tag} isBadge placeholder="Select Tag" />
+            <DetailField label="Keyword" value="--" />
+          </div>
+        );
+
+      case 'Notes':
+        return (
+          <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {notes.length > 0 ? (
+              notes.map((note) => (
+                <div key={note.id} className="bg-muted/30 border border-border/50 rounded-2xl p-5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                        {note.createdBy?.firstName?.[0]}{note.createdBy?.lastName?.[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-foreground/80">{note.createdBy?.firstName} {note.createdBy?.lastName}</p>
+                        <p className="text-[10px] text-foreground/40 font-medium">
+                          {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(note.createdAt * 1000))}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-foreground/70 leading-relaxed">{note.content}</p>
+                </div>
+              ))
+            ) : <EmptyState tab="Notes" />}
+          </div>
+        );
+
+      case 'Tasks':
+        return (
+          <div className="space-y-4 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {tasks.length > 0 ? (
+              tasks.map((task) => (
+                <div key={task.id} className="flex items-center justify-between bg-card border border-border/50 rounded-2xl p-4 hover:border-primary/20 transition-colors group">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${task.isCompleted ? 'bg-emerald-500/10 text-emerald-500' : 'bg-primary/10 text-primary'}`}>
+                      <FontAwesomeIcon icon={task.isCompleted ? faCheckCircle : faCalendar} />
+                    </div>
+                    <div>
+                      <h4 className={`text-sm font-bold ${task.isCompleted ? 'text-foreground/40 line-through' : 'text-foreground/80'}`}>{task.name}</h4>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{task.taskTypeId?.name || 'Task'}</span>
+                        <div className="flex items-center gap-1.5 text-[10px] text-foreground/40 font-medium">
+                          <FontAwesomeIcon icon={faClock} className="text-[9px]" />
+                          {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(task.dueDate * 1000))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border ${
+                      task.taskPriority === 'HIGH' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
+                      task.taskPriority === 'MEDIUM' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
+                      'bg-blue-500/10 border-blue-500/20 text-blue-500'
+                    }`}>
+                      {task.taskPriority}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : <EmptyState tab="Tasks" />}
+          </div>
+        );
+
+      case 'Call logs':
+        return (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {callLogs.length > 0 ? (
+              <div className="border border-border/50 rounded-2xl overflow-hidden">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-muted/30 border-b border-border/50">
+                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Type</th>
+                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">User</th>
+                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
+                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Duration</th>
+                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50">
+                    {callLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <FontAwesomeIcon icon={faPhone} className={`text-xs ${log.callType === 'INCOMING' ? 'text-emerald-500' : 'text-primary'}`} />
+                            <span className="text-xs font-bold text-foreground/70 capitalize">{log.callType?.toLowerCase()}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-xs font-medium text-foreground/60">{log.userId?.firstName} {log.userId?.lastName}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            log.status === 'COMPLETED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'
+                          }`}>
+                            {log.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-xs font-mono text-foreground/40">{log.duration}s</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-[10px] text-foreground/40 font-medium">
+                            {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(log.startTime * 1000))}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : <EmptyState tab="Call logs" />}
+          </div>
+        );
+
+      default:
+        return (
+          <div className="h-full flex flex-col items-center justify-center text-center p-12 bg-muted/10 rounded-2xl border border-dashed border-border animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-2xl mb-4 grayscale opacity-50">
+              <FontAwesomeIcon icon={faFolderOpen} />
+            </div>
+            <h3 className="text-lg font-medium text-foreground/80">{activeTab} Section</h3>
+            <p className="text-sm text-foreground/40 mt-2">This module is currently being integrated and will be available soon.</p>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col min-h-0 space-y-6">
@@ -133,32 +328,7 @@ export function DealProfilePage() {
           </div>
 
           <div className="flex-1 p-8 overflow-y-auto">
-            {activeTab === 'Overview' && (
-              <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl">
-                <DetailField label="Full name" value={deal.name} />
-                <DetailField label="Email ID" value={deal.email} isLink />
-                <DetailField label="Phone number" value={deal.phoneNumber} isPhone />
-                <DetailField label="Source" value={deal.source} isBadge />
-                <DetailField label="Sub source" value={deal.subSource} isBadge />
-                <DetailField label="Stage" value={deal.stage?.name} />
-                <DetailField label="Status" value={deal.status?.name} />
-                <DetailField label="Assigned user" value={deal.assignedUserId ? `${deal.assignedUserId.firstName} ${deal.assignedUserId.lastName || ''}` : '--'} />
-                <DetailField label="Date of creation" value={deal.createdAt ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(deal.createdAt * 1000)) : '--'} />
-                <DetailField label="DNC" value="Off" isBadge />
-                <DetailField label="Tag" value={deal.tag} isBadge placeholder="Select Tag" />
-                <DetailField label="Keyword" value="--" />
-              </div>
-            )}
-
-            {activeTab !== 'Overview' && (
-              <div className="h-full flex flex-col items-center justify-center text-center p-12 bg-muted/10 rounded-2xl border border-dashed border-border">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-2xl mb-4 grayscale opacity-50">
-                  <FontAwesomeIcon icon={faFolderOpen} />
-                </div>
-                <h3 className="text-lg font-medium text-foreground/80">{activeTab} Section</h3>
-                <p className="text-sm text-foreground/40 mt-2">This module is currently being integrated and will be available soon.</p>
-              </div>
-            )}
+            {renderTabContent()}
           </div>
         </div>
 
@@ -186,6 +356,18 @@ export function DealProfilePage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function EmptyState({ tab }: { tab: string }) {
+  return (
+    <div className="h-full flex flex-col items-center justify-center text-center p-12 bg-muted/5 rounded-2xl border border-dashed border-border/50 animate-in fade-in duration-500">
+      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-2xl mb-4 grayscale opacity-50">
+        <FontAwesomeIcon icon={faFolderOpen} />
+      </div>
+      <h3 className="text-lg font-medium text-foreground/80">No {tab.toLowerCase()} found</h3>
+      <p className="text-sm text-foreground/40 mt-2">There are currently no {tab.toLowerCase()} recorded for this deal.</p>
     </div>
   );
 }

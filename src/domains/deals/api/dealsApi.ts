@@ -71,6 +71,24 @@ export interface DealsQueryPayload {
   eagerFields: string[];
 }
 
+export interface NoteEntity {
+  id: number;
+  content: string;
+  createdBy: DealUser;
+  createdAt: number;
+}
+
+export interface TaskEntity {
+  id: number;
+  name: string;
+  taskTypeId: { name: string };
+  dueDate: number;
+  taskPriority: string;
+  isCompleted: boolean;
+  createdBy: DealUser;
+  createdAt: number;
+}
+
 export const dealsApi = {
   fetchDeals: (payload: DealsQueryPayload): Promise<PaginatedDealsResponse> => {
     return httpClient.post<PaginatedDealsResponse>(ENDPOINTS.DEALS.QUERY_EAGER, payload);
@@ -107,5 +125,35 @@ export const dealsApi = {
   },
   fetchUsers: (payload: any): Promise<any> => {
     return httpClient.post(ENDPOINTS.USERS.QUERY, payload);
+  },
+  fetchNotes: (ticketId: number): Promise<{ content: NoteEntity[] }> => {
+    const params = new URLSearchParams({
+      ticketId: String(ticketId),
+      eager: 'true',
+      sort: 'createdAt,DESC',
+      size: '20'
+    });
+    return httpClient.get(`${ENDPOINTS.NOTES.EAGER}?${params.toString()}`);
+  },
+  fetchTasks: (ticketId: number): Promise<{ content: TaskEntity[] }> => {
+    const params = new URLSearchParams({
+      ticketId: String(ticketId),
+      eager: 'true',
+      sort: 'createdAt,DESC',
+      size: '20'
+    });
+    return httpClient.get(`${ENDPOINTS.TASKS.EAGER}?${params.toString()}`);
+  },
+  fetchCallLogs: (phoneNumber: string): Promise<{ content: any[] }> => {
+    return httpClient.post(ENDPOINTS.CALL_LOGS.QUERY, {
+      size: 20,
+      eager: true,
+      eagerFields: ["userId", "firstName", "lastName"],
+      condition: {
+        field: "customerPhoneNumber",
+        operator: "EQUALS",
+        value: phoneNumber
+      }
+    });
   },
 };

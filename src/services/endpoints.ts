@@ -25,7 +25,14 @@ export const ENDPOINTS = {
   },
   TASKS: {
     QUERY_EAGER: '/api/entity/processor/tasks/eager/query',
+    EAGER: '/api/entity/processor/tasks/eager',
     COMPLETE: (id: string | number) => `/api/entity/processor/tasks/req/${id}/completed`,
+  },
+  NOTES: {
+    EAGER: '/api/entity/processor/notes/eager',
+  },
+  CALL_LOGS: {
+    QUERY: '/api/message/call/exotel/eager/query',
   },
   SOURCES: {
     LIST: '/api/entity/processor/sources',
