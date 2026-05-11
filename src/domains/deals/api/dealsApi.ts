@@ -166,4 +166,17 @@ export const dealsApi = {
       }
     });
   },
+  flattenDealPayload: (deal: DealEntity): any => {
+    return {
+      ...deal,
+      ownerId: typeof deal.ownerId === 'object' ? deal.ownerId?.id : deal.ownerId,
+      assignedUserId: typeof deal.assignedUserId === 'object' ? deal.assignedUserId?.id : deal.assignedUserId,
+      productId: typeof deal.productId === 'object' ? deal.productId?.id : deal.productId,
+      stage: typeof deal.stage === 'object' ? deal.stage?.id : deal.stage,
+      status: typeof deal.status === 'object' ? deal.status?.id : deal.status,
+      productTemplateId: typeof deal.productTemplateId === 'object' ? deal.productTemplateId?.id : deal.productTemplateId,
+      updatedBy: typeof deal.updatedBy === 'object' ? (deal.updatedBy as any)?.id : deal.updatedBy,
+      updatedAt: Math.floor(Date.now() / 1000)
+    };
+  }
 };

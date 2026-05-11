@@ -58,16 +58,8 @@ export function DealProfilePage() {
     setIsSavingBio(true);
     try {
       const payload = {
-        ...deal,
-        ownerId: typeof deal.ownerId === 'object' ? deal.ownerId?.id : deal.ownerId,
-        assignedUserId: typeof deal.assignedUserId === 'object' ? deal.assignedUserId?.id : deal.assignedUserId,
-        productId: typeof deal.productId === 'object' ? deal.productId?.id : deal.productId,
-        stage: typeof deal.stage === 'object' ? deal.stage?.id : deal.stage,
-        status: typeof deal.status === 'object' ? deal.status?.id : deal.status,
-        productTemplateId: typeof deal.productTemplateId === 'object' ? deal.productTemplateId?.id : deal.productTemplateId,
-        updatedBy: typeof deal.updatedBy === 'object' ? (deal.updatedBy as any)?.id : deal.updatedBy,
+        ...dealsApi.flattenDealPayload(deal),
         description: bioText,
-        updatedAt: Math.floor(Date.now() / 1000)
       };
 
       if (code) {
@@ -149,136 +141,13 @@ export function DealProfilePage() {
 
     switch (activeTab) {
       case 'Overview':
-        return (
-          <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <DetailField label="Full name" value={deal.name} />
-            <DetailField label="Email ID" value={deal.email} isLink />
-            <DetailField label="Phone number" value={deal.phoneNumber} isPhone />
-            <DetailField label="Source" value={deal.source} isBadge />
-            <DetailField label="Sub source" value={deal.subSource} isBadge />
-            <DetailField label="Stage" value={deal.stage?.name} />
-            <DetailField label="Status" value={deal.status?.name} />
-            <DetailField label="Assigned user" value={deal.assignedUserId ? `${deal.assignedUserId.firstName} ${deal.assignedUserId.lastName || ''}` : '--'} />
-            <DetailField label="Date of creation" value={deal.createdAt ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(deal.createdAt * 1000)) : '--'} />
-            <DetailField label="DNC" value="Off" isBadge />
-            <DetailField label="Tag" value={deal.tag} isBadge placeholder="Select Tag" />
-            <DetailField label="Keyword" value="--" />
-          </div>
-        );
-
+        return <OverviewTab deal={deal} />;
       case 'Notes':
-        return (
-          <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {notes.length > 0 ? (
-              notes.map((note) => (
-                <div key={note.id} className="bg-muted/30 border border-border/50 rounded-2xl p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                        {note.createdBy?.firstName?.[0]}{note.createdBy?.lastName?.[0]}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-foreground/80">{note.createdBy?.firstName} {note.createdBy?.lastName}</p>
-                        <p className="text-[10px] text-foreground/40 font-medium">
-                          {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(note.createdAt * 1000))}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-sm text-foreground/70 leading-relaxed">{note.content}</p>
-                </div>
-              ))
-            ) : <EmptyState tab="Notes" />}
-          </div>
-        );
-
+        return <NotesTab notes={notes} />;
       case 'Tasks':
-        return (
-          <div className="space-y-4 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {tasks.length > 0 ? (
-              tasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between bg-card border border-border/50 rounded-2xl p-4 hover:border-primary/20 transition-colors group">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${task.isCompleted ? 'bg-emerald-500/10 text-emerald-500' : 'bg-primary/10 text-primary'}`}>
-                      <FontAwesomeIcon icon={task.isCompleted ? faCheckCircle : faCalendar} />
-                    </div>
-                    <div>
-                      <h4 className={`text-sm font-bold ${task.isCompleted ? 'text-foreground/40 line-through' : 'text-foreground/80'}`}>{task.name}</h4>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{task.taskTypeId?.name || 'Task'}</span>
-                        <div className="flex items-center gap-1.5 text-[10px] text-foreground/40 font-medium">
-                          <FontAwesomeIcon icon={faClock} className="text-[9px]" />
-                          {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(task.dueDate * 1000))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border ${
-                      task.taskPriority === 'HIGH' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
-                      task.taskPriority === 'MEDIUM' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
-                      'bg-blue-500/10 border-blue-500/20 text-blue-500'
-                    }`}>
-                      {task.taskPriority}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : <EmptyState tab="Tasks" />}
-          </div>
-        );
-
+        return <TasksTab tasks={tasks} />;
       case 'Call logs':
-        return (
-          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {callLogs.length > 0 ? (
-              <div className="border border-border/50 rounded-2xl overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-muted/30 border-b border-border/50">
-                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Type</th>
-                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">User</th>
-                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
-                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Duration</th>
-                      <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Time</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/50">
-                    {callLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-muted/20 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <FontAwesomeIcon icon={faPhone} className={`text-xs ${log.callType === 'INCOMING' ? 'text-emerald-500' : 'text-primary'}`} />
-                            <span className="text-xs font-bold text-foreground/70 capitalize">{log.callType?.toLowerCase()}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-xs font-medium text-foreground/60">{log.userId?.firstName} {log.userId?.lastName}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                            log.status === 'COMPLETED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'
-                          }`}>
-                            {log.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-xs font-mono text-foreground/40">{log.duration}s</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-[10px] text-foreground/40 font-medium">
-                            {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(log.startTime * 1000))}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : <EmptyState tab="Call logs" />}
-          </div>
-        );
-
+        return <CallLogsTab logs={callLogs} />;
       default:
         return (
           <div className="h-full flex flex-col items-center justify-center text-center p-12 bg-muted/10 rounded-2xl border border-dashed border-border animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -430,6 +299,141 @@ export function DealProfilePage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function OverviewTab({ deal }: { deal: DealEntity }) {
+  return (
+    <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <DetailField label="Full name" value={deal.name} />
+      <DetailField label="Email ID" value={deal.email} isLink />
+      <DetailField label="Phone number" value={deal.phoneNumber} isPhone />
+      <DetailField label="Source" value={deal.source} isBadge />
+      <DetailField label="Sub source" value={deal.subSource} isBadge />
+      <DetailField label="Stage" value={deal.stage?.name} />
+      <DetailField label="Status" value={deal.status?.name} />
+      <DetailField label="Assigned user" value={deal.assignedUserId ? `${(deal.assignedUserId as any).firstName} ${(deal.assignedUserId as any).lastName || ''}` : '--'} />
+      <DetailField label="Date of creation" value={deal.createdAt ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(deal.createdAt * 1000)) : '--'} />
+      <DetailField label="DNC" value="Off" isBadge />
+      <DetailField label="Tag" value={deal.tag} isBadge placeholder="Select Tag" />
+      <DetailField label="Keyword" value="--" />
+    </div>
+  );
+}
+
+function NotesTab({ notes }: { notes: NoteEntity[] }) {
+  return (
+    <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+      {notes.length > 0 ? (
+        notes.map((note) => (
+          <div key={note.id} className="bg-muted/30 border border-border/50 rounded-2xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                  {note.createdBy?.firstName?.[0]}{note.createdBy?.lastName?.[0]}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground/80">{note.createdBy?.firstName} {note.createdBy?.lastName}</p>
+                  <p className="text-[10px] text-foreground/40 font-medium">
+                    {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(note.createdAt * 1000))}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-foreground/70 leading-relaxed">{note.content}</p>
+          </div>
+        ))
+      ) : <EmptyState tab="Notes" />}
+    </div>
+  );
+}
+
+function TasksTab({ tasks }: { tasks: TaskEntity[] }) {
+  return (
+    <div className="space-y-4 max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+      {tasks.length > 0 ? (
+        tasks.map((task) => (
+          <div key={task.id} className="flex items-center justify-between bg-card border border-border/50 rounded-2xl p-4 hover:border-primary/20 transition-colors group">
+            <div className="flex items-center gap-4">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${task.isCompleted ? 'bg-emerald-500/10 text-emerald-500' : 'bg-primary/10 text-primary'}`}>
+                <FontAwesomeIcon icon={task.isCompleted ? faCheckCircle : faCalendar} />
+              </div>
+              <div>
+                <h4 className={`text-sm font-bold ${task.isCompleted ? 'text-foreground/40 line-through' : 'text-foreground/80'}`}>{task.name}</h4>
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{task.taskTypeId?.name || 'Task'}</span>
+                  <div className="flex items-center gap-1.5 text-[10px] text-foreground/40 font-medium">
+                    <FontAwesomeIcon icon={faClock} className="text-[9px]" />
+                    {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(task.dueDate * 1000))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border ${
+                task.taskPriority === 'HIGH' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
+                task.taskPriority === 'MEDIUM' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
+                'bg-blue-500/10 border-blue-500/20 text-blue-500'
+              }`}>
+                {task.taskPriority}
+              </span>
+            </div>
+          </div>
+        ))
+      ) : <EmptyState tab="Tasks" />}
+    </div>
+  );
+}
+
+function CallLogsTab({ logs }: { logs: any[] }) {
+  return (
+    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      {logs.length > 0 ? (
+        <div className="border border-border/50 rounded-2xl overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-muted/30 border-b border-border/50">
+                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Type</th>
+                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">User</th>
+                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Duration</th>
+                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Time</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/50">
+              {logs.map((log) => (
+                <tr key={log.id} className="hover:bg-muted/20 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <FontAwesomeIcon icon={faPhone} className={`text-xs ${log.callType === 'INCOMING' ? 'text-emerald-500' : 'text-primary'}`} />
+                      <span className="text-xs font-bold text-foreground/70 capitalize">{log.callType?.toLowerCase()}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-xs font-medium text-foreground/60">{log.userId?.firstName} {log.userId?.lastName}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                      log.status === 'COMPLETED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-amber-500/10 border-amber-500/20 text-amber-500'
+                    }`}>
+                      {log.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-xs font-mono text-foreground/40">{log.duration}s</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-[10px] text-foreground/40 font-medium">
+                      {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(log.startTime * 1000))}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : <EmptyState tab="Call logs" />}
     </div>
   );
 }
