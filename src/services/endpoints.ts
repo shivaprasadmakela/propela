@@ -8,6 +8,7 @@ export const ENDPOINTS = {
     CREATE: '/api/entity/processor/tickets',
     QUERY_EAGER: '/api/entity/processor/tickets/eager/query',
     BY_CODE: (code: string) => `/api/entity/processor/tickets/code/${code}/eager`,
+    UPDATE_BY_CODE: (code: string) => `/api/entity/processor/tickets/code/${code}`,
   },
   ACCOUNTS: {
     QUERY_EAGER: '/api/entity/processor/owners/eager/query',

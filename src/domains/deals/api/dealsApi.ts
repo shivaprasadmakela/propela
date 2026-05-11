@@ -35,11 +35,15 @@ export interface DealEntity {
   subSource?: string;
   tag?: string;
   productId?: DealStageNode & { createdBy?: number };
+  productTemplateId?: number | { id: number };
   createdBy?: DealUser;
+  updatedBy?: number | DealUser;
   nextFollowUp?: number;
   expiresOn?: number;
   createdAt?: number;
   updatedAt?: number;
+  description?: string;
+  metaData?: Record<string, any>;
 }
 
 export interface PaginatedDealsResponse {
@@ -122,6 +126,12 @@ export const dealsApi = {
     return httpClient.patch(`/api/entity/processor/tickets/${dealId}`, {
       stage: { id: stageId }
     });
+  },
+  updateDeal: (dealId: number, data: Partial<DealEntity>): Promise<void> => {
+    return httpClient.patch(`/api/entity/processor/tickets/${dealId}`, data);
+  },
+  saveDealByCode: (code: string, data: any): Promise<void> => {
+    return httpClient.put(ENDPOINTS.DEALS.UPDATE_BY_CODE(code), data);
   },
   fetchUsers: (payload: any): Promise<any> => {
     return httpClient.post(ENDPOINTS.USERS.QUERY, payload);

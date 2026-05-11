@@ -30,6 +30,10 @@ export function DealProfilePage() {
   const [callLogs, setCallLogs] = useState<any[]>([]);
   const [isTabLoading, setIsTabLoading] = useState(false);
 
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioText, setBioText] = useState('');
+  const [isSavingBio, setIsSavingBio] = useState(false);
+
   const toast = useToast();
 
   useEffect(() => {
@@ -48,6 +52,37 @@ export function DealProfilePage() {
     }
     fetchDeal();
   }, [code]);
+
+  const handleSaveBio = async () => {
+    if (!deal?.id) return;
+    setIsSavingBio(true);
+    try {
+      const payload = {
+        ...deal,
+        ownerId: typeof deal.ownerId === 'object' ? deal.ownerId?.id : deal.ownerId,
+        assignedUserId: typeof deal.assignedUserId === 'object' ? deal.assignedUserId?.id : deal.assignedUserId,
+        productId: typeof deal.productId === 'object' ? deal.productId?.id : deal.productId,
+        stage: typeof deal.stage === 'object' ? deal.stage?.id : deal.stage,
+        status: typeof deal.status === 'object' ? deal.status?.id : deal.status,
+        productTemplateId: typeof deal.productTemplateId === 'object' ? deal.productTemplateId?.id : deal.productTemplateId,
+        updatedBy: typeof deal.updatedBy === 'object' ? (deal.updatedBy as any)?.id : deal.updatedBy,
+        description: bioText,
+        updatedAt: Math.floor(Date.now() / 1000)
+      };
+
+      if (code) {
+        await dealsApi.saveDealByCode(code, payload);
+      }
+      setDeal({ ...deal, description: bioText });
+      setIsEditingBio(false);
+      toast('Bio updated successfully', 'success');
+    } catch (error) {
+      console.error('Failed to update bio:', error);
+      toast('Failed to update bio', 'error');
+    } finally {
+      setIsSavingBio(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchTabData() {
@@ -296,10 +331,49 @@ export function DealProfilePage() {
             </div>
 
             <div className="flex items-center gap-4 pt-2">
-
-              <button className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium border-l border-border pl-4">
-                <FontAwesomeIcon icon={faPlus} className="text-sm" /> Add bio
-              </button>
+              {isEditingBio ? (
+                <div className="flex-1 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <textarea
+                    value={bioText}
+                    onChange={(e) => setBioText(e.target.value)}
+                    className="w-full max-w-2xl px-4 py-3 rounded-2xl bg-muted/50 border border-border text-sm text-foreground/80 placeholder-foreground/30 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 outline-none transition-all min-h-[100px] resize-none"
+                    placeholder="Enter bio details..."
+                    autoFocus
+                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleSaveBio}
+                      disabled={isSavingBio}
+                      className="px-4 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                    >
+                      {isSavingBio ? 'Saving...' : 'Save bio'}
+                    </button>
+                    <button
+                      onClick={() => setIsEditingBio(false)}
+                      disabled={isSavingBio}
+                      className="px-4 py-1.5 rounded-xl bg-muted text-foreground/60 text-xs font-bold transition-all hover:bg-muted/80"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-start gap-2">
+                  {deal.description && (
+                    <p className="text-sm text-foreground/60 max-w-2xl italic">"{deal.description}"</p>
+                  )}
+                  <button 
+                    onClick={() => {
+                      setBioText(deal.description || '');
+                      setIsEditingBio(true);
+                    }}
+                    className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium border-l border-border pl-4"
+                  >
+                    <FontAwesomeIcon icon={faPlus} className="text-sm" /> 
+                    {deal.description ? 'Edit bio' : 'Add bio'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
