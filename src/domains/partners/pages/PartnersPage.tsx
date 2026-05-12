@@ -18,7 +18,7 @@ export function PartnersPage() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-  
+
   const toast = useToast();
 
   const fetchPartners = async () => {
@@ -63,14 +63,14 @@ export function PartnersPage() {
       header: 'CP NAME',
       key: 'clientName',
       render: (partner) => (
-        <span className="font-bold text-foreground/80">{partner.clientName}</span>
+        <span className="font-bold text-foreground/80">{partner.clientId.owners[0].firstName + ' ' + partner.clientId.owners[0].lastName}</span>
       )
     },
     {
       header: 'PHONE NUMBER',
       key: 'userPhones',
       render: (partner) => (
-        <span className="font-medium text-foreground/70">{partner.userPhones}</span>
+        <span className="font-medium text-foreground/70">{partner.clientId.owners[0].phoneNumber}</span>
       )
     },
     {
@@ -118,9 +118,8 @@ export function PartnersPage() {
       render: (partner) => {
         const isActive = partner.active;
         return (
-          <span className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-            isActive ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'
-          }`}>
+          <span className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${isActive ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'
+            }`}>
             {isActive ? 'ACTIVE' : 'INACTIVE'}
           </span>
         );
@@ -135,7 +134,7 @@ export function PartnersPage() {
         if (status === 'Verified') colorClasses = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
         if (status === 'Invitation Sent') colorClasses = 'bg-pink-500/10 text-pink-500 border-pink-500/20';
         if (status === 'Approval Pending') colorClasses = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-        
+
         return (
           <span className={`px-3 py-1 rounded-md text-[10px] font-bold border ${colorClasses}`}>
             {status}
@@ -188,17 +187,17 @@ export function PartnersPage() {
           <button className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-sm font-bold shadow-lg shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2">
             <FontAwesomeIcon icon={faPlus} className="text-xs" /> Invite CP
           </button>
-          
+
           <div className="flex items-center gap-2 ml-4">
-             <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
-                <FontAwesomeIcon icon={faFilter} className="text-xs" />
-             </button>
-             <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
-                <FontAwesomeIcon icon={faTable} className="text-xs" />
-             </button>
-             <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
-                <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
-             </button>
+            <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
+              <FontAwesomeIcon icon={faFilter} className="text-xs" />
+            </button>
+            <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
+              <FontAwesomeIcon icon={faTable} className="text-xs" />
+            </button>
+            <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
+              <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
+            </button>
           </div>
         </div>
       </div>
