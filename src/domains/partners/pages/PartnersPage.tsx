@@ -62,16 +62,20 @@ export function PartnersPage() {
     {
       header: 'CP NAME',
       key: 'clientName',
-      render: (partner) => (
-        <span className="font-bold text-foreground/80">{partner.clientId.owners[0].firstName + ' ' + partner.clientId.owners[0].lastName}</span>
-      )
+      render: (partner) => {
+        const owner = partner.clientId?.owners?.[0];
+        const name = owner ? `${owner.firstName} ${owner.lastName || ''}` : partner.clientName || '--';
+        return <span className="font-bold text-foreground/80">{name}</span>;
+      }
     },
     {
       header: 'PHONE NUMBER',
       key: 'userPhones',
-      render: (partner) => (
-        <span className="font-medium text-foreground/70">{partner.clientId.owners[0].phoneNumber}</span>
-      )
+      render: (partner) => {
+        const owner = partner.clientId?.owners?.[0];
+        const phone = owner?.phoneNumber || partner.userPhones || '--';
+        return <span className="font-medium text-foreground/70">{phone}</span>;
+      }
     },
     {
       header: 'CP MANAGER',
@@ -85,14 +89,28 @@ export function PartnersPage() {
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-medium text-foreground/80">{name}</span>
             {managers.length > 1 && (
-              <span className="text-[10px] font-bold text-foreground/30 flex items-center gap-1 cursor-help group relative">
-                & {managers.length - 1} More <FontAwesomeIcon icon={faInfoCircle} className="text-[9px]" />
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
-                  <div className="bg-popover text-popover-foreground text-[10px] p-2 rounded shadow-lg border border-border whitespace-nowrap">
-                    {managers.slice(1).map(m => `${m.firstName} ${m.lastName || ''}`).join(', ')}
+              <div className="relative group flex items-center">
+                <span className="text-[10px] font-bold text-foreground/30 flex items-center gap-1 cursor-help px-1.5 py-0.5 rounded-md hover:bg-muted transition-colors">
+                  & {managers.length - 1} More <FontAwesomeIcon icon={faInfoCircle} className="text-[9px]" />
+                </span>
+                
+                {/* Improved Popover */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="bg-card border border-border shadow-2xl rounded-xl p-3 min-w-[180px]">
+                    <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-2">Additional Managers</p>
+                    <div className="space-y-1.5">
+                      {managers.slice(1).map((m, idx) => (
+                        <div key={idx} className="flex flex-col">
+                          <span className="text-xs font-semibold text-foreground/80">{m.firstName} {m.lastName}</span>
+                          <span className="text-[10px] text-foreground/40">{m.emailId}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Arrow */}
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-card border-r border-b border-border rotate-45" />
                   </div>
                 </div>
-              </span>
+              </div>
             )}
           </div>
         );
@@ -187,18 +205,6 @@ export function PartnersPage() {
           <button className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-sm font-bold shadow-lg shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2">
             <FontAwesomeIcon icon={faPlus} className="text-xs" /> Invite CP
           </button>
-
-          <div className="flex items-center gap-2 ml-4">
-            <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
-              <FontAwesomeIcon icon={faFilter} className="text-xs" />
-            </button>
-            <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
-              <FontAwesomeIcon icon={faTable} className="text-xs" />
-            </button>
-            <button className="w-10 h-10 rounded-2xl border border-border/50 bg-card text-foreground/40 hover:text-primary flex items-center justify-center transition-all">
-              <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
-            </button>
-          </div>
         </div>
       </div>
 
