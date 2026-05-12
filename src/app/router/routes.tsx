@@ -19,6 +19,7 @@ import { AccountProfilePage } from '@/domains/accounts/pages/AccountProfilePage'
 import { TasksPage } from '@/domains/tasks/pages/TasksPage';
 import { UsersPage } from '@/domains/users/pages/UsersPage';
 import { SourceConfigPage } from '../../domains/settings/pages/SourceConfigPage';
+import { PartnersPage } from '@/domains/partners/pages/PartnersPage';
 
 export function AppRoutes() {
   return (
@@ -52,6 +53,7 @@ export function AppRoutes() {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/dealProfile/:code" element={<DealProfilePage />} />
         <Route path="/accountProfile/:code" element={<AccountProfilePage />} />
+        <Route path="/businessPartners" element={<PartnersPage />} />
         {}
       </Route>
       

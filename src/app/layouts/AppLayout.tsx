@@ -24,7 +24,7 @@ const navItems = [
   { label: 'Products', path: '/products', icon: faCartShopping },
   { label: 'My Tasks', path: '/tasks', icon: faListCheck },
   { label: 'Reports', path: '/reports', icon: faChartPie },
-  { label: 'Channel Partner', path: '/partners', icon: faHandshakeAngle },
+  { label: 'Channel Partner', path: '/businessPartners', icon: faHandshakeAngle },
   { label: 'Organisation', path: '/organisation', icon: faBuilding },
   { label: 'Settings', path: '/settings', icon: faGear },
 ];

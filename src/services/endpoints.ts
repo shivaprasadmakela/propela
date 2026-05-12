@@ -42,4 +42,7 @@ export const ENDPOINTS = {
   USERS: {
     QUERY: '/api/entity/processor/tickets/users/query',
   },
+  PARTNERS: {
+    QUERY: '/api/entity/processor/partners/query',
+  },
 } as const;
