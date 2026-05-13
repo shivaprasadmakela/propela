@@ -20,8 +20,9 @@ export interface ProductEntity {
     clientCode: string;
     code: string;
     name: string;
+    description?: string;
     version: number;
-    productTemplateId?: {
+    productTemplateId?: number | {
         id: number;
         productTemplateWalkInFormId?: number;
     };
@@ -30,16 +31,17 @@ export interface ProductEntity {
     };
     logoFileDetail?: FileDetail;
     bannerFileDetail?: FileDetail;
-    tempActive: boolean;
-    isActive: boolean;
-    forPartner: boolean;
-    overrideCTemplate: boolean;
-    overrideRuTemplate: boolean;
-    createdBy?: {
+    tempActive?: boolean;
+    isActive?: boolean;
+    active?: boolean;
+    forPartner?: boolean;
+    overrideCTemplate?: boolean;
+    overrideRuTemplate?: boolean;
+    createdBy?: number | {
         id: number;
     };
     createdAt?: number;
-    updatedBy?: {
+    updatedBy?: number | {
         id: number;
     };
     updatedAt?: number;
@@ -85,5 +87,11 @@ export const productApi = {
         if (params.sort) queryParams.append('sort', params.sort);
         
         return httpClient.get<any>(`${ENDPOINTS.PRODUCT_TEMPLATES.LIST}?${queryParams.toString()}`);
+    },
+    fetchProductByCode: (code: string): Promise<ProductEntity> => {
+        return httpClient.get<ProductEntity>(ENDPOINTS.PRODUCTS.BY_CODE(code));
+    },
+    updateProduct: (id: number, data: Partial<ProductEntity>): Promise<ProductEntity> => {
+        return httpClient.patch<ProductEntity>(ENDPOINTS.PRODUCTS.UPDATE(id), data);
     },
 };

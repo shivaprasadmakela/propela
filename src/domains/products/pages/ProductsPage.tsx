@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { productApi, type ProductEntity } from "../api/productApi";
 import { DataTable, type ColumnDef, type SortState } from "@/shared/ui/table/DataTable";
 import { useToast } from "@/shared/ui/toast/ToastProvider";
@@ -8,10 +9,12 @@ import {
   faCopy, 
   faPlus, 
   faMagnifyingGlass, 
-  faFilter 
+  faFilter,
+  faPenToSquare
 } from "@fortawesome/free-solid-svg-icons";
 
 export function ProductsPage() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<ProductEntity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -132,6 +135,24 @@ export function ProductsPage() {
               }).format(new Date(product.createdAt * 1000))
             : '-'}
         </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (product) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/addProduct/${product.code}`);
+            }}
+            className="w-8 h-8 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center"
+            title="Edit Product"
+          >
+            <FontAwesomeIcon icon={faPenToSquare} className="text-xs" />
+          </button>
+        </div>
       ),
     },
   ];

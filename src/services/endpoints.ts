@@ -16,6 +16,8 @@ export const ENDPOINTS = {
   },
   PRODUCTS: {
     QUERY_EAGER: '/api/entity/processor/products/eager/query',
+    BY_CODE: (code: string) => `/api/entity/processor/products/code/${code}/eager`,
+    UPDATE: (id: number) => `/api/entity/processor/products/${id}`,
   },
   STAGES: {
     LIST: '/api/entity/processor/stages',

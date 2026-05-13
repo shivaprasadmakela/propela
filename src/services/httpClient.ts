@@ -11,11 +11,14 @@ class HttpClient {
     this.baseURL = baseURL;
   }
 
-  private getHeaders(): HeadersInit {
+  private getHeaders(isFormData: boolean = false): HeadersInit {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
       'appcode': 'leadzump',
     };
+
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     const token = localStorage.getItem('accessToken');
     if (token) {
@@ -27,14 +30,15 @@ class HttpClient {
 
   async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { body, headers: customHeaders, ...rest } = options;
+    const isFormData = body instanceof FormData;
 
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       ...rest,
       headers: {
-        ...this.getHeaders(),
+        ...this.getHeaders(isFormData),
         ...customHeaders,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: isFormData ? (body as FormData) : (body ? JSON.stringify(body) : undefined),
     });
 
     if (!response.ok) {

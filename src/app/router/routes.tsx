@@ -20,6 +20,7 @@ import { TasksPage } from '@/domains/tasks/pages/TasksPage';
 import { UsersPage } from '@/domains/users/pages/UsersPage';
 import { SourceConfigPage } from '../../domains/settings/pages/SourceConfigPage';
 import { PartnersPage } from '@/domains/partners/pages/PartnersPage';
+import { AddEditProductPage } from '@/domains/products/pages/AddEditProductPage';
 
 export function AppRoutes() {
   return (
@@ -48,6 +49,7 @@ export function AppRoutes() {
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/products" element={<ProductsPage />} />
+        <Route path="/addProduct/:code" element={<AddEditProductPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/source-config" element={<SourceConfigPage />} />
         <Route path="/users" element={<UsersPage />} />
