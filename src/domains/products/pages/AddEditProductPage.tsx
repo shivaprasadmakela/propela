@@ -35,7 +35,7 @@ export function AddEditProductPage() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const toast = useToast();
-  
+
   const [activeStep, setActiveStep] = useState(0);
   const [isLoading, setIsLoading] = useState(!!code);
   const [product, setProduct] = useState<Partial<ProductEntity>>({
@@ -104,7 +104,7 @@ export function AddEditProductPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 space-y-6 max-w-7xl mx-auto w-full pb-20">
+    <div className="flex-1 flex flex-col min-h-0 space-y-2 max-w-1xl mx-auto w-full pb-20">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <span className="text-foreground/40 cursor-pointer hover:text-primary transition-colors" onClick={() => navigate('/products')}>Products</span>
@@ -126,16 +126,15 @@ export function AddEditProductPage() {
       </div>
 
       {/* Stepper */}
-      <div className="flex items-center gap-2 overflow-x-auto py-4 no-scrollbar">
+      <div className="flex items-center gap-2 overflow-x-auto py-2 no-scrollbar">
         {STEPS.map((step, index) => (
           <div key={step.id} className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setActiveStep(index)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-                activeStep === index 
-                  ? 'bg-foreground text-background shadow-lg shadow-foreground/20 scale-105' 
-                  : 'bg-card border border-border/50 text-foreground/40 hover:bg-muted'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${activeStep === index
+                ? 'bg-foreground text-background shadow-lg shadow-foreground/20 scale-105'
+                : 'bg-card border border-border/50 text-foreground/40 hover:bg-muted'
+                }`}
             >
               <FontAwesomeIcon icon={step.icon} className="text-xs" />
               <span className="text-xs font-bold whitespace-nowrap">{step.label}</span>
@@ -148,7 +147,7 @@ export function AddEditProductPage() {
       </div>
 
       {/* Step Content */}
-      <div className="bg-card border border-border/50 rounded-3xl shadow-sm overflow-hidden p-8">
+      <div className="bg-card border border-border/50 rounded-3xl shadow-sm overflow-hidden p-6">
         {activeStep === 0 && (
           <div className="max-w-2xl space-y-8">
             <div className="grid gap-6">
@@ -183,83 +182,83 @@ export function AddEditProductPage() {
                   Selected Template
                 </label>
                 <div className="relative group">
-                   <select 
-                     value={typeof product.productTemplateId === 'object' ? product.productTemplateId?.id : product.productTemplateId || ''}
-                     onChange={(e) => setProduct(prev => ({ 
-                       ...prev, 
-                       productTemplateId: Number(e.target.value) 
-                     }))}
-                     className="w-full px-4 py-3 rounded-xl bg-muted/10 border border-border/50 appearance-none text-sm font-medium focus:outline-none cursor-not-allowed opacity-80"
-                     disabled
-                   >
-                     <option value="">Select Template</option>
-                     {templates.map(t => (
-                       <option key={t.id} value={t.id}>{t.name}</option>
-                     ))}
-                   </select>
-                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-foreground/20">
-                     <FontAwesomeIcon icon={faLock} className="text-xs" />
-                   </div>
+                  <select
+                    value={typeof product.productTemplateId === 'object' ? product.productTemplateId?.id : product.productTemplateId || ''}
+                    onChange={(e) => setProduct(prev => ({
+                      ...prev,
+                      productTemplateId: Number(e.target.value)
+                    }))}
+                    className="w-full px-4 py-3 rounded-xl bg-muted/10 border border-border/50 appearance-none text-sm font-medium focus:outline-none cursor-not-allowed opacity-80"
+                    disabled
+                  >
+                    <option value="">Select Template</option>
+                    {templates.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-foreground/20">
+                    <FontAwesomeIcon icon={faLock} className="text-xs" />
+                  </div>
                 </div>
               </div>
 
               {/* File Uploads */}
               <div className="grid sm:grid-cols-2 gap-6">
-                 <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground/40 uppercase tracking-widest">
-                      Product logo <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border/50 rounded-xl">
-                       <div className="w-10 h-10 rounded-lg bg-card border border-border/50 flex items-center justify-center text-foreground/20 overflow-hidden shrink-0">
-                          {product.logoFileDetail?.url ? (
-                            <img src={`https://dev.leadzump.ai/${product.logoFileDetail.url}`} className="w-full h-full object-contain" />
-                          ) : (
-                            <FontAwesomeIcon icon={faCloudUploadAlt} />
-                          )}
-                       </div>
-                       <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-foreground/70 truncate">{product.logoFileDetail?.name || 'No file chosen'}</p>
-                       </div>
-                       <div className="flex items-center gap-2">
-                          <button className="w-8 h-8 rounded-lg text-primary hover:bg-primary/10 flex items-center justify-center transition-colors">
-                            <FontAwesomeIcon icon={faDownload} className="text-xs" />
-                          </button>
-                          <button className="w-8 h-8 rounded-lg text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-colors">
-                            <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
-                          </button>
-                       </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/40 uppercase tracking-widest">
+                    Product logo <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border/50 rounded-xl">
+                    <div className="w-10 h-10 rounded-lg bg-card border border-border/50 flex items-center justify-center text-foreground/20 overflow-hidden shrink-0">
+                      {product.logoFileDetail?.url ? (
+                        <img src={`https://dev.leadzump.ai/${product.logoFileDetail.url}`} className="w-full h-full object-contain" />
+                      ) : (
+                        <FontAwesomeIcon icon={faCloudUploadAlt} />
+                      )}
                     </div>
-                 </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-foreground/70 truncate">{product.logoFileDetail?.name || 'No file chosen'}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="w-8 h-8 rounded-lg text-primary hover:bg-primary/10 flex items-center justify-center transition-colors">
+                        <FontAwesomeIcon icon={faDownload} className="text-xs" />
+                      </button>
+                      <button className="w-8 h-8 rounded-lg text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-colors">
+                        <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-                 <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground/40 uppercase tracking-widest">
-                      Product banner image <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border/50 rounded-xl">
-                       <div className="w-10 h-10 rounded-lg bg-card border border-border/50 flex items-center justify-center text-foreground/20 overflow-hidden shrink-0">
-                          {product.bannerFileDetail?.url ? (
-                            <img src={`https://dev.leadzump.ai/${product.bannerFileDetail.url}`} className="w-full h-full object-cover" />
-                          ) : (
-                            <FontAwesomeIcon icon={faCloudUploadAlt} />
-                          )}
-                       </div>
-                       <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-foreground/70 truncate">{product.bannerFileDetail?.name || 'No file chosen'}</p>
-                       </div>
-                       <div className="flex items-center gap-2">
-                          <button className="w-8 h-8 rounded-lg text-primary hover:bg-primary/10 flex items-center justify-center transition-colors">
-                            <FontAwesomeIcon icon={faDownload} className="text-xs" />
-                          </button>
-                          <button className="w-8 h-8 rounded-lg text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-colors">
-                            <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
-                          </button>
-                       </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/40 uppercase tracking-widest">
+                    Product banner image <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border/50 rounded-xl">
+                    <div className="w-10 h-10 rounded-lg bg-card border border-border/50 flex items-center justify-center text-foreground/20 overflow-hidden shrink-0">
+                      {product.bannerFileDetail?.url ? (
+                        <img src={`https://dev.leadzump.ai/${product.bannerFileDetail.url}`} className="w-full h-full object-cover" />
+                      ) : (
+                        <FontAwesomeIcon icon={faCloudUploadAlt} />
+                      )}
                     </div>
-                 </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-foreground/70 truncate">{product.bannerFileDetail?.name || 'No file chosen'}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="w-8 h-8 rounded-lg text-primary hover:bg-primary/10 flex items-center justify-center transition-colors">
+                        <FontAwesomeIcon icon={faDownload} className="text-xs" />
+                      </button>
+                      <button className="w-8 h-8 rounded-lg text-red-500 hover:bg-red-500/10 flex items-center justify-center transition-colors">
+                        <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <button 
+            <button
               onClick={handleUpdateNext}
               className="px-8 py-3 rounded-xl bg-foreground text-background text-sm font-bold shadow-xl shadow-foreground/10 hover:-translate-y-0.5 active:translate-y-0 transition-all"
             >
@@ -271,13 +270,13 @@ export function AddEditProductPage() {
         {activeStep > 0 && (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-foreground/20">
-               <FontAwesomeIcon icon={STEPS[activeStep].icon} size="2x" />
+              <FontAwesomeIcon icon={STEPS[activeStep].icon} size="2x" />
             </div>
             <div className="text-center">
               <h3 className="text-lg font-bold text-foreground/80">{STEPS[activeStep].label}</h3>
               <p className="text-sm text-foreground/40 mt-1">Section coming soon...</p>
             </div>
-            <button 
+            <button
               onClick={() => setActiveStep(prev => prev - 1)}
               className="text-sm font-bold text-primary hover:underline mt-4"
             >
