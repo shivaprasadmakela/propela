@@ -11,7 +11,13 @@ import {
   faIdCard,
   faGear,
   faSitemap,
-  faFilter
+  faFilter,
+  faPhone,
+  faImage,
+  faCreditCard,
+  faMicrochip,
+  faEnvelope,
+  faLink
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
@@ -161,7 +167,119 @@ export function SettingsPage() {
             </div>
           )}
 
-          {activeCategory !== 'user' && activeCategory !== 'template' && (
+          {activeCategory === 'communication' && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="space-y-1">
+                <h2 className="text-xl font-bold">Communication & Integration</h2>
+                <p className="text-sm text-foreground/50">Configure and manage products efficiently</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faLink} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">CX Integrations</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Enable one-click calling, call tracking, and logging directly within the CRM</p>
+                  </div>
+                </button>
+
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faComments} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">WhatsApp Integration</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Communicate directly with leads through WhatsApp for effective responses</p>
+                  </div>
+                </button>
+
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faComments} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">WhatsApp Templates</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Communicate directly with leads through WhatsApp for effective responses</p>
+                  </div>
+                </button>
+
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faPhone} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Telephony</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Enable one-click calling, call tracking, and logging directly within the CRM</p>
+                  </div>
+                </button>
+
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faImage} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Connect Your Social Accounts</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Connect your social profiles to manage them in one place.</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeCategory === 'partner' && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="space-y-1">
+                <h2 className="text-xl font-bold">Channel Partner</h2>
+                <p className="text-sm text-foreground/50">Configure and manage channel partner application</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faCreditCard} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Customize & Generate</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Add your app name and branding in seconds</p>
+                  </div>
+                </button>
+
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faShieldHalved} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Verification & Onboarding</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Customize how your app works for channel partner and teammates</p>
+                  </div>
+                </button>
+
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faMicrochip} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">App Configuration</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Customize how your app works for channel partner and teammates</p>
+                  </div>
+                </button>
+
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Email Configuration</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Customize how your app works for channel partner and teammates</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeCategory === 'security' && (
             <div className="flex flex-col items-center justify-center h-full text-center py-20 animate-in fade-in duration-500">
               <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center text-2xl mb-4 text-foreground/20">
                 <FontAwesomeIcon icon={faGear} />
