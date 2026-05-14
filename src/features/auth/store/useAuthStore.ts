@@ -128,8 +128,6 @@ window.addEventListener('auth:unauthorized', () => {
 
 
 if (import.meta.env.DEV) {
-
-  
-  window.getStore = useAuthStore.getState;
+  (window as any).getStore = useAuthStore.getState;
 }
 
