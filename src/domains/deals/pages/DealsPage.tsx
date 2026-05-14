@@ -80,11 +80,15 @@ export function DealsPage() {
 
   const fetchStages = async (productId: number) => {
     const product = products.find(p => p.id === productId) || selectedProduct;
-    if (!product?.productTemplateId?.id) return;
+    const templateId = product?.productTemplateId && typeof product.productTemplateId === 'object' 
+      ? product.productTemplateId.id 
+      : product?.productTemplateId;
+      
+    if (!templateId) return;
 
     try {
       const response = await stagesApi.fetchStages({
-        productTemplateId: product.productTemplateId.id
+        productTemplateId: templateId as number
       });
       setStages(response.content || []);
     } catch (error) {

@@ -8,8 +8,8 @@ interface StageChangeModalProps {
   onClose: () => void;
   onConfirm: () => void;
   deal: DealEntity | null;
-  fromStage: StageEntity | null;
-  toStage: StageEntity | null;
+  fromStage: { name: string } | null;
+  toStage: { name: string } | null;
 }
 
 export function StageChangeModal({
