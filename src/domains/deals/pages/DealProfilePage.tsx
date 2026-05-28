@@ -317,7 +317,7 @@ export function DealProfilePage() {
       {/* Main Content Split View */}
       <div className="flex-1 flex gap-6 min-h-0">
         {/* Left Section: Details & Tabs */}
-        <div className="flex-[3] flex flex-col bg-card border border-border/50 rounded-3xl overflow-hidden shadow-sm">
+        <div className="flex-[2.4] flex flex-col bg-card border border-border/50 rounded-3xl overflow-hidden shadow-sm">
           {/* Tabs bar */}
           <div className="flex items-center px-4 border-b border-border/50 bg-muted/20">
             {TABS.map((tab) => (
@@ -340,7 +340,7 @@ export function DealProfilePage() {
         </div>
 
         {/* Right Section: Activity Logs */}
-        <div className="flex-[1.2] flex flex-col bg-card border border-border/50 rounded-3xl overflow-hidden shadow-sm">
+        <div className="flex-[1.6] min-w-[420px] flex flex-col bg-card border border-border/50 rounded-3xl overflow-hidden shadow-sm">
           <div className="px-6 py-4 flex items-center justify-between border-b border-border/50 bg-muted/20">
             <h3 className="text-sm font-bold text-foreground font-display">
               Activity logs
