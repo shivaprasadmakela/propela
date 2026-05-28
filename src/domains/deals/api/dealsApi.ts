@@ -1,5 +1,5 @@
-import { httpClient } from '@/services/httpClient';
-import { ENDPOINTS } from '@/services/endpoints';
+import { httpClient } from "@/services/httpClient";
+import { ENDPOINTS } from "@/services/endpoints";
 
 export interface DealUser {
   id: number;
@@ -63,14 +63,14 @@ export interface PaginatedDealsResponse {
 export interface DealsQueryPayload {
   condition: {
     conditions: Record<string, any>[];
-    operator: 'AND' | 'OR';
+    operator: "AND" | "OR";
   };
   eager: boolean;
   size: number;
   page: number;
   sort: Array<{
     property: string;
-    direction: 'ASC' | 'DESC';
+    direction: "ASC" | "DESC";
   }>;
   eagerFields: string[];
 }
@@ -93,20 +93,97 @@ export interface TaskEntity {
   createdAt: number;
 }
 
+export interface ActivityActor {
+  id: number;
+  firstName?: string;
+  lastName?: string;
+  emailId?: string;
+  statusCode?: string;
+}
+
+export interface ActivityValueRef {
+  id?: number;
+  value?: string;
+}
+
+export interface ActivityNote {
+  id: number;
+  content?: string;
+  createdAt?: number;
+  updatedAt?: number;
+  hasAttachment?: boolean;
+}
+
+export interface DealActivity {
+  id: number;
+  description?: string;
+  comment?: string;
+  activityDate?: number;
+  activityAction?: string;
+  actorId?: ActivityActor | number;
+  objectData?: {
+    user?: ActivityValueRef;
+    stage?: ActivityValueRef;
+    _stage?: ActivityValueRef;
+    status?: ActivityValueRef;
+    tag?: string;
+    _tag?: string;
+    assignedUserId?: ActivityValueRef;
+    _assignedUserId?: ActivityValueRef;
+    noteId?: number;
+    dateTime?: number;
+    ticketId?: number;
+    Note?: ActivityNote;
+    entity?: string;
+    [key: string]: unknown;
+  };
+  noteId?: ActivityNote;
+  createdAt?: number;
+}
+
+export interface PaginatedResponse<T> {
+  content: T[];
+  pageable?: Record<string, unknown>;
+  totalPages?: number;
+  totalElements?: number;
+  last?: boolean;
+  size?: number;
+  number?: number;
+  sort?: Record<string, unknown>;
+  numberOfElements?: number;
+  first?: boolean;
+  empty?: boolean;
+}
+
 export const dealsApi = {
   fetchDeals: (payload: DealsQueryPayload): Promise<PaginatedDealsResponse> => {
-    return httpClient.post<PaginatedDealsResponse>(ENDPOINTS.DEALS.QUERY_EAGER, payload);
+    return httpClient.post<PaginatedDealsResponse>(
+      ENDPOINTS.DEALS.QUERY_EAGER,
+      payload,
+    );
   },
   fetchDealByCode: async (code: string): Promise<DealEntity | null> => {
     const eagerFields = [
-      'id', 'name', 'productTemplateId', 'order', 'platform', 'isSuccess',
-      'firstName', 'lastName', 'emailId', 'phoneNumber', 'clientId', 'statusCode'
+      "id",
+      "name",
+      "productTemplateId",
+      "order",
+      "platform",
+      "isSuccess",
+      "firstName",
+      "lastName",
+      "emailId",
+      "phoneNumber",
+      "clientId",
+      "statusCode",
     ];
     const params = new URLSearchParams();
-    params.append('eager', 'true');
-    eagerFields.forEach(field => params.append('eagerField', field));
+    params.append("eager", "true");
+    eagerFields.forEach((field) => params.append("eagerField", field));
 
-    return httpClient.get<DealEntity>(`${ENDPOINTS.DEALS.BY_CODE(code)}?${params.toString()}`);
+    return httpClient.get<DealEntity>(
+      `${ENDPOINTS.DEALS.BY_CODE(code)}?${params.toString()}`,
+    );
   },
   createDeal: (data: {
     name: string;
@@ -118,13 +195,13 @@ export const dealsApi = {
   }): Promise<Record<string, any>> => {
     return httpClient.post(ENDPOINTS.DEALS.CREATE, data, {
       headers: {
-        appcode: 'leadzump'
-      }
+        appcode: "leadzump",
+      },
     });
   },
   updateDealStage: (dealId: number, stageId: number): Promise<void> => {
     return httpClient.patch(`/api/entity/processor/tickets/${dealId}`, {
-      stage: { id: stageId }
+      stage: { id: stageId },
     });
   },
   updateDeal: (dealId: number, data: Partial<DealEntity>): Promise<void> => {
@@ -139,18 +216,18 @@ export const dealsApi = {
   fetchNotes: (ticketId: number): Promise<{ content: NoteEntity[] }> => {
     const params = new URLSearchParams({
       ticketId: String(ticketId),
-      eager: 'true',
-      sort: 'createdAt,DESC',
-      size: '20'
+      eager: "true",
+      sort: "createdAt,DESC",
+      size: "20",
     });
     return httpClient.get(`${ENDPOINTS.NOTES.EAGER}?${params.toString()}`);
   },
   fetchTasks: (ticketId: number): Promise<{ content: TaskEntity[] }> => {
     const params = new URLSearchParams({
       ticketId: String(ticketId),
-      eager: 'true',
-      sort: 'createdAt,DESC',
-      size: '20'
+      eager: "true",
+      sort: "createdAt,DESC",
+      size: "20",
     });
     return httpClient.get(`${ENDPOINTS.TASKS.EAGER}?${params.toString()}`);
   },
@@ -162,21 +239,46 @@ export const dealsApi = {
       condition: {
         field: "customerPhoneNumber",
         operator: "EQUALS",
-        value: phoneNumber
-      }
+        value: phoneNumber,
+      },
     });
+  },
+  fetchActivities: (
+    ticketId: number,
+  ): Promise<PaginatedResponse<DealActivity>> => {
+    const params = new URLSearchParams({
+      eager: "true",
+      sort: "id,DESC",
+      size: "20",
+    });
+    return httpClient.get(
+      `${ENDPOINTS.ACTIVITIES.TICKETS_EAGER(ticketId)}?${params.toString()}`,
+    );
   },
   flattenDealPayload: (deal: DealEntity): any => {
     return {
       ...deal,
-      ownerId: typeof deal.ownerId === 'object' ? deal.ownerId?.id : deal.ownerId,
-      assignedUserId: typeof deal.assignedUserId === 'object' ? deal.assignedUserId?.id : deal.assignedUserId,
-      productId: typeof deal.productId === 'object' ? deal.productId?.id : deal.productId,
-      stage: typeof deal.stage === 'object' ? deal.stage?.id : deal.stage,
-      status: typeof deal.status === 'object' ? deal.status?.id : deal.status,
-      productTemplateId: typeof deal.productTemplateId === 'object' ? deal.productTemplateId?.id : deal.productTemplateId,
-      updatedBy: typeof deal.updatedBy === 'object' ? (deal.updatedBy as any)?.id : deal.updatedBy,
-      updatedAt: Math.floor(Date.now() / 1000)
+      ownerId:
+        typeof deal.ownerId === "object" ? deal.ownerId?.id : deal.ownerId,
+      assignedUserId:
+        typeof deal.assignedUserId === "object"
+          ? deal.assignedUserId?.id
+          : deal.assignedUserId,
+      productId:
+        typeof deal.productId === "object"
+          ? deal.productId?.id
+          : deal.productId,
+      stage: typeof deal.stage === "object" ? deal.stage?.id : deal.stage,
+      status: typeof deal.status === "object" ? deal.status?.id : deal.status,
+      productTemplateId:
+        typeof deal.productTemplateId === "object"
+          ? deal.productTemplateId?.id
+          : deal.productTemplateId,
+      updatedBy:
+        typeof deal.updatedBy === "object"
+          ? (deal.updatedBy as any)?.id
+          : deal.updatedBy,
+      updatedAt: Math.floor(Date.now() / 1000),
     };
-  }
+  },
 };
