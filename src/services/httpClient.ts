@@ -25,6 +25,11 @@ class HttpClient {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
+    const clientCode = localStorage.getItem('clientCode');
+    if (clientCode) {
+      headers['clientcode'] = clientCode;
+    }
+
     return headers;
   }
 

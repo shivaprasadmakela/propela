@@ -56,4 +56,7 @@ export const ENDPOINTS = {
   PARTNERS: {
     QUERY: "/api/entity/processor/partners/query",
   },
+  ANALYTICS: {
+    STAGE_COUNTS: "/api/entity/processor/analytics/tickets/stage-counts/sources/assigned-users",
+  },
 } as const;

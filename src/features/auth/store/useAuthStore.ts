@@ -70,10 +70,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('accessTokenExpiryAt', response.accessTokenExpiryAt.toString());
+      localStorage.setItem('clientCode', response.client?.code || response.loggedInClientCode || 'SYSTEM');
     } catch (error) {
       
       localStorage.removeItem('accessToken');
       localStorage.removeItem('accessTokenExpiryAt');
+      localStorage.removeItem('clientCode');
       set({
         user: null,
         client: null,
@@ -92,6 +94,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('accessTokenExpiryAt', response.accessTokenExpiryAt.toString());
+      localStorage.setItem('clientCode', response.client?.code || response.loggedInClientCode || 'SYSTEM');
 
       set({
         user: response.user,
@@ -112,6 +115,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('accessTokenExpiryAt');
+    localStorage.removeItem('clientCode');
     set({
       user: null,
       client: null,
