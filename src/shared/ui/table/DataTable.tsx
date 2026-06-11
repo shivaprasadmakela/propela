@@ -30,6 +30,8 @@ export interface DataTableProps<T> {
   totalElements?: number;
   onPageChange?: (page: number) => void;
   onRowClick?: (item: T) => void;
+  isRowClickable?: (item: T) => boolean;
+  rowClassName?: (item: T, index: number) => string;
 }
 
 export function DataTable<T>({
@@ -47,6 +49,8 @@ export function DataTable<T>({
   totalElements,
   onPageChange,
   onRowClick,
+  isRowClickable,
+  rowClassName,
 }: DataTableProps<T>) {
   const getSortIndicator = (key: string) => {
     const sort = sortState.find((s) => s.property === key);
@@ -115,23 +119,31 @@ export function DataTable<T>({
               </td>
             </tr>
           ) : (
-            data.map((item, i) => (
-              <tr
-                key={i}
-                onClick={() => onRowClick?.(item)}
-                className={`border-b border-border transition-colors group ${
-                  onRowClick ? 'cursor-pointer hover:bg-muted/70' : 'hover:bg-muted/50'
-                } ${i === data.length - 1 ? 'border-b-0' : ''}`}
-              >
-                {actualColumns.map((col) => (
-                  <td key={col.key} className="px-4 py-2.5 whitespace-nowrap">
-                    {col.render
-                      ? col.render(item, i)
-                      : (item[col.key as keyof T] as React.ReactNode)}
-                  </td>
-                ))}
-              </tr>
-            ))
+            data.map((item, i) => {
+              const clickable = !!onRowClick && (!isRowClickable || isRowClickable(item));
+              const customRowClass = rowClassName ? rowClassName(item, i) : '';
+              return (
+                <tr
+                  key={i}
+                  onClick={() => clickable && onRowClick?.(item)}
+                  className={`border-b border-border transition-colors group ${
+                    clickable
+                      ? 'cursor-pointer hover:bg-muted/70'
+                      : onRowClick
+                        ? 'hover:bg-transparent'
+                        : 'hover:bg-muted/50'
+                  } ${i === data.length - 1 ? 'border-b-0' : ''} ${customRowClass}`}
+                >
+                  {actualColumns.map((col) => (
+                    <td key={col.key} className="px-4 py-2.5 whitespace-nowrap">
+                      {col.render
+                        ? col.render(item, i)
+                        : (item[col.key as keyof T] as React.ReactNode)}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

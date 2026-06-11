@@ -11,6 +11,7 @@ import { ForgotPasswordPage } from '@/app/pages/ForgotPasswordPage';
 import { NotFoundPage } from '@/app/pages/NotFoundPage';
 import { DealsPage } from '@/domains/deals/pages/DealsPage';
 import { DashboardPage } from '@/app/pages/DashboardPage';
+import { ReportsPage } from '@/app/pages/ReportsPage';
 import { ProductsPage } from '@/domains/products/pages/ProductsPage';
 import { AccountsPage } from '@/domains/accounts/pages/AccountsPage';
 import { SettingsPage } from '@/domains/settings/pages/SettingsPage';
@@ -46,6 +47,8 @@ export function AppRoutes() {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/dealReport" element={<ReportsPage />} />
         <Route path="/deals" element={<DealsPage />} />
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/tasks" element={<TasksPage />} />

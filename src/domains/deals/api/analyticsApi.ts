@@ -53,5 +53,23 @@ export const analyticsApi = {
       `${ENDPOINTS.ANALYTICS.STAGE_COUNTS}?page=${page}&size=${size}`,
       payload
     );
+  },
+  fetchAssignedUsersStageCounts: async (
+    payload: {
+      includeTotal: boolean;
+      includeZero: boolean;
+      includeAll: boolean;
+      onlyCurrentStageStatus?: boolean;
+      stageIds?: number[];
+      userIds?: number[];
+      productIds?: number[];
+    },
+    page = 0,
+    size = 25
+  ): Promise<any> => {
+    return httpClient.post<any>(
+      `${ENDPOINTS.ANALYTICS.ASSIGNED_USERS}?page=${page}&size=${size}`,
+      payload
+    );
   }
 };

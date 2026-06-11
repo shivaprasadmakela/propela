@@ -9,6 +9,7 @@ import {
 } from "../api/dealsApi";
 import { useToast } from "@/shared/ui/toast/ToastProvider";
 import { getStringColorClass } from "@/shared/utils/colorUtils";
+import { DataTable, type ColumnDef } from "@/shared/ui/table/DataTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleRight,
@@ -531,82 +532,79 @@ function TasksTab({ tasks }: { tasks: TaskEntity[] }) {
 }
 
 function CallLogsTab({ logs }: { logs: any[] }) {
+  const columns: ColumnDef<any>[] = [
+    {
+      key: 'callType',
+      header: 'Type',
+      render: (log) => (
+        <div className="flex items-center gap-2">
+          <FontAwesomeIcon
+            icon={faPhone}
+            className={`text-xs ${log.callType === "INCOMING" ? "text-emerald-500" : "text-primary"}`}
+          />
+          <span className="text-xs font-bold text-foreground/70 capitalize">
+            {log.callType?.toLowerCase()}
+          </span>
+        </div>
+      )
+    },
+    {
+      key: 'user',
+      header: 'User',
+      render: (log) => (
+        <span className="text-xs font-medium text-foreground/60">
+          {log.userId?.firstName} {log.userId?.lastName}
+        </span>
+      )
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (log) => (
+        <span
+          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+            log.status === "COMPLETED"
+              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+              : "bg-amber-500/10 border-amber-500/20 text-amber-500"
+          }`}
+        >
+          {log.status}
+        </span>
+      )
+    },
+    {
+      key: 'duration',
+      header: 'Duration',
+      render: (log) => (
+        <span className="text-xs font-mono text-foreground/40">
+          {log.duration}s
+        </span>
+      )
+    },
+    {
+      key: 'startTime',
+      header: 'Time',
+      render: (log) => (
+        <span className="text-[10px] text-foreground/40 font-medium">
+          {new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(new Date(log.startTime * 1000))}
+        </span>
+      )
+    }
+  ];
+
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {logs.length > 0 ? (
-        <div className="border border-border/50 rounded-2xl overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-muted/30 border-b border-border/50">
-                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
-                  User
-                </th>
-                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
-                  Duration
-                </th>
-                <th className="px-6 py-3 text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
-                  Time
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50">
-              {logs.map((log) => (
-                <tr
-                  key={log.id}
-                  className="hover:bg-muted/20 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <FontAwesomeIcon
-                        icon={faPhone}
-                        className={`text-xs ${log.callType === "INCOMING" ? "text-emerald-500" : "text-primary"}`}
-                      />
-                      <span className="text-xs font-bold text-foreground/70 capitalize">
-                        {log.callType?.toLowerCase()}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-xs font-medium text-foreground/60">
-                      {log.userId?.firstName} {log.userId?.lastName}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                        log.status === "COMPLETED"
-                          ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
-                          : "bg-amber-500/10 border-amber-500/20 text-amber-500"
-                      }`}
-                    >
-                      {log.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-xs font-mono text-foreground/40">
-                      {log.duration}s
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-[10px] text-foreground/40 font-medium">
-                      {new Intl.DateTimeFormat("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(new Date(log.startTime * 1000))}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="border border-border/50 rounded-2xl overflow-hidden bg-card">
+          <DataTable
+            data={logs}
+            columns={columns}
+          />
         </div>
       ) : (
         <EmptyState tab="Call logs" />

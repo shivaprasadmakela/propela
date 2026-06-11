@@ -58,5 +58,6 @@ export const ENDPOINTS = {
   },
   ANALYTICS: {
     STAGE_COUNTS: "/api/entity/processor/analytics/tickets/stage-counts/sources/assigned-users",
+    ASSIGNED_USERS: "/api/entity/processor/analytics/tickets/stage-counts/assigned-users",
   },
 } as const;

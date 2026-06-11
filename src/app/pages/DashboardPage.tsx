@@ -15,6 +15,7 @@ import { stagesApi, type StageEntity } from '@/domains/stages/api/stagesApi';
 import { dealsApi } from '@/domains/deals/api/dealsApi';
 import { analyticsApi, type AnalyticsPayload, type AnalyticsPeriodData } from '@/domains/deals/api/analyticsApi';
 import { getDateRange } from '@/shared/utils/dateUtils';
+import { DataTable, type ColumnDef } from '@/shared/ui/table/DataTable';
 
 // Color mapping for columns
 const COLUMN_COLORS: Record<string, string> = {
@@ -322,6 +323,148 @@ export function DashboardPage() {
       </div>
     );
   };
+
+  const flattenedData = React.useMemo(() => {
+    const list: any[] = [];
+    analyticsData.forEach((period, periodIdx) => {
+      const totalSource = period.statusCount?.find(sc => sc.name === 'Total');
+      const isExpanded = !!expandedRows[periodIdx];
+      const badgeBg = BADGE_COLORS[periodIdx % BADGE_COLORS.length];
+
+      const getPC = (sourceObj: any, id: string) => {
+        const pc = sourceObj?.perCount?.find((p: any) => p.id === id);
+        return {
+          percentage: pc?.value.percentage ?? 0,
+          count: pc?.value.count ?? 0
+        };
+      };
+
+      list.push({
+        id: `period-${periodIdx}`,
+        type: 'period',
+        periodIdx,
+        label: formatDateRange(period.datePair.zonedFirst, period.datePair.zonedSecond),
+        badgeColorClass: badgeBg,
+        isExpanded,
+        total: getPC(totalSource, 'Total'),
+        fresh: getPC(totalSource, 'Fresh'),
+        contactable: getPC(totalSource, 'Contactable'),
+        nonContactable: getPC(totalSource, 'Non Contactable'),
+        visit: getPC(totalSource, 'Visit'),
+        revisit: getPC(totalSource, 'Revisit'),
+        lost: getPC(totalSource, 'Lost'),
+        booking: getPC(totalSource, 'Booking'),
+      });
+
+      if (isExpanded) {
+        const subSources = period.statusCount?.filter(sc => sc.name !== 'Total') || [];
+        subSources.forEach((source, subIdx) => {
+          list.push({
+            id: `sub-${periodIdx}-${subIdx}`,
+            type: 'subsource',
+            periodIdx,
+            subIdx,
+            label: source.name,
+            total: getPC(source, 'Total'),
+            fresh: getPC(source, 'Fresh'),
+            contactable: getPC(source, 'Contactable'),
+            nonContactable: getPC(source, 'Non Contactable'),
+            visit: getPC(source, 'Visit'),
+            revisit: getPC(source, 'Revisit'),
+            lost: getPC(source, 'Lost'),
+            booking: getPC(source, 'Booking'),
+          });
+        });
+      }
+    });
+    return list;
+  }, [analyticsData, expandedRows]);
+
+  const columns = React.useMemo(() => {
+    const cols: ColumnDef<any>[] = [
+      {
+        key: 'label',
+        header: timePeriod === 'W' ? 'WEEKLY' : 'MONTHLY',
+        render: (row) => {
+          if (row.type === 'period') {
+            return (
+              <div className="flex items-center gap-3">
+                <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center text-[8px] font-mono shrink-0 ${row.badgeColorClass}`}>
+                  {row.periodIdx + 1}
+                </span>
+                <span className="text-xs font-semibold text-primary/90 leading-none">
+                  {row.label}
+                </span>
+                <FontAwesomeIcon
+                  icon={row.isExpanded ? faChevronUp : faChevronDown}
+                  className="text-foreground/20 group-hover:text-foreground/40 text-[10px] transition-colors shrink-0 ml-1"
+                />
+              </div>
+            );
+          } else {
+            return (
+              <div className="pl-8 font-medium font-mono text-[10px] text-foreground/45 uppercase tracking-wider">
+                {row.label}
+              </div>
+            );
+          }
+        }
+      },
+      {
+        key: 'total',
+        header: 'TOTAL DEALS',
+        render: (row) => {
+          if (row.type === 'period') {
+            return (
+              <div className="text-center text-xs font-semibold text-foreground/80">
+                <span className="underline decoration-1 decoration-foreground/20 hover:decoration-primary/40 cursor-pointer">
+                  {row.total.count}
+                </span>
+              </div>
+            );
+          } else {
+            return renderValueCell(row.total.percentage, row.total.count, 'Total');
+          }
+        }
+      },
+      {
+        key: 'fresh',
+        header: 'FRESH',
+        render: (row) => renderValueCell(row.fresh.percentage, row.fresh.count, 'Fresh')
+      },
+      {
+        key: 'contactable',
+        header: 'CONTACTABLE',
+        render: (row) => renderValueCell(row.contactable.percentage, row.contactable.count, 'Contactable')
+      },
+      {
+        key: 'nonContactable',
+        header: 'NON CONTACTABLE',
+        render: (row) => renderValueCell(row.nonContactable.percentage, row.nonContactable.count, 'Non Contactable')
+      },
+      {
+        key: 'visit',
+        header: 'VISIT',
+        render: (row) => renderValueCell(row.visit.percentage, row.visit.count, 'Visit')
+      },
+      {
+        key: 'revisit',
+        header: 'REVISIT',
+        render: (row) => renderValueCell(row.revisit.percentage, row.revisit.count, 'Revisit')
+      },
+      {
+        key: 'lost',
+        header: 'LOST',
+        render: (row) => renderValueCell(row.lost.percentage, row.lost.count, 'Lost')
+      },
+      {
+        key: 'booking',
+        header: 'BOOKING',
+        render: (row) => renderValueCell(row.booking.percentage, row.booking.count, 'Booking')
+      }
+    ];
+    return cols;
+  }, [timePeriod, renderValueCell]);
 
   // Get aggregated stats by source for the donut chart
   const getSourceStats = () => {
@@ -722,176 +865,13 @@ export function DashboardPage() {
                   <p className="text-[10px] mt-0.5">Try expanding your date range or removing filters.</p>
                 </div>
               ) : (
-                <table className="w-full border-collapse text-left">
-                  <thead>
-                    <tr className="border-b border-border/30 bg-muted/5 text-[9px] font-semibold text-foreground/45 uppercase tracking-wider">
-                      <th className="py-3 px-6">{timePeriod === 'W' ? 'WEEKLY' : 'MONTHLY'}</th>
-                      <th className="py-3 px-4 text-center">TOTAL DEALS</th>
-                      <th className="py-3 px-4">FRESH</th>
-                      <th className="py-3 px-4">CONTACTABLE</th>
-                      <th className="py-3 px-4">NON CONTACTABLE</th>
-                      <th className="py-3 px-4">VISIT</th>
-                      <th className="py-3 px-4">REVISIT</th>
-                      <th className="py-3 px-4">LOST</th>
-                      <th className="py-3 px-4">BOOKING</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/20">
-                    {analyticsData.map((period, periodIdx) => {
-                      const totalSource = period.statusCount?.find(sc => sc.name === 'Total');
-                      const subSources = period.statusCount?.filter(sc => sc.name !== 'Total') || [];
-                      const isExpanded = !!expandedRows[periodIdx];
-                      
-                      const badgeBg = BADGE_COLORS[periodIdx % BADGE_COLORS.length];
-                      
-                      return (
-                        <React.Fragment key={periodIdx}>
-                          {/* Main/Total Period Row */}
-                          <tr 
-                            onClick={() => toggleRow(periodIdx)}
-                            className="hover:bg-muted/5 transition-colors cursor-pointer group"
-                          >
-                            <td className="py-3.5 px-6 flex items-center gap-3">
-                              {/* Tiny elegant outline border dot */}
-                              <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center text-[8px] font-mono shrink-0 ${badgeBg}`}>
-                                {periodIdx + 1}
-                              </span>
-                              <span className="text-xs font-semibold text-primary/90 leading-none">
-                                {formatDateRange(period.datePair.zonedFirst, period.datePair.zonedSecond)}
-                              </span>
-                              <FontAwesomeIcon 
-                                icon={isExpanded ? faChevronUp : faChevronDown} 
-                                className="text-foreground/20 group-hover:text-foreground/40 text-[10px] transition-colors shrink-0 ml-1" 
-                              />
-                            </td>
-                            {/* Total deals main row is bold and underlined */}
-                            <td className="py-3.5 px-4 text-center text-xs font-medium text-foreground/70">
-                              <span className="underline decoration-1 decoration-foreground/20 hover:decoration-primary/40 cursor-pointer">
-                                {totalSource?.perCount?.find(pc => pc.id === 'Total')?.value.count || 0}
-                              </span>
-                            </td>
-                            {/* Other columns display values with progress bars */}
-                            <td className="py-3.5 px-4">
-                              {renderValueCell(
-                                totalSource?.perCount?.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
-                                totalSource?.perCount?.find(pc => pc.id === 'Fresh')?.value.count || 0,
-                                'Fresh'
-                              )}
-                            </td>
-                            <td className="py-3.5 px-4">
-                              {renderValueCell(
-                                totalSource?.perCount?.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
-                                totalSource?.perCount?.find(pc => pc.id === 'Contactable')?.value.count || 0,
-                                'Contactable'
-                              )}
-                            </td>
-                            <td className="py-3.5 px-4">
-                              {renderValueCell(
-                                totalSource?.perCount?.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
-                                totalSource?.perCount?.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
-                                'Non Contactable'
-                              )}
-                            </td>
-                            <td className="py-3.5 px-4">
-                              {renderValueCell(
-                                totalSource?.perCount?.find(pc => pc.id === 'Visit')?.value.percentage || 0,
-                                totalSource?.perCount?.find(pc => pc.id === 'Visit')?.value.count || 0,
-                                'Visit'
-                              )}
-                            </td>
-                            <td className="py-3.5 px-4">
-                              {renderValueCell(
-                                totalSource?.perCount?.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
-                                totalSource?.perCount?.find(pc => pc.id === 'Revisit')?.value.count || 0,
-                                'Revisit'
-                              )}
-                            </td>
-                            <td className="py-3.5 px-4">
-                              {renderValueCell(
-                                totalSource?.perCount?.find(pc => pc.id === 'Lost')?.value.percentage || 0,
-                                totalSource?.perCount?.find(pc => pc.id === 'Lost')?.value.count || 0,
-                                'Lost'
-                              )}
-                            </td>
-                            <td className="py-3.5 px-4">
-                              {renderValueCell(
-                                totalSource?.perCount?.find(pc => pc.id === 'Booking')?.value.percentage || 0,
-                                totalSource?.perCount?.find(pc => pc.id === 'Booking')?.value.count || 0,
-                                'Booking'
-                              )}
-                            </td>
-                          </tr>
-
-                          {/* Sub-Rows */}
-                          {isExpanded && subSources.map((source, subIdx) => (
-                            <tr key={subIdx} className="bg-muted/5 hover:bg-muted/10 transition-colors text-[10px] text-foreground/50 border-b border-border/10">
-                              <td className="py-2.5 pl-12 pr-6 font-medium font-mono text-foreground/40 uppercase tracking-wider">
-                                {source.name}
-                              </td>
-                              {/* Total deals in sub-rows has percentage bar as well */}
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Total')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Total')?.value.count || 0,
-                                  'Total'
-                                )}
-                              </td>
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Fresh')?.value.count || 0,
-                                  'Fresh'
-                                )}
-                              </td>
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Contactable')?.value.count || 0,
-                                  'Contactable'
-                                )}
-                              </td>
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
-                                  'Non Contactable'
-                                )}
-                              </td>
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Visit')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Visit')?.value.count || 0,
-                                  'Visit'
-                                )}
-                              </td>
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Revisit')?.value.count || 0,
-                                  'Revisit'
-                                )}
-                              </td>
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Lost')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Lost')?.value.count || 0,
-                                  'Lost'
-                                )}
-                              </td>
-                              <td className="py-2.5 px-4">
-                                {renderValueCell(
-                                  source.perCount?.find(pc => pc.id === 'Booking')?.value.percentage || 0,
-                                  source.perCount?.find(pc => pc.id === 'Booking')?.value.count || 0,
-                                  'Booking'
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                        </React.Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <DataTable
+                  data={flattenedData}
+                  columns={columns}
+                  onRowClick={(row) => toggleRow(row.periodIdx)}
+                  isRowClickable={(row) => row.type === 'period'}
+                  rowClassName={(row) => row.type === 'subsource' ? 'bg-muted/5 hover:bg-muted/10 text-[10px] text-foreground/50 border-b border-border/10' : ''}
+                />
               )}
             </div>
 
