@@ -46,6 +46,10 @@ export function getDateRange(preset: string) {
       start = new Date(startOfToday);
       start.setDate(start.getDate() - 29);
       break;
+    case 'Last 4 Weeks':
+      start = new Date(startOfToday);
+      start.setDate(start.getDate() - 27); // 28 days total
+      break;
     case 'Last 60 Days':
       start = new Date(startOfToday);
       start.setDate(start.getDate() - 59);

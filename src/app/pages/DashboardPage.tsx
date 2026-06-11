@@ -38,6 +38,14 @@ const BADGE_COLORS = [
   'border-cyan-300 text-cyan-500 bg-cyan-500/5',
 ];
 
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June', 
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+const YEARS = ['2024', '2025', '2026', '2027', '2028'];
+const DAYS = Array.from({ length: 31 }, (_, i) => String(i + 1));
+
 export function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'deal' | 'cp'>('deal');
   
@@ -48,13 +56,27 @@ export function DashboardPage() {
   
   const [selectedUser, setSelectedUser] = useState<string>('all');
   const [selectedProduct, setSelectedProduct] = useState<string>('all');
-  const [selectedDatePreset, setSelectedDatePreset] = useState<string>('Last 6 Months');
+  const [selectedDatePreset, setSelectedDatePreset] = useState<string>('Last 4 Weeks'); // Default to 4 Weeks
   const [timePeriod, setTimePeriod] = useState<'W' | 'M'>('W');
   
-  // Custom Date States
+  // Popup Date Picker States
+  const [showPickerPopup, setShowPickerPopup] = useState<boolean>(false);
+  const [pickerMode, setPickerMode] = useState<'preset' | 'custom'>('preset');
   const [isCustomDate, setIsCustomDate] = useState<boolean>(false);
   const [customStartDate, setCustomStartDate] = useState<string>('');
   const [customEndDate, setCustomEndDate] = useState<string>('');
+
+  // Dropdown Select States for custom dates (defaulting dynamic June/May values matching layout)
+  const now = new Date();
+  const defaultStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 21); // 3 weeks ago
+  
+  const [startYear, setStartYear] = useState<string>(String(defaultStart.getFullYear()));
+  const [startMonth, setStartMonth] = useState<string>(MONTHS[defaultStart.getMonth()]);
+  const [startDay, setStartDay] = useState<string>(String(defaultStart.getDate()));
+  
+  const [endYear, setEndYear] = useState<string>(String(now.getFullYear()));
+  const [endMonth, setEndMonth] = useState<string>(MONTHS[now.getMonth()]);
+  const [endDay, setEndDay] = useState<string>(String(now.getDate()));
 
   // Data & Loading States
   const [analyticsData, setAnalyticsData] = useState<AnalyticsPeriodData[]>([]);
@@ -62,14 +84,19 @@ export function DashboardPage() {
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Expansion State
-  const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({ 0: true }); // Default first expanded
+  // Expansion State (initially all closed)
+  const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
 
   // Predefined presets
   const DATE_PRESETS = [
     'Today', 'Yesterday', 'This week', 'This month', 'Last week', 
-    'Last month', 'Last 7 Days', 'Last 30 Days', 'Last 60 Days', 'Last 6 Months'
+    'Last month', 'Last 7 Days', 'Last 30 Days', 'Last 4 Weeks', 'Last 60 Days', 'Last 6 Months'
   ];
+
+  // Collapse rows whenever filters change
+  useEffect(() => {
+    setExpandedRows({});
+  }, [selectedUser, selectedProduct, selectedDatePreset, timePeriod, isCustomDate]);
 
   // Load static filters
   useEffect(() => {
@@ -196,8 +223,10 @@ export function DashboardPage() {
     try {
       let range: { start: number; end: number };
       if (isCustomDate) {
-        const start = customStartDate ? new Date(customStartDate) : new Date();
-        const end = customEndDate ? new Date(customEndDate) : new Date();
+        const startMonthIndex = MONTHS.indexOf(startMonth);
+        const endMonthIndex = MONTHS.indexOf(endMonth);
+        const start = new Date(Number(startYear), startMonthIndex, Number(startDay));
+        const end = new Date(Number(endYear), endMonthIndex, Number(endDay));
         end.setHours(23, 59, 59);
         range = {
           start: Math.floor(start.getTime() / 1000),
@@ -207,12 +236,18 @@ export function DashboardPage() {
         range = getDateRange(selectedDatePreset);
       }
 
+      // Group by DAYS if range spans less than a week to prevent server division error on WEEKS grouping
+      const durationDays = (range.end - range.start) / (24 * 3600);
+      const computedPeriod = durationDays < 7 
+        ? 'DAYS' 
+        : (timePeriod === 'W' ? 'WEEKS' : 'MONTHS');
+
       const payload: AnalyticsPayload = {
         includeTotal: true,
         includePercentage: true,
         includeZero: true,
         includeAll: true,
-        timePeriod: timePeriod === 'W' ? 'WEEKS' : 'MONTHS',
+        timePeriod: computedPeriod,
         startDate: range.start,
         endDate: range.end,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata',
@@ -236,10 +271,37 @@ export function DashboardPage() {
   };
 
   const formatDateRange = (zonedFirst: number, zonedSecond: number) => {
+    if (!zonedFirst || !zonedSecond) return 'Unknown Range';
     const start = new Date(zonedFirst * 1000);
     const end = new Date(zonedSecond * 1000);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return 'Unknown Range';
     const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
     return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
+  };
+
+  const formatDatePickerLabel = () => {
+    if (isCustomDate) {
+      const startMonthIndex = MONTHS.indexOf(startMonth);
+      const endMonthIndex = MONTHS.indexOf(endMonth);
+      const start = new Date(Number(startYear), startMonthIndex, Number(startDay));
+      const end = new Date(Number(endYear), endMonthIndex, Number(endDay));
+      return formatDateRange(Math.floor(start.getTime() / 1000), Math.floor(end.getTime() / 1000));
+    }
+    const range = getDateRange(selectedDatePreset);
+    return formatDateRange(range.start, range.end);
+  };
+
+  const handleSubmitCustomRange = () => {
+    const startMonthIndex = MONTHS.indexOf(startMonth);
+    const endMonthIndex = MONTHS.indexOf(endMonth);
+    const start = new Date(Number(startYear), startMonthIndex, Number(startDay));
+    const end = new Date(Number(endYear), endMonthIndex, Number(endDay));
+    end.setHours(23, 59, 59);
+
+    setCustomStartDate(start.toISOString().split('T')[0]);
+    setCustomEndDate(end.toISOString().split('T')[0]);
+    setIsCustomDate(true);
+    setShowPickerPopup(false);
   };
 
   // Modern clean cell layout: side-by-side count & percentage, thin line underneath
@@ -267,9 +329,9 @@ export function DashboardPage() {
     let totalCount = 0;
 
     analyticsData.forEach(period => {
-      period.statusCount.forEach(source => {
+      period.statusCount?.forEach(source => {
         if (source.name !== 'Total') {
-          const totalVal = source.perCount.find(pc => pc.id === 'Total')?.value.count || 0;
+          const totalVal = source.perCount?.find(pc => pc.id === 'Total')?.value.count || 0;
           if (totalVal > 0) {
             totals[source.name] = (totals[source.name] || 0) + totalVal;
             totalCount += totalVal;
@@ -328,8 +390,10 @@ export function DashboardPage() {
       // Sort oldest to newest
       const sortedData = [...analyticsData].reverse();
       sortedData.forEach((period) => {
-        const totalDeals = period.statusCount.find(sc => sc.name === 'Total')?.perCount.find(pc => pc.id === 'Total')?.value.count || 0;
-        const start = new Date(period.datePair.zonedFirst * 1000);
+        const totalSource = period.statusCount?.find(sc => sc.name === 'Total');
+        const totalDeals = totalSource?.perCount?.find(pc => pc.id === 'Total')?.value.count || 0;
+        const zonedFirst = period.datePair?.zonedFirst || period.datePair?.first || 0;
+        const start = new Date(zonedFirst * 1000);
         const label = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         points.push({ label, value: totalDeals });
       });
@@ -459,60 +523,147 @@ export function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Date Filter & Preset */}
-                <div className="flex flex-col">
+                {/* Custom Single Date Picker Dropdown */}
+                <div className="flex flex-col relative">
                   <label className="text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1 flex items-center gap-1">
                     <FontAwesomeIcon icon={faCalendar} className="opacity-50" /> Date Range
                   </label>
-                  <div className="flex items-center gap-2">
-                    <div className="relative group">
-                      <select
-                        value={isCustomDate ? 'custom' : selectedDatePreset}
-                        onChange={(e) => {
-                          if (e.target.value === 'custom') {
-                            setIsCustomDate(true);
-                          } else {
-                            setIsCustomDate(false);
-                            setSelectedDatePreset(e.target.value);
-                          }
-                        }}
-                        className="pl-3 pr-8 py-1.5 rounded-xl bg-card border border-border/40 text-xs text-foreground/70 outline-none focus:border-primary/25 transition-all focus:ring-1 focus:ring-primary/5 cursor-pointer appearance-none min-w-[120px]"
-                      >
-                        <option value="custom">Custom Range</option>
-                        {DATE_PRESETS.map(preset => (
-                          <option key={preset} value={preset}>{preset}</option>
-                        ))}
-                      </select>
-                      <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/30 text-[10px] pointer-events-none" />
-                    </div>
+                  
+                  <button
+                    onClick={() => setShowPickerPopup(!showPickerPopup)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border/40 rounded-xl text-xs text-foreground/70 outline-none hover:bg-muted/10 transition-all select-none"
+                  >
+                    <FontAwesomeIcon icon={faCalendar} className="opacity-50 text-[10px]" />
+                    <span>{formatDatePickerLabel()}</span>
+                    <FontAwesomeIcon icon={faChevronDown} className="opacity-30 text-[9px] ml-1" />
+                  </button>
 
-                    {isCustomDate ? (
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="date"
-                          value={customStartDate}
-                          onChange={(e) => setCustomStartDate(e.target.value)}
-                          className="px-2 py-1 rounded-xl bg-card border border-border/40 text-foreground text-[10px] outline-none focus:border-primary/20"
-                        />
-                        <span className="text-foreground/30 text-[9px]">-</span>
-                        <input
-                          type="date"
-                          value={customEndDate}
-                          onChange={(e) => setCustomEndDate(e.target.value)}
-                          className="px-2 py-1 rounded-xl bg-card border border-border/40 text-foreground text-[10px] outline-none focus:border-primary/20"
-                        />
+                  {showPickerPopup && (
+                    <>
+                      {/* Overlay background click listener to close */}
+                      <div className="fixed inset-0 z-40" onClick={() => setShowPickerPopup(false)} />
+                      
+                      {/* Popup container panel matching screenshot */}
+                      <div className="absolute top-full mt-2 left-0 z-50 bg-card border border-border/60 rounded-2xl p-6 shadow-xl w-[350px] animate-in fade-in slide-in-from-top-1 duration-200">
+                        {/* Option 1: Date presets */}
+                        <div className="mb-4">
+                          <label className="flex items-center gap-2 cursor-pointer font-medium text-xs text-foreground/85 mb-3">
+                            <input
+                              type="radio"
+                              name="date_picker_mode"
+                              checked={pickerMode === 'preset'}
+                              onChange={() => setPickerMode('preset')}
+                              className="accent-primary w-3.5 h-3.5"
+                            />
+                            <span>Date presets</span>
+                          </label>
+                          
+                          {pickerMode === 'preset' && (
+                            <div className="pl-6.5">
+                              <select
+                                value={selectedDatePreset}
+                                onChange={(e) => {
+                                  setSelectedDatePreset(e.target.value);
+                                  setIsCustomDate(false);
+                                  setShowPickerPopup(false);
+                                }}
+                                className="w-full pl-3 pr-8 py-1.5 rounded-xl bg-muted/20 border border-border/40 text-xs text-foreground/75 outline-none cursor-pointer"
+                              >
+                                {DATE_PRESETS.map(preset => (
+                                  <option key={preset} value={preset}>{preset}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Line Divider */}
+                        <div className="my-4 border-t border-border/40" />
+
+                        {/* Option 2: Custom date range */}
+                        <div className="mb-1">
+                          <label className="flex items-center gap-2 cursor-pointer font-medium text-xs text-foreground/85 mb-3">
+                            <input
+                              type="radio"
+                              name="date_picker_mode"
+                              checked={pickerMode === 'custom'}
+                              onChange={() => setPickerMode('custom')}
+                              className="accent-primary w-3.5 h-3.5"
+                            />
+                            <span>Custom date range</span>
+                          </label>
+
+                          {pickerMode === 'custom' && (
+                            <div className="pl-6.5 space-y-3">
+                              {/* Start Date elements row */}
+                              <div>
+                                <span className="text-[10px] font-semibold text-foreground/45 block mb-1">Start date</span>
+                                <div className="grid grid-cols-3 gap-1.5">
+                                  <select
+                                    value={startYear}
+                                    onChange={(e) => setStartYear(e.target.value)}
+                                    className="px-2 py-1 rounded-lg bg-muted/20 border border-border/40 text-[11px] text-foreground/75 outline-none cursor-pointer"
+                                  >
+                                    {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                                  </select>
+                                  <select
+                                    value={startMonth}
+                                    onChange={(e) => setStartMonth(e.target.value)}
+                                    className="px-2 py-1 rounded-lg bg-muted/20 border border-border/40 text-[11px] text-foreground/75 outline-none cursor-pointer"
+                                  >
+                                    {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
+                                  </select>
+                                  <select
+                                    value={startDay}
+                                    onChange={(e) => setStartDay(e.target.value)}
+                                    className="px-2 py-1 rounded-lg bg-muted/20 border border-border/40 text-[11px] text-foreground/75 outline-none cursor-pointer"
+                                  >
+                                    {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                                  </select>
+                                </div>
+                              </div>
+
+                              {/* End Date elements row */}
+                              <div>
+                                <span className="text-[10px] font-semibold text-foreground/45 block mb-1">End date</span>
+                                <div className="grid grid-cols-3 gap-1.5">
+                                  <select
+                                    value={endYear}
+                                    onChange={(e) => setEndYear(e.target.value)}
+                                    className="px-2 py-1 rounded-lg bg-muted/20 border border-border/40 text-[11px] text-foreground/75 outline-none cursor-pointer"
+                                  >
+                                    {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                                  </select>
+                                  <select
+                                    value={endMonth}
+                                    onChange={(e) => setEndMonth(e.target.value)}
+                                    className="px-2 py-1 rounded-lg bg-muted/20 border border-border/40 text-[11px] text-foreground/75 outline-none cursor-pointer"
+                                  >
+                                    {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
+                                  </select>
+                                  <select
+                                    value={endDay}
+                                    onChange={(e) => setEndDay(e.target.value)}
+                                    className="px-2 py-1 rounded-lg bg-muted/20 border border-border/40 text-[11px] text-foreground/75 outline-none cursor-pointer"
+                                  >
+                                    {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                                  </select>
+                                </div>
+                              </div>
+
+                              {/* Big Submit Button */}
+                              <button
+                                onClick={handleSubmitCustomRange}
+                                className="w-full mt-3 bg-black hover:bg-black/90 text-white text-xs font-bold py-2 rounded-full transition-all flex items-center justify-center cursor-pointer shadow-md active:scale-98 border-none"
+                              >
+                                Submit
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    ) : (
-                      <div className="flex items-center px-3 py-1.5 bg-card border border-border/40 rounded-xl text-[10px] text-foreground/50 leading-none">
-                        {isInitialLoading ? 'Loading dates...' : (
-                          (() => {
-                            const range = getDateRange(selectedDatePreset);
-                            return formatDateRange(range.start, range.end);
-                          })()
-                        )}
-                      </div>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -587,8 +738,8 @@ export function DashboardPage() {
                   </thead>
                   <tbody className="divide-y divide-border/20">
                     {analyticsData.map((period, periodIdx) => {
-                      const totalSource = period.statusCount.find(sc => sc.name === 'Total');
-                      const subSources = period.statusCount.filter(sc => sc.name !== 'Total');
+                      const totalSource = period.statusCount?.find(sc => sc.name === 'Total');
+                      const subSources = period.statusCount?.filter(sc => sc.name !== 'Total') || [];
                       const isExpanded = !!expandedRows[periodIdx];
                       
                       const badgeBg = BADGE_COLORS[periodIdx % BADGE_COLORS.length];
@@ -616,56 +767,56 @@ export function DashboardPage() {
                             {/* Total deals main row is bold and underlined */}
                             <td className="py-3.5 px-4 text-center text-xs font-medium text-foreground/70">
                               <span className="underline decoration-1 decoration-foreground/20 hover:decoration-primary/40 cursor-pointer">
-                                {totalSource?.perCount.find(pc => pc.id === 'Total')?.value.count || 0}
+                                {totalSource?.perCount?.find(pc => pc.id === 'Total')?.value.count || 0}
                               </span>
                             </td>
                             {/* Other columns display values with progress bars */}
                             <td className="py-3.5 px-4">
                               {renderValueCell(
-                                totalSource?.perCount.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
-                                totalSource?.perCount.find(pc => pc.id === 'Fresh')?.value.count || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Fresh')?.value.count || 0,
                                 'Fresh'
                               )}
                             </td>
                             <td className="py-3.5 px-4">
                               {renderValueCell(
-                                totalSource?.perCount.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
-                                totalSource?.perCount.find(pc => pc.id === 'Contactable')?.value.count || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Contactable')?.value.count || 0,
                                 'Contactable'
                               )}
                             </td>
                             <td className="py-3.5 px-4">
                               {renderValueCell(
-                                totalSource?.perCount.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
-                                totalSource?.perCount.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
                                 'Non Contactable'
                               )}
                             </td>
                             <td className="py-3.5 px-4">
                               {renderValueCell(
-                                totalSource?.perCount.find(pc => pc.id === 'Visit')?.value.percentage || 0,
-                                totalSource?.perCount.find(pc => pc.id === 'Visit')?.value.count || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Visit')?.value.percentage || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Visit')?.value.count || 0,
                                 'Visit'
                               )}
                             </td>
                             <td className="py-3.5 px-4">
                               {renderValueCell(
-                                totalSource?.perCount.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
-                                totalSource?.perCount.find(pc => pc.id === 'Revisit')?.value.count || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Revisit')?.value.count || 0,
                                 'Revisit'
                               )}
                             </td>
                             <td className="py-3.5 px-4">
                               {renderValueCell(
-                                totalSource?.perCount.find(pc => pc.id === 'Lost')?.value.percentage || 0,
-                                totalSource?.perCount.find(pc => pc.id === 'Lost')?.value.count || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Lost')?.value.percentage || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Lost')?.value.count || 0,
                                 'Lost'
                               )}
                             </td>
                             <td className="py-3.5 px-4">
                               {renderValueCell(
-                                totalSource?.perCount.find(pc => pc.id === 'Booking')?.value.percentage || 0,
-                                totalSource?.perCount.find(pc => pc.id === 'Booking')?.value.count || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Booking')?.value.percentage || 0,
+                                totalSource?.perCount?.find(pc => pc.id === 'Booking')?.value.count || 0,
                                 'Booking'
                               )}
                             </td>
@@ -680,57 +831,57 @@ export function DashboardPage() {
                               {/* Total deals in sub-rows has percentage bar as well */}
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Total')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Total')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Total')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Total')?.value.count || 0,
                                   'Total'
                                 )}
                               </td>
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Fresh')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Fresh')?.value.count || 0,
                                   'Fresh'
                                 )}
                               </td>
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Contactable')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Contactable')?.value.count || 0,
                                   'Contactable'
                                 )}
                               </td>
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
                                   'Non Contactable'
                                 )}
                               </td>
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Visit')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Visit')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Visit')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Visit')?.value.count || 0,
                                   'Visit'
                                 )}
                               </td>
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Revisit')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Revisit')?.value.count || 0,
                                   'Revisit'
                                 )}
                               </td>
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Lost')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Lost')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Lost')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Lost')?.value.count || 0,
                                   'Lost'
                                 )}
                               </td>
                               <td className="py-2.5 px-4">
                                 {renderValueCell(
-                                  source.perCount.find(pc => pc.id === 'Booking')?.value.percentage || 0,
-                                  source.perCount.find(pc => pc.id === 'Booking')?.value.count || 0,
+                                  source.perCount?.find(pc => pc.id === 'Booking')?.value.percentage || 0,
+                                  source.perCount?.find(pc => pc.id === 'Booking')?.value.count || 0,
                                   'Booking'
                                 )}
                               </td>

@@ -6,7 +6,7 @@ export interface AnalyticsPayload {
   includePercentage: boolean;
   includeZero: boolean;
   includeAll: boolean;
-  timePeriod: 'WEEKS' | 'MONTHS';
+  timePeriod: 'WEEKS' | 'MONTHS' | 'DAYS';
   startDate: number;
   endDate: number;
   timezone: string;
