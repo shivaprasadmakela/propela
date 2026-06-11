@@ -18,24 +18,24 @@ import { getDateRange } from '@/shared/utils/dateUtils';
 
 // Color mapping for columns
 const COLUMN_COLORS: Record<string, string> = {
-  'Total': 'bg-indigo-500',
+  'Total': 'bg-indigo-400',
   'Fresh': 'bg-sky-400',
   'Contactable': 'bg-amber-400',
   'Non Contactable': 'bg-orange-400',
   'Visit': 'bg-teal-400',
-  'Revisit': 'bg-emerald-500',
+  'Revisit': 'bg-emerald-400',
   'Lost': 'bg-rose-400',
-  'Booking': 'bg-emerald-600',
+  'Booking': 'bg-emerald-500',
 };
 
 // Color cycling for row badges
 const BADGE_COLORS = [
-  'bg-rose-500 text-white',
-  'bg-blue-500 text-white',
-  'bg-emerald-500 text-white',
-  'bg-amber-500 text-white',
-  'bg-purple-500 text-white',
-  'bg-cyan-500 text-white',
+  'border-rose-300 text-rose-500 bg-rose-500/5',
+  'border-blue-300 text-blue-500 bg-blue-500/5',
+  'border-emerald-300 text-emerald-500 bg-emerald-500/5',
+  'border-amber-300 text-amber-500 bg-amber-500/5',
+  'border-purple-300 text-purple-500 bg-purple-500/5',
+  'border-cyan-300 text-cyan-500 bg-cyan-500/5',
 ];
 
 export function DashboardPage() {
@@ -242,20 +242,20 @@ export function DashboardPage() {
     return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
   };
 
-  // Helper component to render standard progress-bar cell
+  // Modern clean cell layout: side-by-side count & percentage, thin line underneath
   const renderValueCell = (percentage: number, count: number, id: string) => {
     const barColor = COLUMN_COLORS[id] || 'bg-primary';
     return (
-      <div className="flex flex-col min-w-[100px] py-1">
-        <span className="text-[10px] font-bold text-foreground/50 mb-0.5">{percentage.toFixed(2)}%</span>
-        <div className="flex items-center gap-2">
-          <div className="flex-grow h-1.5 rounded-full bg-muted overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-300 ${barColor}`}
-              style={{ width: `${Math.min(100, percentage)}%` }}
-            />
-          </div>
-          <span className="text-xs font-bold text-foreground/80 w-8 text-right shrink-0">{count}</span>
+      <div className="flex flex-col gap-0.5 min-w-[90px] py-1">
+        <div className="flex items-baseline justify-between text-[10px]">
+          <span className="font-medium text-foreground/80">{count}</span>
+          <span className="text-[9px] text-foreground/40 font-normal">{percentage.toFixed(1)}%</span>
+        </div>
+        <div className="w-full h-[3px] rounded-full bg-muted/60 overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+            style={{ width: `${Math.min(100, percentage)}%` }}
+          />
         </div>
       </div>
     );
@@ -371,221 +371,221 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6 flex-1 flex flex-col min-h-0">
+    <div className="space-y-4 flex-1 flex flex-col min-h-0">
       {/* Title block */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Dashboard</h1>
-        <p className="text-sm text-foreground/40 mt-1">Overview of your sales pipeline and activity</p>
+        <h1 className="text-xl font-semibold text-foreground tracking-tight">Dashboard</h1>
+        <p className="text-xs text-foreground/45 mt-0.5">Overview of your sales pipeline and activity</p>
       </div>
 
       {/* Main card panel */}
-      <div className="bg-card border border-border/60 rounded-3xl shadow-sm overflow-hidden flex flex-col flex-1 min-h-0">
+      <div className="bg-card border border-border/40 rounded-2xl shadow-sm overflow-hidden flex flex-col flex-1 min-h-0">
         
-        {/* Card Header with tabs */}
-        <div className="flex items-center justify-between border-b border-border/50 px-6 py-4 bg-muted/5">
-          <div className="flex p-1 rounded-2xl bg-muted/20 border border-border/50">
-            <button
-              onClick={() => setActiveTab('deal')}
-              className={`px-5 py-2 rounded-xl text-sm font-bold tracking-wide transition-all ${
-                activeTab === 'deal'
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-foreground/40 hover:text-foreground/70'
-              }`}
-            >
-              Deal Dashboard
-            </button>
-            <button
-              onClick={() => setActiveTab('cp')}
-              className={`px-5 py-2 rounded-xl text-sm font-bold tracking-wide transition-all ${
-                activeTab === 'cp'
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-foreground/40 hover:text-foreground/70'
-              }`}
-            >
-              CP Dashboard
-            </button>
-          </div>
+        {/* Underline Tab Layout */}
+        <div className="flex items-center gap-6 border-b border-border/40 px-6 bg-card shrink-0">
+          <button
+            onClick={() => setActiveTab('deal')}
+            className={`py-3 text-[11px] font-semibold tracking-wider uppercase border-b-2 transition-all relative -mb-[1.5px] ${
+              activeTab === 'deal'
+                ? 'border-primary text-primary font-bold'
+                : 'border-transparent text-foreground/45 hover:text-foreground/75'
+            }`}
+          >
+            Deal Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab('cp')}
+            className={`py-3 text-[11px] font-semibold tracking-wider uppercase border-b-2 transition-all relative -mb-[1.5px] ${
+              activeTab === 'cp'
+                ? 'border-primary text-primary font-bold'
+                : 'border-transparent text-foreground/45 hover:text-foreground/75'
+            }`}
+          >
+            CP Dashboard
+          </button>
         </div>
 
         {activeTab === 'cp' ? (
           <div className="flex-1 flex flex-col items-center justify-center p-20 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4 text-primary/60">
-              <FontAwesomeIcon icon={faFilter} className="text-2xl" />
+            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3 text-primary/50">
+              <FontAwesomeIcon icon={faFilter} className="text-lg" />
             </div>
-            <h3 className="text-lg font-bold text-foreground">CP Dashboard Coming Soon</h3>
-            <p className="text-sm text-foreground/40 mt-1 max-w-sm">Channel Partner dashboard metrics and analysis will be available here.</p>
+            <h3 className="text-sm font-semibold text-foreground">CP Dashboard Coming Soon</h3>
+            <p className="text-xs text-foreground/40 mt-1 max-w-xs">Channel Partner dashboard metrics and analysis will be available here.</p>
           </div>
         ) : (
           <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
-            {/* Filter Controls Bar */}
-            <div className="p-6 border-b border-border/40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-card">
+            {/* Minimal Compact Filters Bar */}
+            <div className="px-6 py-4 border-b border-border/30 bg-muted/5 flex flex-wrap items-center justify-between gap-4">
               
-              {/* Assignee Filter */}
-              <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                  <FontAwesomeIcon icon={faUser} className="opacity-60" /> Assignee
-                </label>
-                <div className="relative group">
-                  <select
-                    value={selectedUser}
-                    onChange={(e) => setSelectedUser(e.target.value)}
-                    className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-muted/30 border border-border/50 text-foreground text-sm outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all appearance-none cursor-pointer"
-                  >
-                    <option value="all">All Assignee</option>
-                    {users.map(u => (
-                      <option key={u.id} value={u.id}>{`${u.firstName} ${u.lastName}`}</option>
-                    ))}
-                  </select>
-                  <FontAwesomeIcon icon={faChevronDown} className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/20 text-xs pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Product Filter */}
-              <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                  <FontAwesomeIcon icon={faBox} className="opacity-60" /> Product
-                </label>
-                <div className="relative group">
-                  <select
-                    value={selectedProduct}
-                    onChange={(e) => handleProductChange(e.target.value)}
-                    className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-muted/30 border border-border/50 text-foreground text-sm outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all appearance-none cursor-pointer"
-                  >
-                    <option value="all">All Products</option>
-                    {products.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                  <FontAwesomeIcon icon={faChevronDown} className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/20 text-xs pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Date Filter & Preset */}
-              <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                  <FontAwesomeIcon icon={faCalendar} className="opacity-60" /> Date Range
-                </label>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-wrap items-center gap-6">
+                {/* Assignee Filter */}
+                <div className="flex flex-col">
+                  <label className="text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <FontAwesomeIcon icon={faUser} className="opacity-50" /> Assignee
+                  </label>
                   <div className="relative group">
                     <select
-                      value={isCustomDate ? 'custom' : selectedDatePreset}
-                      onChange={(e) => {
-                        if (e.target.value === 'custom') {
-                          setIsCustomDate(true);
-                        } else {
-                          setIsCustomDate(false);
-                          setSelectedDatePreset(e.target.value);
-                        }
-                      }}
-                      className="w-full pl-3 pr-8 py-2.5 rounded-2xl bg-muted/30 border border-border/50 text-foreground text-xs outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all appearance-none cursor-pointer"
+                      value={selectedUser}
+                      onChange={(e) => setSelectedUser(e.target.value)}
+                      className="pl-3 pr-8 py-1.5 rounded-xl bg-card border border-border/40 text-xs text-foreground/70 outline-none focus:border-primary/25 transition-all focus:ring-1 focus:ring-primary/5 cursor-pointer appearance-none min-w-[140px]"
                     >
-                      <option value="custom">Custom Range</option>
-                      {DATE_PRESETS.map(preset => (
-                        <option key={preset} value={preset}>{preset}</option>
+                      <option value="all">All Assignee</option>
+                      {users.map(u => (
+                        <option key={u.id} value={u.id}>{`${u.firstName} ${u.lastName}`}</option>
                       ))}
                     </select>
-                    <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/20 text-xs pointer-events-none" />
+                    <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/30 text-[10px] pointer-events-none" />
                   </div>
+                </div>
 
-                  {isCustomDate ? (
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="date"
-                        value={customStartDate}
-                        onChange={(e) => setCustomStartDate(e.target.value)}
-                        className="w-[48%] px-2 py-2.5 rounded-xl bg-muted/30 border border-border/50 text-foreground text-[10px] outline-none focus:border-primary/30"
-                      />
-                      <span className="text-foreground/30 text-[10px]">-</span>
-                      <input
-                        type="date"
-                        value={customEndDate}
-                        onChange={(e) => setCustomEndDate(e.target.value)}
-                        className="w-[48%] px-2 py-2.5 rounded-xl bg-muted/30 border border-border/50 text-foreground text-[10px] outline-none focus:border-primary/30"
-                      />
+                {/* Product Filter */}
+                <div className="flex flex-col">
+                  <label className="text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <FontAwesomeIcon icon={faBox} className="opacity-50" /> Product
+                  </label>
+                  <div className="relative group">
+                    <select
+                      value={selectedProduct}
+                      onChange={(e) => handleProductChange(e.target.value)}
+                      className="pl-3 pr-8 py-1.5 rounded-xl bg-card border border-border/40 text-xs text-foreground/70 outline-none focus:border-primary/25 transition-all focus:ring-1 focus:ring-primary/5 cursor-pointer appearance-none min-w-[140px]"
+                    >
+                      <option value="all">All Products</option>
+                      {products.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                    <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/30 text-[10px] pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Date Filter & Preset */}
+                <div className="flex flex-col">
+                  <label className="text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <FontAwesomeIcon icon={faCalendar} className="opacity-50" /> Date Range
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative group">
+                      <select
+                        value={isCustomDate ? 'custom' : selectedDatePreset}
+                        onChange={(e) => {
+                          if (e.target.value === 'custom') {
+                            setIsCustomDate(true);
+                          } else {
+                            setIsCustomDate(false);
+                            setSelectedDatePreset(e.target.value);
+                          }
+                        }}
+                        className="pl-3 pr-8 py-1.5 rounded-xl bg-card border border-border/40 text-xs text-foreground/70 outline-none focus:border-primary/25 transition-all focus:ring-1 focus:ring-primary/5 cursor-pointer appearance-none min-w-[120px]"
+                      >
+                        <option value="custom">Custom Range</option>
+                        {DATE_PRESETS.map(preset => (
+                          <option key={preset} value={preset}>{preset}</option>
+                        ))}
+                      </select>
+                      <FontAwesomeIcon icon={faChevronDown} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/30 text-[10px] pointer-events-none" />
                     </div>
-                  ) : (
-                    <div className="flex items-center px-3 py-2.5 bg-muted/10 border border-border/30 rounded-2xl text-[10px] font-medium text-foreground/60 leading-none truncate">
-                      {isInitialLoading ? 'Loading dates...' : (
-                        (() => {
-                          const range = getDateRange(selectedDatePreset);
-                          return formatDateRange(range.start, range.end);
-                        })()
-                      )}
-                    </div>
-                  )}
+
+                    {isCustomDate ? (
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="date"
+                          value={customStartDate}
+                          onChange={(e) => setCustomStartDate(e.target.value)}
+                          className="px-2 py-1 rounded-xl bg-card border border-border/40 text-foreground text-[10px] outline-none focus:border-primary/20"
+                        />
+                        <span className="text-foreground/30 text-[9px]">-</span>
+                        <input
+                          type="date"
+                          value={customEndDate}
+                          onChange={(e) => setCustomEndDate(e.target.value)}
+                          className="px-2 py-1 rounded-xl bg-card border border-border/40 text-foreground text-[10px] outline-none focus:border-primary/20"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center px-3 py-1.5 bg-card border border-border/40 rounded-xl text-[10px] text-foreground/50 leading-none">
+                        {isInitialLoading ? 'Loading dates...' : (
+                          (() => {
+                            const range = getDateRange(selectedDatePreset);
+                            return formatDateRange(range.start, range.end);
+                          })()
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* View Period Toggle (Weekly / Monthly) */}
-              <div className="flex flex-col">
-                <label className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mb-1.5">
+              <div className="flex flex-col shrink-0">
+                <label className="text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1">
                   View Interval
                 </label>
-                <div className="flex p-0.5 rounded-2xl bg-muted/20 border border-border/50 w-28 h-10 self-start">
+                <div className="flex rounded-lg bg-muted/20 border border-border/50 p-0.5 h-7">
                   <button
                     onClick={() => setTimePeriod('W')}
-                    className={`flex-grow rounded-xl text-xs font-bold transition-all ${
+                    className={`px-3 flex items-center justify-center rounded-md text-[10px] font-semibold transition-all ${
                       timePeriod === 'W'
                         ? 'bg-card text-foreground shadow-sm'
-                        : 'text-foreground/30 hover:text-foreground/60'
+                        : 'text-foreground/45 hover:text-foreground/75'
                     }`}
                   >
-                    W
+                    Weekly
                   </button>
                   <button
                     onClick={() => setTimePeriod('M')}
-                    className={`flex-grow rounded-xl text-xs font-bold transition-all ${
+                    className={`px-3 flex items-center justify-center rounded-md text-[10px] font-semibold transition-all ${
                       timePeriod === 'M'
                         ? 'bg-card text-foreground shadow-sm'
-                        : 'text-foreground/30 hover:text-foreground/60'
+                        : 'text-foreground/45 hover:text-foreground/75'
                     }`}
                   >
-                    M
+                    Monthly
                   </button>
                 </div>
               </div>
 
             </div>
 
-            {/* Table Area */}
+            {/* Clean Table Area */}
             <div className="flex-1 overflow-x-auto min-h-[300px]">
               {isTableLoading && analyticsData.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-24 text-center">
-                  <FontAwesomeIcon icon={faSpinner} className="text-2xl text-primary animate-spin mb-4" />
-                  <p className="text-sm text-foreground/50">Fetching analytics data...</p>
+                <div className="flex flex-col items-center justify-center p-20 text-center">
+                  <FontAwesomeIcon icon={faSpinner} className="text-lg text-primary animate-spin mb-3" />
+                  <p className="text-xs text-foreground/40">Fetching analytics data...</p>
                 </div>
               ) : error ? (
-                <div className="flex flex-col items-center justify-center p-24 text-center text-red-400">
-                  <p className="text-sm font-bold mb-2">Error Loading Analytics</p>
-                  <p className="text-xs max-w-sm mb-4">{error}</p>
+                <div className="flex flex-col items-center justify-center p-20 text-center text-red-400">
+                  <p className="text-xs font-semibold mb-1">Error Loading Analytics</p>
+                  <p className="text-[10px] max-w-sm mb-3 opacity-80">{error}</p>
                   <button
                     onClick={fetchAnalytics}
-                    className="px-5 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/95 transition-all text-xs"
+                    className="px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/95 transition-all text-xs"
                   >
                     Try Again
                   </button>
                 </div>
               ) : analyticsData.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-24 text-center text-foreground/40">
-                  <p className="text-sm font-semibold">No data available</p>
-                  <p className="text-xs mt-1">Try expanding your date range or removing filters.</p>
+                <div className="flex flex-col items-center justify-center p-20 text-center text-foreground/30">
+                  <p className="text-xs font-semibold">No data available</p>
+                  <p className="text-[10px] mt-0.5">Try expanding your date range or removing filters.</p>
                 </div>
               ) : (
                 <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-border/50 bg-muted/5 text-[10px] font-bold text-foreground/40 uppercase tracking-widest">
-                      <th className="py-4 px-6">{timePeriod === 'W' ? 'WEEKLY' : 'MONTHLY'}</th>
-                      <th className="py-4 px-4 text-center">TOTAL DEALS</th>
-                      <th className="py-4 px-4">FRESH</th>
-                      <th className="py-4 px-4">CONTACTABLE</th>
-                      <th className="py-4 px-4">NON CONTACTABLE</th>
-                      <th className="py-4 px-4">VISIT</th>
-                      <th className="py-4 px-4">REVISIT</th>
-                      <th className="py-4 px-4">LOST</th>
-                      <th className="py-4 px-4">BOOKING</th>
+                    <tr className="border-b border-border/30 bg-muted/5 text-[9px] font-semibold text-foreground/45 uppercase tracking-wider">
+                      <th className="py-3 px-6">{timePeriod === 'W' ? 'WEEKLY' : 'MONTHLY'}</th>
+                      <th className="py-3 px-4 text-center">TOTAL DEALS</th>
+                      <th className="py-3 px-4">FRESH</th>
+                      <th className="py-3 px-4">CONTACTABLE</th>
+                      <th className="py-3 px-4">NON CONTACTABLE</th>
+                      <th className="py-3 px-4">VISIT</th>
+                      <th className="py-3 px-4">REVISIT</th>
+                      <th className="py-3 px-4">LOST</th>
+                      <th className="py-3 px-4">BOOKING</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/30">
+                  <tbody className="divide-y divide-border/20">
                     {analyticsData.map((period, periodIdx) => {
                       const totalSource = period.statusCount.find(sc => sc.name === 'Total');
                       const subSources = period.statusCount.filter(sc => sc.name !== 'Total');
@@ -598,70 +598,71 @@ export function DashboardPage() {
                           {/* Main/Total Period Row */}
                           <tr 
                             onClick={() => toggleRow(periodIdx)}
-                            className="hover:bg-muted/10 transition-colors cursor-pointer group font-medium"
+                            className="hover:bg-muted/5 transition-colors cursor-pointer group"
                           >
-                            <td className="py-5 px-6 flex items-center gap-3">
-                              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${badgeBg}`}>
+                            <td className="py-3.5 px-6 flex items-center gap-3">
+                              {/* Tiny elegant outline border dot */}
+                              <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center text-[8px] font-mono shrink-0 ${badgeBg}`}>
                                 {periodIdx + 1}
                               </span>
-                              <span className="text-sm font-bold text-primary group-hover:text-primary-focus leading-none">
+                              <span className="text-xs font-semibold text-primary/90 leading-none">
                                 {formatDateRange(period.datePair.zonedFirst, period.datePair.zonedSecond)}
                               </span>
                               <FontAwesomeIcon 
                                 icon={isExpanded ? faChevronUp : faChevronDown} 
-                                className="text-foreground/20 group-hover:text-foreground/40 text-xs transition-colors shrink-0" 
+                                className="text-foreground/20 group-hover:text-foreground/40 text-[10px] transition-colors shrink-0 ml-1" 
                               />
                             </td>
                             {/* Total deals main row is bold and underlined */}
-                            <td className="py-5 px-4 text-center text-sm font-bold text-foreground/80">
-                              <span className="underline decoration-2 decoration-foreground/20 hover:decoration-primary/50 cursor-pointer">
+                            <td className="py-3.5 px-4 text-center text-xs font-medium text-foreground/70">
+                              <span className="underline decoration-1 decoration-foreground/20 hover:decoration-primary/40 cursor-pointer">
                                 {totalSource?.perCount.find(pc => pc.id === 'Total')?.value.count || 0}
                               </span>
                             </td>
                             {/* Other columns display values with progress bars */}
-                            <td className="py-5 px-4">
+                            <td className="py-3.5 px-4">
                               {renderValueCell(
                                 totalSource?.perCount.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
                                 totalSource?.perCount.find(pc => pc.id === 'Fresh')?.value.count || 0,
                                 'Fresh'
                               )}
                             </td>
-                            <td className="py-5 px-4">
+                            <td className="py-3.5 px-4">
                               {renderValueCell(
                                 totalSource?.perCount.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
                                 totalSource?.perCount.find(pc => pc.id === 'Contactable')?.value.count || 0,
                                 'Contactable'
                               )}
                             </td>
-                            <td className="py-5 px-4">
+                            <td className="py-3.5 px-4">
                               {renderValueCell(
                                 totalSource?.perCount.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
                                 totalSource?.perCount.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
                                 'Non Contactable'
                               )}
                             </td>
-                            <td className="py-5 px-4">
+                            <td className="py-3.5 px-4">
                               {renderValueCell(
                                 totalSource?.perCount.find(pc => pc.id === 'Visit')?.value.percentage || 0,
                                 totalSource?.perCount.find(pc => pc.id === 'Visit')?.value.count || 0,
                                 'Visit'
                               )}
                             </td>
-                            <td className="py-5 px-4">
+                            <td className="py-3.5 px-4">
                               {renderValueCell(
                                 totalSource?.perCount.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
                                 totalSource?.perCount.find(pc => pc.id === 'Revisit')?.value.count || 0,
                                 'Revisit'
                               )}
                             </td>
-                            <td className="py-5 px-4">
+                            <td className="py-3.5 px-4">
                               {renderValueCell(
                                 totalSource?.perCount.find(pc => pc.id === 'Lost')?.value.percentage || 0,
                                 totalSource?.perCount.find(pc => pc.id === 'Lost')?.value.count || 0,
                                 'Lost'
                               )}
                             </td>
-                            <td className="py-5 px-4">
+                            <td className="py-3.5 px-4">
                               {renderValueCell(
                                 totalSource?.perCount.find(pc => pc.id === 'Booking')?.value.percentage || 0,
                                 totalSource?.perCount.find(pc => pc.id === 'Booking')?.value.count || 0,
@@ -672,61 +673,61 @@ export function DashboardPage() {
 
                           {/* Sub-Rows */}
                           {isExpanded && subSources.map((source, subIdx) => (
-                            <tr key={subIdx} className="bg-muted/5 hover:bg-muted/10 transition-colors text-xs text-foreground/60 border-b border-border/10">
-                              <td className="py-4 pl-14 pr-6 font-medium font-mono text-foreground/40 uppercase tracking-wider">
+                            <tr key={subIdx} className="bg-muted/5 hover:bg-muted/10 transition-colors text-[10px] text-foreground/50 border-b border-border/10">
+                              <td className="py-2.5 pl-12 pr-6 font-medium font-mono text-foreground/40 uppercase tracking-wider">
                                 {source.name}
                               </td>
                               {/* Total deals in sub-rows has percentage bar as well */}
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Total')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Total')?.value.count || 0,
                                   'Total'
                                 )}
                               </td>
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Fresh')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Fresh')?.value.count || 0,
                                   'Fresh'
                                 )}
                               </td>
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Contactable')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Contactable')?.value.count || 0,
                                   'Contactable'
                                 )}
                               </td>
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Non Contactable')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Non Contactable')?.value.count || 0,
                                   'Non Contactable'
                                 )}
                               </td>
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Visit')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Visit')?.value.count || 0,
                                   'Visit'
                                 )}
                               </td>
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Revisit')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Revisit')?.value.count || 0,
                                   'Revisit'
                                 )}
                               </td>
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Lost')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Lost')?.value.count || 0,
                                   'Lost'
                                 )}
                               </td>
-                              <td className="py-4 px-4">
+                              <td className="py-2.5 px-4">
                                 {renderValueCell(
                                   source.perCount.find(pc => pc.id === 'Booking')?.value.percentage || 0,
                                   source.perCount.find(pc => pc.id === 'Booking')?.value.count || 0,
@@ -743,12 +744,12 @@ export function DashboardPage() {
               )}
             </div>
 
-            {/* Bottom Chart Widgets Side-By-Side */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 border-t border-border/40 bg-muted/10">
+            {/* Bottom Clean Chart Widgets Side-By-Side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 border-t border-border/30 bg-muted/5">
               
               {/* Line Chart Widget: Deal Performance */}
-              <div className="bg-card border border-border/50 rounded-2xl p-5 flex flex-col shadow-sm">
-                <h3 className="text-sm font-bold text-foreground">Deal Performance</h3>
+              <div className="bg-card border border-border/40 rounded-2xl p-5 flex flex-col shadow-sm">
+                <h3 className="text-[10px] font-bold text-foreground/45 uppercase tracking-wider mb-2">Deal Performance</h3>
                 
                 <div className="mt-4 flex-grow flex items-center justify-center">
                   <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full max-h-[220px]">
@@ -757,21 +758,21 @@ export function DashboardPage() {
                       const y = paddingTop + (i / 5) * graphHeight;
                       const val = Math.round(maxValue - (i / 5) * maxValue);
                       return (
-                        <g key={i} className="opacity-40">
+                        <g key={i} className="opacity-20">
                           <line
                             x1={paddingLeft}
                             y1={y}
                             x2={chartWidth - paddingRight}
                             y2={y}
                             stroke="var(--color-border, #e2e8f0)"
-                            strokeWidth="1"
-                            strokeDasharray="4 4"
+                            strokeWidth="0.5"
+                            strokeDasharray="3 3"
                           />
                           <text
                             x={paddingLeft - 8}
-                            y={y + 4}
+                            y={y + 3}
                             textAnchor="end"
-                            className="text-[10px] font-medium fill-foreground/40 font-sans"
+                            className="text-[9px] font-normal fill-foreground/40 font-sans"
                           >
                             {val}
                           </text>
@@ -784,7 +785,7 @@ export function DashboardPage() {
                       <path
                         d={areaD}
                         fill="url(#chartGradient)"
-                        className="opacity-25"
+                        className="opacity-[0.08]"
                       />
                     )}
 
@@ -794,7 +795,7 @@ export function DashboardPage() {
                         d={pathD}
                         fill="none"
                         stroke="#6366f1"
-                        strokeWidth="3.5"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
@@ -806,26 +807,26 @@ export function DashboardPage() {
                         <circle
                           cx={pt.x}
                           cy={pt.y}
-                          r="5.5"
+                          r="3"
                           fill="#ffffff"
                           stroke="#6366f1"
-                          strokeWidth="3"
+                          strokeWidth="1.5"
                         />
                         {/* Hover values tooltip display inside SVG */}
                         <g className="opacity-0 group-hover/dot:opacity-100 transition-opacity">
                           <rect
-                            x={pt.x - 22}
-                            y={pt.y - 28}
-                            width="44"
-                            height="18"
-                            rx="4"
+                            x={pt.x - 16}
+                            y={pt.y - 22}
+                            width="32"
+                            height="14"
+                            rx="3"
                             fill="#1e293b"
                           />
                           <text
                             x={pt.x}
-                            y={pt.y - 16}
+                            y={pt.y - 12}
                             textAnchor="middle"
-                            className="text-[9px] font-bold fill-white"
+                            className="text-[8px] font-bold fill-white"
                           >
                             {pt.value}
                           </text>
@@ -833,9 +834,9 @@ export function DashboardPage() {
                         {/* X Axis label */}
                         <text
                           x={pt.x}
-                          y={chartHeight - paddingBottom + 18}
+                          y={chartHeight - paddingBottom + 16}
                           textAnchor="middle"
-                          className="text-[10px] font-bold fill-foreground/30 font-sans"
+                          className="text-[9px] font-semibold fill-foreground/30 font-sans"
                         >
                           {pt.label}
                         </text>
@@ -854,14 +855,14 @@ export function DashboardPage() {
               </div>
 
               {/* Donut Chart Widget: Deals by source */}
-              <div className="bg-card border border-border/50 rounded-2xl p-5 flex flex-col shadow-sm">
-                <h3 className="text-sm font-bold text-foreground">Deals by source</h3>
+              <div className="bg-card border border-border/40 rounded-2xl p-5 flex flex-col shadow-sm">
+                <h3 className="text-[10px] font-bold text-foreground/45 uppercase tracking-wider mb-2">Deals by source</h3>
 
                 <div className="mt-4 flex-grow flex flex-col sm:flex-row items-center justify-around gap-6">
-                  {/* SVG Donut */}
-                  <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
+                  {/* SVG Donut with clean thin ring */}
+                  <div className="relative w-36 h-36 flex items-center justify-center shrink-0">
                     <svg viewBox="0 0 120 120" className="w-full h-full transform -rotate-90">
-                      <circle cx="60" cy="60" r="50" fill="transparent" stroke="var(--color-border, #f1f5f9)" strokeWidth="12" />
+                      <circle cx="60" cy="60" r="50" fill="transparent" stroke="var(--color-border, #f1f5f9)" strokeWidth="8" />
                       {donutSegments.map((seg, i) => (
                         <circle
                           key={i}
@@ -870,7 +871,7 @@ export function DashboardPage() {
                           r="50"
                           fill="transparent"
                           stroke={seg.color}
-                          strokeWidth="12"
+                          strokeWidth="8"
                           strokeDasharray={`${seg.strokeDash} 314.16`}
                           strokeDashoffset={-seg.offset}
                           className="transition-all duration-500"
@@ -878,18 +879,18 @@ export function DashboardPage() {
                       ))}
                     </svg>
                     <div className="absolute flex flex-col items-center justify-center text-center">
-                      <span className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest leading-none">Total</span>
-                      <span className="text-xl font-black text-foreground mt-0.5 leading-none">{displayTotalCount}</span>
+                      <span className="text-[8px] font-semibold text-foreground/30 uppercase tracking-widest leading-none">Total</span>
+                      <span className="text-base font-bold text-foreground mt-0.5 leading-none">{displayTotalCount}</span>
                     </div>
                   </div>
 
-                  {/* Legend Grid */}
-                  <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5">
+                  {/* Clean Legend List */}
+                  <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                     {donutSegments.map((seg, i) => (
-                      <div key={i} className="flex items-center gap-2 text-xs">
-                        <FontAwesomeIcon icon={faCircle} style={{ color: seg.color }} className="text-[10px] shrink-0" />
-                        <span className="font-semibold text-foreground/60 truncate max-w-[120px]">{seg.source}</span>
-                        <span className="font-bold text-foreground/80 ml-auto shrink-0">({seg.count})</span>
+                      <div key={i} className="flex items-center gap-2 text-[10px]">
+                        <FontAwesomeIcon icon={faCircle} style={{ color: seg.color }} className="text-[6px] shrink-0" />
+                        <span className="font-medium text-foreground/50 truncate max-w-[110px]">{seg.source}</span>
+                        <span className="font-semibold text-foreground/75 ml-auto shrink-0">({seg.count})</span>
                       </div>
                     ))}
                   </div>
