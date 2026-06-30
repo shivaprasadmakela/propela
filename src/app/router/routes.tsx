@@ -23,6 +23,7 @@ import { UsersPage } from '@/domains/users/pages/UsersPage';
 import { SourceConfigPage } from '../../domains/settings/pages/SourceConfigPage';
 import { PartnersPage } from '@/domains/partners/pages/PartnersPage';
 import { AddEditProductPage } from '@/domains/products/pages/AddEditProductPage';
+import { AgentPage } from '@/domains/agent/pages/AgentPage';
 
 export function AppRoutes() {
   return (
@@ -61,6 +62,7 @@ export function AppRoutes() {
         <Route path="/dealProfile/:code" element={<DealProfilePage />} />
         <Route path="/accountProfile/:code" element={<AccountProfilePage />} />
         <Route path="/businessPartners" element={<PartnersPage />} />
+        <Route path="/agent" element={<AgentPage />} />
         {}
       </Route>
       

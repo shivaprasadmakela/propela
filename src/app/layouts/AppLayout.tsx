@@ -14,8 +14,12 @@ import {
   faGear,
   faBell,
   faAngleDoubleLeft,
-  faAngleDoubleRight
+  faAngleDoubleRight,
+  faRobot,
+  faCommentDots
 } from '@fortawesome/free-solid-svg-icons';
+import { useAgentStore } from '@/features/agent/store/agentStore';
+import { AgentDrawer } from '@/features/agent/components/AgentDrawer';
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', icon: faGauge },
@@ -25,6 +29,7 @@ const navItems = [
   { label: 'My Tasks', path: '/tasks', icon: faListCheck },
   { label: 'Reports', path: '/reports', icon: faChartPie },
   { label: 'Channel Partner', path: '/businessPartners', icon: faHandshakeAngle },
+  { label: 'AI Copilot', path: '/agent', icon: faRobot },
   { label: 'Organisation', path: '/organisation', icon: faBuilding },
   { label: 'Settings', path: '/settings', icon: faGear },
 ];
@@ -34,6 +39,7 @@ export function AppLayout() {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const { toggleDrawer } = useAgentStore();
 
   const handleLogout = () => {
     logout();
@@ -160,6 +166,21 @@ export function AppLayout() {
           </div>
         </main>
       </div>
+
+      {/* Floating AI Button */}
+      <button
+        onClick={toggleDrawer}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all z-40 group cursor-pointer border border-primary/20"
+        title="Open AI Assistant"
+      >
+        <FontAwesomeIcon icon={faCommentDots} className="text-xl group-hover:rotate-12 transition-transform" />
+        <span className="absolute right-16 bg-card text-foreground text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-border shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity mr-2 select-none pointer-events-none">
+          Chat with AI
+        </span>
+      </button>
+
+      {/* Drawer Overlay */}
+      <AgentDrawer />
     </div>
   );
 }
