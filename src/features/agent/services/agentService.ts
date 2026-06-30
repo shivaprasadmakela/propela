@@ -10,10 +10,10 @@ Your main responsibilities are:
 3. Help users with general queries, questions, or formatting requests.
 
 Formatting guidelines:
-- Use bullet points, bolding, and clean lists when presenting deals, tasks, or notes.
-- Use markdown table structures for side-by-side comparison of deal details if helpful.
-- When listing deals, mention their name, code, status/stage, and product.
-- Always be professional, crisp, and helpful. If a user asks general questions, answer them, but gently relate them back to how you can help them in Propela if relevant.
+- DO NOT list or repeat the details of deals, tasks, or notes (such as names, codes, stages, products, or descriptions) in the text of your chat response if you have invoked a tool that returns a list (like list_deals, list_deal_tasks, or list_deal_notes). The frontend chat UI will automatically render visual card components for these lists underneath your text bubble.
+- Instead, write a brief, friendly summary in your text response (e.g. "I found 3 deals assigned to Angel Mary. You can view them below:" or "Here is the details for the deal:").
+- If the user asks for comparison or query analytics (e.g. "which source got more deals in Booking stage"), use the get_deals_by_source_analytics tool and explain the counts/statistics in the text of your response.
+- Always be professional, crisp, and helpful.
 `;
 
 const GEMINI_TOOLS: Tool[] = [
@@ -21,7 +21,7 @@ const GEMINI_TOOLS: Tool[] = [
     functionDeclarations: [
       {
         name: "list_deals",
-        description: "List or search for deals/leads. You can filter by: 1) search (matches name or code keywords), 2) stageName (e.g., 'New Lead', 'Follow Up'), or 3) timeframe ('today', 'yesterday', 'this_week', 'all'). Use this whenever the user asks for 'todays deals', 'deals under followup', or wants to search deals by name.",
+        description: "List or search for deals/leads. You can apply multiple filters simultaneously: 1) search (keywords matching name/code), 2) stageName (e.g. 'Booking', 'Follow Up'), 3) timeframe ('today', 'yesterday', 'this_week', 'all'), 4) assignedUserName (e.g. 'Angel Mary'), 5) source (e.g. 'Google', 'Facebook'), and 6) productName (e.g. 'CityVille').",
         parameters: {
           type: SchemaType.OBJECT,
           properties: {
@@ -38,6 +38,45 @@ const GEMINI_TOOLS: Tool[] = [
               format: "enum",
               description: "Optional timeframe filter: 'today', 'yesterday', 'this_week', or 'all'.",
               enum: ["today", "yesterday", "this_week", "all"]
+            },
+            assignedUserName: {
+              type: SchemaType.STRING,
+              description: "Optional assignee name to filter deals by (e.g., 'Angel Mary')."
+            },
+            source: {
+              type: SchemaType.STRING,
+              description: "Optional marketing source to filter deals by (e.g. 'Google', 'Facebook')."
+            },
+            productName: {
+              type: SchemaType.STRING,
+              description: "Optional product name to filter deals by (e.g. 'CityVille')."
+            }
+          }
+        }
+      },
+      {
+        name: "get_deals_by_source_analytics",
+        description: "Get analytics on deal counts grouped by marketing source (e.g., Google, Facebook, Direct). You can filter the counts using multiple options simultaneously: stageName, assignedUserName, timeframe, or productName.",
+        parameters: {
+          type: SchemaType.OBJECT,
+          properties: {
+            stageName: {
+              type: SchemaType.STRING,
+              description: "Optional workflow stage name to filter the deal counts by (e.g. 'Booking')."
+            },
+            assignedUserName: {
+              type: SchemaType.STRING,
+              description: "Optional assignee name to filter the counts by (e.g. 'Angel Mary')."
+            },
+            timeframe: {
+              type: SchemaType.STRING,
+              format: "enum",
+              description: "Optional timeframe to filter the counts by: 'today', 'yesterday', 'this_week', or 'all'.",
+              enum: ["today", "yesterday", "this_week", "all"]
+            },
+            productName: {
+              type: SchemaType.STRING,
+              description: "Optional product name to filter the counts by (e.g. 'CityVille')."
             }
           }
         }
