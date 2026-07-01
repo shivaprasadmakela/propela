@@ -10,10 +10,11 @@ Your main responsibilities are:
 3. Help users with general queries, questions, or formatting requests.
 
 Formatting guidelines:
-- DO NOT list or repeat the details of deals, tasks, or notes (such as names, codes, stages, products, or descriptions) in the text of your chat response if you have invoked a tool that returns a list (like list_deals, list_deal_tasks, or list_deal_notes). The frontend chat UI will automatically render visual card components for these lists underneath your text bubble.
-- Instead, write a brief, friendly summary in your text response (e.g. "I found 3 deals assigned to Angel Mary. You can view them below:" or "Here is the details for the deal:").
-- If the user asks for comparison or query analytics (e.g. "which source got more deals in Booking stage"), use the get_deals_by_source_analytics tool and explain the counts/statistics in the text of your response.
-- Always be professional, crisp, and helpful.
+- Avoid printing long, repetitious text lists of deals, tasks, or notes in your chat response. The frontend chat interface will automatically render visual card components for lists (such as the output of list_deals, list_deal_tasks, or list_deal_notes) right below your message bubble.
+- You MUST still write a conversational text response: state the summary, answer any specific questions (like counting the number of deals, comparing counts, or explaining analytics), and direct the user to look at the cards below for details if relevant.
+- When answering queries about counts (e.g., "how many deals..."), count the elements in the JSON array returned by the tool exactly and double-check your arithmetic. The count in your text response MUST match the actual number of items returned by the tool (which is displayed in the UI cards).
+- If a tool call returns an empty array ([]) or no results, do NOT repeat the same tool call with the same parameters. Accept that no records match the criteria, and write a friendly text response informing the user that no matches were found (e.g. "I couldn't find any deals matching those criteria.").
+- Always be professional, crisp, and helpful. If a user asks general questions, answer them, but gently relate them back to how you can help them in Propela if relevant.
 `;
 
 const GEMINI_TOOLS: Tool[] = [
@@ -270,11 +271,38 @@ export const agentService = {
           functionCalls = response.functionCalls();
         }
 
+        console.log("AGENT RESPONSE:", JSON.stringify(response, null, 2));
+
         let responseText = "";
         try {
-          responseText = response.text() || "I processed your request but didn't generate a text response.";
-        } catch {
-          responseText = "I've processed your request successfully.";
+          responseText = response.text() || "";
+        } catch {}
+
+        // Fallback if the model returned an empty text response (e.g. tool loop termination or safety filters)
+        if (!responseText.trim()) {
+          if (lastExecutedTool) {
+            const { toolName, data, status } = lastExecutedTool;
+            if (status === 'error') {
+              responseText = `I encountered an issue executing the request: ${data?.error || 'Unknown error'}.`;
+            } else if (toolName === 'list_deals') {
+              const count = Array.isArray(data) ? data.length : 0;
+              responseText = `I found ${count} deal${count === 1 ? '' : 's'} matching your request. You can view them below:`;
+            } else if (toolName === 'get_deals_by_source_analytics') {
+              const entries = Object.entries(data || {});
+              if (entries.length === 0) {
+                responseText = "I couldn't find any deals for the specified criteria, so all marketing source counts are zero.";
+              } else {
+                const summary = entries.map(([src, val]) => `${src}: ${val}`).join(', ');
+                responseText = `Here is the marketing source breakdown for those deals: ${summary}.`;
+              }
+            } else if (toolName === 'get_deal_details') {
+              responseText = `Here are the details for the requested deal:`;
+            } else {
+              responseText = `I have successfully processed your request. Please check the results:`;
+            }
+          } else {
+            responseText = "I have successfully processed your request.";
+          }
         }
 
         return {

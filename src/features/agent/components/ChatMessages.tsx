@@ -10,9 +10,10 @@ import {
   faNoteSticky, 
   faPhone,
   faEnvelope,
-  faPaperclip
+  faPaperclip,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons';
-import { type Message } from '../store/agentStore';
+import { type Message, useAgentStore } from '../store/agentStore';
 import { type DealEntity, type TaskEntity, type NoteEntity } from '@/domains/deals/api/dealsApi';
 import { getStringColorClass } from '@/shared/utils/colorUtils';
 
@@ -24,6 +25,7 @@ interface ChatMessagesProps {
 export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const deleteMessage = useAgentStore(state => state.deleteMessage);
 
   // Auto scroll to bottom when new messages arrive
   useEffect(() => {
@@ -340,8 +342,21 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
               <FontAwesomeIcon icon={isModel ? faRobot : faUser} />
             </div>
 
-            {/* Chat Bubble */}
-            <div className="space-y-1">
+            {/* Chat Bubble wrapper */}
+            <div className="space-y-1 relative group/msg">
+              {/* Delete button (shows on hover exactly beside the bubble) */}
+              <button
+                onClick={() => deleteMessage(msg.id)}
+                title="Delete message"
+                className={`absolute top-1/2 -translate-y-1/2 opacity-0 group-hover/msg:opacity-100 transition-all duration-200 w-6 h-6 rounded-md hover:bg-muted border border-border/45 text-foreground/35 hover:text-red-400 flex items-center justify-center text-[10px] bg-card/60 backdrop-blur-sm z-10 cursor-pointer
+                  ${isModel 
+                    ? 'left-full ml-2' 
+                    : 'right-full mr-2'
+                  }`}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+
               <div 
                 className={`p-3 rounded-2xl border text-sm shadow-[0_1px_2px_rgba(0,0,0,0.02)]
                   ${isModel 

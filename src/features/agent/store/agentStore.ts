@@ -23,6 +23,7 @@ export interface AgentState {
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
   addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => Message;
+  deleteMessage: (id: string) => void;
   sendMessage: (text: string) => Promise<void>;
   setLoading: (loading: boolean) => void;
   setApiKey: (key: string) => void;
@@ -30,9 +31,17 @@ export interface AgentState {
 }
 
 const STORAGE_KEY_API_KEY = 'propela_gemini_api_key';
+const STORAGE_KEY_MESSAGES = 'propela_agent_messages';
 
 export const useAgentStore = create<AgentState>((set, get) => ({
-  messages: [],
+  messages: (() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_MESSAGES);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  })(),
   isOpen: false,
   isLoading: false,
   apiKey: localStorage.getItem(STORAGE_KEY_API_KEY) || import.meta.env.VITE_GEMINI_API_KEY || '',
@@ -46,17 +55,35 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       id: crypto.randomUUID(),
       timestamp: Date.now(),
     };
-    set((state) => ({
-      messages: [...state.messages, newMsg],
-    }));
+    set((state) => {
+      const updated = [...state.messages, newMsg];
+      try {
+        localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(updated));
+      } catch (err) {
+        console.error('Failed to save message to localStorage:', err);
+      }
+      return { messages: updated };
+    });
     return newMsg;
+  },
+
+  deleteMessage: (id) => {
+    set((state) => {
+      const updated = state.messages.filter(msg => msg.id !== id);
+      try {
+        localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(updated));
+      } catch (err) {
+        console.error('Failed to save messages to localStorage after deletion:', err);
+      }
+      return { messages: updated };
+    });
   },
 
   sendMessage: async (text) => {
     if (!text.trim() || get().isLoading) return;
 
     // Add user message
-    const userMsg = get().addMessage({ role: 'user', content: text });
+    get().addMessage({ role: 'user', content: text });
     set({ isLoading: true });
 
     try {
@@ -91,5 +118,12 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     set({ apiKey: key });
   },
 
-  clearChat: () => set({ messages: [] }),
+  clearChat: () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY_MESSAGES);
+    } catch (err) {
+      console.error('Failed to clear messages from localStorage:', err);
+    }
+    set({ messages: [] });
+  },
 }));
