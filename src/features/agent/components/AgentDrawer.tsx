@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAgentStore } from '../store/agentStore';
-import { ChatMessages } from './ChatMessages';
+import { ChatMessages } from './chat/ChatMessages';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faClose, 

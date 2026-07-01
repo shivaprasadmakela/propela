@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAgentStore } from '@/features/agent/store/agentStore';
-import { ChatMessages } from '@/features/agent/components/ChatMessages';
+import { ChatMessages } from '@/features/agent/components/chat/ChatMessages';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faRobot, 

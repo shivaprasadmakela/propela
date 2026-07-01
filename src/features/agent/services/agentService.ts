@@ -237,46 +237,53 @@ export const agentService = {
 
         while (functionCalls && functionCalls.length > 0 && loopCount < MAX_LOOPS) {
           loopCount++;
-          const call = functionCalls[0];
-          const { name, args } = call;
 
-          // Add the model's exact candidate parts (which preserves the mandatory thought_signature)
+          // Add the model's exact candidate parts (which preserves the mandatory thought_signature and all parallel calls)
           contents.push({
             role: 'model',
-            parts: response.candidates?.[0]?.content?.parts || [{ functionCall: call }]
+            parts: response.candidates?.[0]?.content?.parts || functionCalls.map(fc => ({ functionCall: fc }))
           });
 
-          let toolResult: any;
+          const functionResponses: any[] = [];
 
-          try {
-            // Execute the tool locally
-            if (name in agentTools) {
-              toolResult = await (agentTools as any)[name](args);
-            } else {
-              throw new Error(`Tool [${name}] is not implemented`);
+          // Execute all function calls in parallel/sequence for this turn
+          for (const call of functionCalls) {
+            const { name, args } = call;
+            let toolResult: any;
+
+            try {
+              // Execute the tool locally
+              if (name in agentTools) {
+                toolResult = await (agentTools as any)[name](args);
+              } else {
+                throw new Error(`Tool [${name}] is not implemented`);
+              }
+
+              if (onToolExecute) {
+                onToolExecute(name, toolResult);
+              }
+              lastExecutedTool = { toolName: name, data: toolResult, status: 'success' };
+            } catch (error: any) {
+              console.error(`Agent tool [${name}] failed:`, error);
+              toolResult = { error: error?.message || 'Tool execution failed' };
+              lastExecutedTool = { toolName: name, data: toolResult, status: 'error' };
             }
 
-            if (onToolExecute) {
-              onToolExecute(name, toolResult);
-            }
-            lastExecutedTool = { toolName: name, data: toolResult, status: 'success' };
-          } catch (error: any) {
-            toolResult = { error: error?.message || 'Tool execution failed' };
-            lastExecutedTool = { toolName: name, data: toolResult, status: 'error' };
-          }
-
-          // Add the tool's result to the history to send back to the model
-          contents.push({
-            role: 'user',
-            parts: [{
+            functionResponses.push({
               functionResponse: {
                 name: name,
                 response: { result: toolResult }
               }
-            }]
+            });
+          }
+
+          // Add all tool results as parallel responses to the history
+          contents.push({
+            role: 'user',
+            parts: functionResponses
           });
 
-          // Query LLM again with the tool response
+          // Query LLM again with the tool responses
           result = await model.generateContent({ contents });
           response = result.response;
           functionCalls = response.functionCalls();
