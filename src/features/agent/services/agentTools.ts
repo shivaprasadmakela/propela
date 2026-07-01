@@ -1,4 +1,4 @@
-import { dealsApi, type DealEntity, type TaskEntity, type NoteEntity } from '@/domains/deals/api/dealsApi';
+import { dealsApi, type DealEntity, type TaskEntity, type NoteEntity, type DealActivity } from '@/domains/deals/api/dealsApi';
 import { getDateRange } from '@/shared/utils/dateUtils';
 
 export interface SearchDealsArgs {
@@ -274,6 +274,19 @@ export const agentTools = {
       return response.content || [];
     } catch (error) {
       console.error('Agent tool [list_deal_notes] failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Fetch activity logs linked to a deal.
+   */
+  list_deal_activities: async (args: { dealId: number }): Promise<DealActivity[]> => {
+    try {
+      const response = await dealsApi.fetchActivities(args.dealId);
+      return response.content || [];
+    } catch (error) {
+      console.error('Agent tool [list_deal_activities] failed:', error);
       throw error;
     }
   }
