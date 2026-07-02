@@ -50,6 +50,10 @@ export const ENDPOINTS = {
     LIST: "/api/entity/processor/sources",
     SAVE: "/api/entity/processor/sources",
   },
+  TAGS: {
+    LIST: "/api/entity/processor/tags",
+    SAVE: "/api/entity/processor/tags",
+  },
   USERS: {
     QUERY: "/api/entity/processor/tickets/users/query",
   },
