@@ -21,6 +21,7 @@ import { AccountProfilePage } from '@/domains/accounts/pages/AccountProfilePage'
 import { TasksPage } from '@/domains/tasks/pages/TasksPage';
 import { UsersPage } from '@/domains/users/pages/UsersPage';
 import { SourceConfigPage } from '../../domains/settings/pages/SourceConfigPage';
+import { TagConfigPage } from '../../domains/settings/pages/TagConfigPage';
 import { PartnersPage } from '@/domains/partners/pages/PartnersPage';
 import { AddEditProductPage } from '@/domains/products/pages/AddEditProductPage';
 import { AgentPage } from '@/domains/agent/pages/AgentPage';
@@ -57,6 +58,7 @@ export function AppRoutes() {
         <Route path="/addProduct/:code" element={<AddEditProductPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/source-config" element={<SourceConfigPage />} />
+        <Route path="/settings/tag-config" element={<TagConfigPage />} />
         <Route path="/settings/templates" element={<TemplatesPage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/dealProfile/:code" element={<DealProfilePage />} />
