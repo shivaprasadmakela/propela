@@ -247,7 +247,7 @@ export function TemplatesPage() {
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate('/settings')}
-            className="w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center hover:bg-muted transition-colors text-foreground/60"
+            className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors text-foreground/60"
           >
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
@@ -267,9 +267,9 @@ export function TemplatesPage() {
       </header>
 
       {/* Main Content Area */}
-      <div className="flex-1 min-h-0 bg-card/30 rounded-3xl border border-border/50 flex flex-col overflow-hidden">
+      <div className="flex-1 min-h-0 bg-card rounded-3xl border border-border flex flex-col overflow-hidden shadow-sm">
         {/* Search Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border/50 shrink-0">
+        <div className="flex items-center justify-between p-6 border-b border-border shrink-0">
           <div className="relative">
             <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/30 text-sm" />
             <input
@@ -277,7 +277,7 @@ export function TemplatesPage() {
               placeholder="Search templates..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 rounded-xl bg-muted/50 border border-border/50 text-foreground placeholder-foreground/20 text-sm outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all w-64"
+              className="pl-9 pr-4 py-2 rounded-xl bg-muted/50 border border-border text-foreground placeholder-foreground/20 text-sm outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all w-64"
             />
           </div>
         </div>
@@ -323,7 +323,7 @@ export function TemplatesPage() {
                       className={`flex-1 py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
                         editingTemplate.category === cat
                           ? 'bg-primary/10 border-primary text-primary'
-                          : 'bg-muted/50 border-border/50 text-foreground/60 hover:bg-muted'
+                          : 'bg-muted/50 border-border text-foreground/60 hover:bg-muted'
                       }`}
                     >
                       {cat}

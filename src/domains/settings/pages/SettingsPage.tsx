@@ -18,7 +18,8 @@ import {
   faMicrochip,
   faEnvelope,
   faLink,
-  faFileCode
+  faFileCode,
+  faTag
 } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
@@ -109,7 +110,7 @@ export function SettingsPage() {
           ))}
         </aside>
 
-        <main className="flex-1 bg-card/30 rounded-3xl border border-border/50 p-8 overflow-y-auto">
+        <main className="flex-1 bg-card rounded-3xl border border-border p-8 shadow-sm overflow-y-auto">
           {activeCategory === 'user' && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
               <div className="space-y-1">
@@ -120,7 +121,7 @@ export function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <button 
                   onClick={() => navigate('/users')}
-                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
+                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
                 >
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faUsers} className="text-lg" />
@@ -131,7 +132,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faIdCard} className="text-lg" />
                   </div>
@@ -151,10 +152,10 @@ export function SettingsPage() {
                 <p className="text-sm text-foreground/50">Enhance deal tracking and customization</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button 
                   onClick={() => navigate('/settings/source-config')}
-                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
+                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
                 >
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faSitemap} className="text-lg" />
@@ -166,8 +167,21 @@ export function SettingsPage() {
                 </button>
 
                 <button 
+                  onClick={() => navigate('/settings/tag-config')}
+                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <FontAwesomeIcon icon={faTag} className="text-lg" />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Tag Config</h3>
+                    <p className="text-sm text-foreground/40 mt-1">Configure customizable deal and account tags</p>
+                  </div>
+                </button>
+
+                <button 
                   onClick={() => navigate('/settings/templates')}
-                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
+                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
                 >
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faFileCode} className="text-lg" />
@@ -189,7 +203,7 @@ export function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faLink} className="text-lg" />
                   </div>
@@ -199,7 +213,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faComments} className="text-lg" />
                   </div>
@@ -209,7 +223,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faComments} className="text-lg" />
                   </div>
@@ -219,7 +233,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faPhone} className="text-lg" />
                   </div>
@@ -229,7 +243,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faImage} className="text-lg" />
                   </div>
@@ -250,7 +264,7 @@ export function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faCreditCard} className="text-lg" />
                   </div>
@@ -260,7 +274,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faShieldHalved} className="text-lg" />
                   </div>
@@ -270,7 +284,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faMicrochip} className="text-lg" />
                   </div>
@@ -280,7 +294,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
                   </div>

@@ -77,7 +77,7 @@ function SortableSourceItem({
       style={style}
       className={`
         group relative flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 mb-2
-        ${isDragging ? 'bg-primary/5 border-primary shadow-xl scale-[1.02] opacity-50' : 'bg-card border-border/50 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5'}
+        ${isDragging ? 'bg-primary/5 border-primary shadow-xl scale-[1.02] opacity-50' : 'bg-card border-border hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5'}
       `}
     >
       <div 
@@ -339,7 +339,7 @@ export function SourceConfigPage() {
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate('/settings')}
-            className="w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center hover:bg-muted transition-colors"
+            className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors"
           >
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
@@ -376,7 +376,7 @@ export function SourceConfigPage() {
       </header>
 
       {}
-      <div className="flex-1 min-h-0 bg-card/30 rounded-3xl border border-border/50 p-8 overflow-y-auto">
+      <div className="flex-1 min-h-0 bg-card rounded-3xl border border-border p-8 shadow-sm overflow-y-auto">
         <DndContext 
           sensors={sensors}
           collisionDetection={closestCenter}
