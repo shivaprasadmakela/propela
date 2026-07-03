@@ -29,6 +29,8 @@ export const ENDPOINTS = {
   },
   PRODUCT_TEMPLATES: {
     LIST: "/api/entity/processor/products/templates",
+    EAGER: "/api/entity/processor/products/templates/eager",
+    BY_CODE: (code: string) => `/api/entity/processor/products/templates/req/${code}`,
   },
   TASKS: {
     QUERY_EAGER: "/api/entity/processor/tasks/eager/query",
