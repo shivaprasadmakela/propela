@@ -152,7 +152,7 @@ export function SettingsPage() {
                 <p className="text-sm text-foreground/50">Enhance deal tracking and customization</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <button 
                   onClick={() => navigate('/settings/source-config')}
                   className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
@@ -176,19 +176,6 @@ export function SettingsPage() {
                   <div className="flex-1 py-1">
                     <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Tag Config</h3>
                     <p className="text-sm text-foreground/40 mt-1">Configure customizable deal and account tags</p>
-                  </div>
-                </button>
-
-                <button 
-                  onClick={() => navigate('/settings/templates')}
-                  className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                    <FontAwesomeIcon icon={faFileCode} className="text-lg" />
-                  </div>
-                  <div className="flex-1 py-1">
-                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Templates</h3>
-                    <p className="text-sm text-foreground/40 mt-1">Manage reusable email, SMS, and WhatsApp templates</p>
                   </div>
                 </button>
               </div>
