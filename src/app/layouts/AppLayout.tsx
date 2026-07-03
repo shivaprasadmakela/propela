@@ -16,7 +16,8 @@ import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
   faRobot,
-  faCommentDots
+  faCommentDots,
+  faFileCode
 } from '@fortawesome/free-solid-svg-icons';
 import { useAgentStore } from '@/features/agent/store/agentStore';
 import { AgentDrawer } from '@/features/agent/components/AgentDrawer';
@@ -26,6 +27,7 @@ const navItems = [
   { label: 'Deals', path: '/deals', icon: faHandshake },
   { label: 'Accounts', path: '/accounts', icon: faUsers },
   { label: 'Products', path: '/products', icon: faCartShopping },
+  { label: 'Product Templates', path: '/productTemplates', icon: faFileCode },
   { label: 'My Tasks', path: '/tasks', icon: faListCheck },
   { label: 'Reports', path: '/reports', icon: faChartPie },
   { label: 'Channel Partner', path: '/businessPartners', icon: faHandshakeAngle },

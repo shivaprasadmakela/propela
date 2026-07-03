@@ -15,7 +15,8 @@ import { ReportsPage } from '@/app/pages/ReportsPage';
 import { ProductsPage } from '@/domains/products/pages/ProductsPage';
 import { AccountsPage } from '@/domains/accounts/pages/AccountsPage';
 import { SettingsPage } from '@/domains/settings/pages/SettingsPage';
-import { TemplatesPage } from '@/domains/settings/pages/TemplatesPage';
+import { ProductTemplatesPage } from '@/domains/productTemplates/pages/ProductTemplatesPage';
+import { AddEditProductTemplatePage } from '@/domains/productTemplates/pages/AddEditProductTemplatePage';
 import { DealProfilePage } from '@/domains/deals/pages/DealProfilePage';
 import { AccountProfilePage } from '@/domains/accounts/pages/AccountProfilePage';
 import { TasksPage } from '@/domains/tasks/pages/TasksPage';
@@ -59,7 +60,9 @@ export function AppRoutes() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/source-config" element={<SourceConfigPage />} />
         <Route path="/settings/tag-config" element={<TagConfigPage />} />
-        <Route path="/settings/templates" element={<TemplatesPage />} />
+        <Route path="/productTemplates" element={<ProductTemplatesPage />} />
+        <Route path="/addProductTemplate" element={<AddEditProductTemplatePage />} />
+        <Route path="/addProductTemplate/:code" element={<AddEditProductTemplatePage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/dealProfile/:code" element={<DealProfilePage />} />
         <Route path="/accountProfile/:code" element={<AccountProfilePage />} />
