@@ -335,83 +335,88 @@ export function TagConfigPage() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-1 pb-6">
-          {filteredTags.map((tag, idx) => {
-            const actualIndex = tags.findIndex(t => t === tag);
-            const tagColor = getOpaqueColor(tag.color || '#475569');
-            return (
-              <div 
-                key={tag.id || `tag-${idx}`}
-                className="group relative bg-card border border-border hover:border-primary/30 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between min-h-[140px] overflow-hidden"
-              >
-                {/* Visual accent background: subtle gradient matching tag color */}
-                <div 
-                  className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${tagColor} 0%, transparent 100%)` 
-                  }}
-                />
-
-                {/* Top Section: Icon & Active State */}
-                <div className="flex items-center justify-between gap-3 relative z-10">
-                  <div 
-                    className="w-9 h-9 rounded-xl flex items-center justify-center border border-black/5 shadow-sm"
-                    style={{ backgroundColor: `${tagColor}15`, color: tagColor }}
-                  >
-                    <FontAwesomeIcon icon={getFontAwesomeIcon(tag.icon)} className="text-sm" />
-                  </div>
-                  
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    tag.active 
-                      ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
-                      : 'bg-muted text-foreground/45 border border-border'
-                  }`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${tag.active ? 'bg-emerald-500' : 'bg-foreground/30'}`} />
-                    {tag.active ? 'Active' : 'Inactive'}
-                  </span>
-                </div>
-
-                {/* Center Section: Tag Name Badge Preview */}
-                <div className="my-3 relative z-10 flex">
-                  <span 
-                    className="inline-flex items-center gap-2 font-bold text-xs px-3.5 py-1.5 rounded-full border shadow-sm"
-                    style={{ 
-                      backgroundColor: `${tagColor}08`, 
-                      borderColor: `${tagColor}25`, 
-                      color: tagColor 
-                    }}
-                  >
-                    <FontAwesomeIcon icon={getFontAwesomeIcon(tag.icon)} className="text-[10px] opacity-70" />
-                    {tag.name}
-                  </span>
-                </div>
-
-                {/* Bottom Section: Metadata & Quick Actions */}
-                <div className="flex items-center justify-between pt-3 border-t border-border/40 relative z-10">
-                  <span className="text-[10px] font-mono text-foreground/35 uppercase">
-                    Color: {tagColor.toUpperCase()}
-                  </span>
-                  
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleEditTag(tag, actualIndex)}
-                      className="w-7 h-7 rounded-lg hover:bg-primary/10 hover:text-primary text-foreground/45 flex items-center justify-center text-xs transition-all cursor-pointer border border-transparent hover:border-primary/10"
-                      title="Edit Tag"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(tag, actualIndex)}
-                      className="w-7 h-7 rounded-lg hover:bg-destructive/10 hover:text-destructive text-foreground/45 flex items-center justify-center text-xs transition-all cursor-pointer border border-transparent hover:border-destructive/10"
-                      title="Delete Tag"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="flex-1 overflow-x-auto bg-card border border-border rounded-2xl shadow-sm pr-1 pb-6">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-border/60 bg-muted/20 text-xs font-semibold text-foreground/50 uppercase tracking-wider">
+                <th className="py-4 px-6 text-center w-16">S. No</th>
+                <th className="py-4 px-6">Tag Preview</th>
+                <th className="py-4 px-6">Last Modified By</th>
+                <th className="py-4 px-6">Last Modified Date</th>
+                <th className="py-4 px-6 w-32">Status</th>
+                <th className="py-4 px-6 text-center w-24">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/40 text-sm">
+              {filteredTags.map((tag, idx) => {
+                const actualIndex = tags.findIndex(t => t === tag);
+                const tagColor = getOpaqueColor(tag.color || '#475569');
+                const isDefault = ['cold', 'hot', 'warm'].includes(tag.name.trim().toLowerCase());
+                
+                return (
+                  <tr key={tag.id || `tag-${idx}`} className="hover:bg-muted/10 transition-colors">
+                    <td className="py-4 px-6 text-center text-foreground/40 font-medium">
+                      {idx + 1}
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <span 
+                          className="inline-flex items-center gap-2 font-bold text-xs px-3.5 py-1.5 rounded-full border shadow-sm"
+                          style={{ 
+                            backgroundColor: `${tagColor}08`, 
+                            borderColor: `${tagColor}25`, 
+                            color: tagColor 
+                          }}
+                        >
+                          <FontAwesomeIcon icon={getFontAwesomeIcon(tag.icon)} className="text-[10px] opacity-70" />
+                          {tag.name}
+                        </span>
+                        {isDefault && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/25 uppercase tracking-wide">
+                            Default
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 text-foreground/60">
+                      {isDefault ? 'System' : 'Admin'}
+                    </td>
+                    <td className="py-4 px-6 text-foreground/40 font-mono text-xs">
+                      {isDefault ? '30/06/2026' : '03/07/2026'}
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        tag.active 
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/25' 
+                          : 'bg-muted text-foreground/45 border border-border'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${tag.active ? 'bg-emerald-500' : 'bg-foreground/30'}`} />
+                        {tag.active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleEditTag(tag, actualIndex)}
+                          className="w-8 h-8 rounded-lg hover:bg-primary/10 hover:text-primary text-foreground/45 flex items-center justify-center transition-all cursor-pointer border border-transparent hover:border-primary/10"
+                          title="Edit Tag"
+                        >
+                          <FontAwesomeIcon icon={faEdit} className="text-xs" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(tag, actualIndex)}
+                          className="w-8 h-8 rounded-lg hover:bg-destructive/10 hover:text-destructive text-foreground/45 flex items-center justify-center transition-all cursor-pointer border border-transparent hover:border-destructive/10"
+                          title="Delete Tag"
+                        >
+                          <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
