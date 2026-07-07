@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { dealsApi, type DealEntity } from '../api/dealsApi';
 import { stagesApi, type StageEntity } from '../../stages/api/stagesApi';
 import { productApi, type ProductEntity } from '../../products/api/productApi';
@@ -9,21 +8,37 @@ import { getStringColorClass } from '@/shared/utils/colorUtils';
 import { useToast } from '@/shared/ui/toast/ToastProvider';
 import { AddDealModal } from '../components/AddDealModal';
 import { DealFilterModal } from '../components/DealFilterModal';
+import { DownloadDealsModal } from '../components/DownloadDealsModal';
 import { getDateRange } from '@/shared/utils/dateUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMagnifyingGlass,
   faFilter,
   faPlus,
-  faUpRightFromSquare,
   faCopy,
-  faCircle,
   faTable,
   faColumns,
-  faChevronDown
+  faChevronDown,
+  faDownload
 } from '@fortawesome/free-solid-svg-icons';
 
 type ViewMode = 'table' | 'kanban';
+
+interface FilterCondition {
+  field?: string;
+  value?: string | number | boolean;
+  toValue?: string | number | boolean;
+  operator?: string;
+  conditions?: FilterCondition[];
+}
+
+interface ActiveFiltersType {
+  operator: 'AND' | 'OR';
+  conditions: {
+    operator: 'AND' | 'OR';
+    conditions: FilterCondition[];
+  }[];
+}
 
 export function DealsPage() {
   const [deals, setDeals] = useState<DealEntity[]>([]);
@@ -42,9 +57,58 @@ export function DealsPage() {
   const [sortState, setSortState] = useState<SortState[]>([{ property: 'updatedAt', direction: 'DESC' }]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
+  const handleFetchAllDeals = async () => {
+    // Default structure with 15 empty slots
+    const finalCondition = activeFilters?.conditions ? { ...activeFilters } : {
+      operator: 'AND' as const,
+      conditions: Array(15).fill(null).map(() => ({
+        conditions: [] as FilterCondition[],
+        operator: 'OR' as const
+      }))
+    };
+
+    // Clone conditions to avoid direct mutation
+    const conditions = [...finalCondition.conditions];
+
+    // Slot 0: Search (name)
+    if (search.trim()) {
+      conditions[0] = {
+        operator: 'OR',
+        conditions: [
+          { field: 'name', operator: 'CONTAINS', value: search.trim() },
+          { field: 'code', operator: 'CONTAINS', value: search.trim() }
+        ]
+      };
+    }
+
+    // Slot 6: Product (for Kanban view override)
+    if (viewMode === 'kanban' && selectedProduct) {
+      conditions[6] = {
+        operator: 'OR',
+        conditions: [
+          { field: 'productId', operator: 'EQUALS', value: selectedProduct.id }
+        ]
+      };
+    }
+
+    const response = await dealsApi.fetchDeals({
+      condition: {
+        ...finalCondition,
+        conditions: conditions
+      },
+      eager: true,
+      size: 10000,
+      page: 0,
+      sort: sortState,
+      eagerFields: ['name', 'firstName', 'lastName', 'campaign_name', 'id', 'code', 'productId', 'createdBy', 'nextFollowUp', 'stage', 'status', 'source', 'subSource', 'tag', 'assignedUserId'],
+    });
+    return response.content || [];
+  };
   
   const initialRange = getDateRange('Last 6 Months');
-  const [activeFilters, setActiveFilters] = useState<any>({
+  const [activeFilters, setActiveFilters] = useState<ActiveFiltersType>({
     operator: 'AND',
     conditions: Array(15).fill(null).map((_, i) => ({
       operator: 'OR',
@@ -100,11 +164,11 @@ export function DealsPage() {
     setIsLoading(true);
     try {
       // Default structure with 15 empty slots
-      let finalCondition = activeFilters?.conditions ? { ...activeFilters } : {
-        operator: 'AND',
+      const finalCondition = activeFilters?.conditions ? { ...activeFilters } : {
+        operator: 'AND' as const,
         conditions: Array(15).fill(null).map(() => ({
-          conditions: [] as any[],
-          operator: 'OR'
+          conditions: [] as FilterCondition[],
+          operator: 'OR' as const
         }))
       };
 
@@ -306,7 +370,7 @@ export function DealsPage() {
     },
   ];
 
-  const navigate = useNavigate();
+
   const hasActiveFilters = Object.keys(activeFilters).length > 0;
 
   return (
@@ -316,13 +380,22 @@ export function DealsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight">List of deals</h1>
         </div>
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2"
-        >
-          <FontAwesomeIcon icon={faPlus} className="text-base" />
-          Add deal
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsDownloadModalOpen(true)}
+            className="px-5 py-2.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2"
+          >
+            <FontAwesomeIcon icon={faDownload} className="text-base text-foreground/60" />
+            Download
+          </button>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-2"
+          >
+            <FontAwesomeIcon icon={faPlus} className="text-base" />
+            Add deal
+          </button>
+        </div>
       </div>
 
       { }
@@ -450,9 +523,15 @@ export function DealsPage() {
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
         onApply={(filters) => {
-          setActiveFilters(filters);
+          setActiveFilters(filters as ActiveFiltersType);
           setPage(0);
         }}
+      />
+
+      <DownloadDealsModal
+        isOpen={isDownloadModalOpen}
+        onClose={() => setIsDownloadModalOpen(false)}
+        onFetchData={handleFetchAllDeals}
       />
     </div>
   );

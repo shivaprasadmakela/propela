@@ -1,5 +1,6 @@
 import { httpClient } from "@/services/httpClient";
 import { ENDPOINTS } from "@/services/endpoints";
+import { ENV } from "@/env";
 
 export interface DealUser {
   id: number;
@@ -23,6 +24,7 @@ export interface DealEntity {
   name: string;
   firstName?: string;
   lastName?: string;
+  campaign_name?: string;
   version: number;
   ownerId?: DealUser;
   assignedUserId?: DealUser;
@@ -280,5 +282,41 @@ export const dealsApi = {
           : deal.updatedBy,
       updatedAt: Math.floor(Date.now() / 1000),
     };
+  },
+  downloadSpreadsheet: async (payload: {
+    name: string;
+    type: 'XLSX' | 'CSV';
+    headers: string[];
+    data: any[];
+    downloadable: boolean;
+    skipHeader: boolean;
+  }): Promise<Blob> => {
+    const token = localStorage.getItem('accessToken');
+    const clientCode = localStorage.getItem('clientCode');
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'appcode': 'leadzump',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    if (clientCode) {
+      headers['clientcode'] = clientCode;
+    }
+
+    const baseURL = ENV.API_BASE_URL.endsWith('/') ? ENV.API_BASE_URL.slice(0, -1) : ENV.API_BASE_URL;
+    const response = await fetch(`${baseURL}/api/core/spreadsheet`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to download spreadsheet`);
+    }
+
+    return response.blob();
   },
 };
