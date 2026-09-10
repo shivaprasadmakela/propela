@@ -1,3 +1,42 @@
+/**
+ * Formats a timestamp that may arrive as epoch milliseconds, epoch seconds, an
+ * ISO-8601 string, or a space-separated local datetime — all shapes the call
+ * provider APIs have been seen to return.
+ *
+ * Returns null when the value cannot be read as a date, so a caller renders its
+ * own placeholder rather than the string "Invalid Date".
+ */
+export function formatTimestamp(value?: number | string | null): string | null {
+  // 0 is treated as absent rather than as the epoch: an unset sentinel is far
+  // likelier here than a genuine 1970 timestamp, and "Jan 01, 1970" in a column
+  // reads as data when it is the absence of data.
+  if (value === null || value === undefined || value === "" || value === 0) return null;
+
+  const numeric =
+    typeof value === "number" ? value : /^\d+$/.test(value.trim()) ? Number(value.trim()) : null;
+
+  let date: Date;
+  if (numeric !== null) {
+    // Seconds and milliseconds are both in the wild. Anything below this bound
+    // is too small to be milliseconds for a date worth showing.
+    date = new Date(numeric < 1e12 ? numeric * 1000 : numeric);
+  } else {
+    const text = String(value).trim();
+    // "2026-09-08 14:23:11" does not parse everywhere; ISO wants the T.
+    date = new Date(/^\d{4}-\d{2}-\d{2} \d{2}:/.test(text) ? text.replace(" ", "T") : text);
+  }
+
+  if (Number.isNaN(date.getTime())) return null;
+
+  return date.toLocaleString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function getDateRange(preset: string) {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());

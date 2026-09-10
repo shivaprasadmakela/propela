@@ -91,6 +91,9 @@ export const productApi = {
     fetchProductByCode: (code: string): Promise<ProductEntity> => {
         return httpClient.get<ProductEntity>(ENDPOINTS.PRODUCTS.BY_CODE(code));
     },
+    fetchProductById: (id: number): Promise<ProductEntity> => {
+        return httpClient.get<ProductEntity>(`/api/entity/processor/products/${id}`);
+    },
     updateProduct: (id: number, data: Partial<ProductEntity>): Promise<ProductEntity> => {
         return httpClient.patch<ProductEntity>(ENDPOINTS.PRODUCTS.UPDATE(id), data);
     },

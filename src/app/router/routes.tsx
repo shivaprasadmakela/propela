@@ -1,3 +1,6 @@
+import { TelephonyProviderPage } from '@/domains/settings/pages/TelephonyProviderPage';
+import { ExotelConfigPage } from '@/domains/settings/pages/ExotelConfigPage';
+import { ProductNumbersConfigPage } from '@/domains/settings/pages/ProductNumbersConfigPage';
 import { Routes, Route } from 'react-router-dom';
 
 import { MinimalLayout } from '@/app/layouts/MinimalLayout';
@@ -58,6 +61,10 @@ export function AppRoutes() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/addProduct/:code" element={<AddEditProductPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/telephony" element={<TelephonyProviderPage />} />
+        <Route path="/settings/telephony/exotel" element={<ExotelConfigPage />} />
+        <Route path="/settings/telephony/exotel/product/:productId" element={<ProductNumbersConfigPage />} />
+
         <Route path="/settings/source-config" element={<SourceConfigPage />} />
         <Route path="/settings/tag-config" element={<TagConfigPage />} />
         <Route path="/productTemplates" element={<ProductTemplatesPage />} />

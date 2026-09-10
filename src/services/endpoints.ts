@@ -62,6 +62,21 @@ export const ENDPOINTS = {
   PARTNERS: {
     QUERY: "/api/entity/processor/partners/query",
   },
+  TELEPHONY: {
+    CONNECTIONS: "/api/core/connections",
+    CONNECTION_BY_ID: (id: string) => `/api/core/connections/${id}`,
+    PRODUCT_COMMS_DEFAULT: "/api/entity/processor/productComms/default",
+    PRODUCT_COMMS: "/api/entity/processor/productComms",
+    PRODUCT_COMMS_BY_CODE: (code: string) => `/api/entity/processor/productComms/code/${code}`,
+    PRODUCT_COMMS_BY_ID: (id: number | string) => `/api/entity/processor/productComms/${id}`,
+    PROVISIONING_INITIALIZE: "/api/message/call/provisioning/initialize",
+    PROVISIONING_APP: "/api/message/call/provisioning/app",
+    PROVISIONING_AGENT: "/api/message/call/provisioning/agent",
+    PROVISIONING_AGENTS: "/api/message/call/provisioning/agents",
+    PROVISIONING_AGENT_DEACTIVATE: (userId: string | number) => `/api/message/call/provisioning/agent/${userId}`,
+    BROWSER_STATUS: "/api/message/call/browser/status",
+    BROWSER_TOKEN: "/api/message/call/browser/token",
+  },
   ANALYTICS: {
     STAGE_COUNTS: "/api/entity/processor/analytics/tickets/stage-counts/sources/assigned-users",
     ASSIGNED_USERS: "/api/entity/processor/analytics/tickets/stage-counts/assigned-users",

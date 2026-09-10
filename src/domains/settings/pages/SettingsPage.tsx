@@ -220,7 +220,7 @@ export function SettingsPage() {
                   </div>
                 </button>
 
-                <button className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left">
+                <button onClick={() => navigate("/settings/telephony")} className="group relative flex items-start gap-4 p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 text-left cursor-pointer">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                     <FontAwesomeIcon icon={faPhone} className="text-lg" />
                   </div>
